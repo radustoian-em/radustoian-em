@@ -703,10 +703,10 @@
   .cert-item a:hover{ color: var(--p-400); }
   .cert-meta{ font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft); white-space:nowrap; text-align:right; }
 
-  .contact-panel{ text-align:center; padding: 56px 44px; }
-  .contact-panel h2{ font-family: var(--font-display); font-weight: 500; font-size: clamp(1.7rem, 3.4vw, 2.3rem); color: #fff; margin-bottom: 14px; }
-  .contact-panel p{ color: rgba(255,255,255,0.78); max-width: 46ch; margin: 0 auto 28px; font-size: 1rem; line-height: 1.6; }
-  .contact-buttons{ display:flex; justify-content:center; gap: 12px; flex-wrap:wrap; }
+  .connect-panel{ text-align:center; padding: 56px 44px; }
+  .connect-panel h2{ font-family: var(--font-display); font-weight: 500; font-size: clamp(1.7rem, 3.4vw, 2.3rem); color: #fff; margin-bottom: 14px; }
+  .connect-panel p{ color: rgba(255,255,255,0.78); max-width: 46ch; margin: 0 auto 28px; font-size: 1rem; line-height: 1.6; }
+  .connect-buttons{ display:flex; justify-content:center; gap: 12px; flex-wrap:wrap; }
   .btn-solid{
     position:relative; overflow:hidden; display:inline-flex; align-items:center; gap: 8px; padding: 13px 24px; border-radius: 999px;
     background: linear-gradient(155deg, var(--p-500), var(--p-700)); color: #fff; font-weight: 600; font-size: 0.95rem; text-decoration:none;
@@ -752,7 +752,7 @@
         <li><a href="#testimonials"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Testimonials</a></li>
         <li><a href="#speaking"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Speaking</a></li>
         <li><a href="#certifications"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Certifications</a></li>
-        <li><a href="#contact"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Contact</a></li>
+        <li><a href="#connect"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Connect</a></li>
       </ul>
     </div>
   </div>
@@ -1129,11 +1129,11 @@
       </div>
     </section>
 
-    <section id="contact">
-      <div class="panel panel--deep contact-panel">
+    <section id="connect">
+      <div class="panel panel--deep connect-panel">
         <h2>Let&rsquo;s connect</h2>
         <p>Looking for a digital marketing leader with a strategic mindset and a track record of product innovation? I&rsquo;d love to hear from you.</p>
-        <div class="contact-buttons">
+        <div class="connect-buttons">
           <a class="btn-solid card-3d" href="https://www.linkedin.com/in/radustoian/" target="_blank" rel="noopener">
             <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
             Connect on LinkedIn
@@ -1236,7 +1236,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
-      current = 'contact';
+      current = 'connect';
     }
     
     links.forEach(l => {
