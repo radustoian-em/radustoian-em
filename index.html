@@ -514,12 +514,15 @@
     box-shadow: var(--bevel-hi), var(--bevel-lo), var(--sh-panel-deep);
   }
 
-  /* About section specific pop-out */
-  #about .panel {
+  /* Hero and About section specific pop-out */
+  .hero.panel, #about .panel {
     transition: transform 0.35s var(--tilt-ease), box-shadow 0.35s var(--tilt-ease), background 0.35s var(--ease), border-color 0.35s var(--ease);
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
-  #about .panel:hover {
-    transform: translateY(-6px) scale(1.015);
+  .hero.panel:hover, #about .panel:hover {
+    transform: translateY(-6px);
     background: var(--sheen-hover), linear-gradient(135deg, rgba(42, 20, 68, 0.55) 0%, rgba(16, 6, 28, 0.3) 100%);
     border-top-color: rgba(255, 255, 255, 0.35);
     border-left-color: rgba(255, 255, 255, 0.2);
