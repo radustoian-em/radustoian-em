@@ -27,5 +27,6 @@ I provide the strategic leadership and digital infrastructure that helps employe
 
 ## 📬 Connect with Me
 
+* **Profile page:** [radustoian.com](https://radustoian.com)
 * **Substack:** [Radu Stoian on Substack](https://radustoian.substack.com/p/radu-stoian-technical-director-at)
 * **LinkedIn:** [Radu Stoian on LinkedIn](https://www.linkedin.com/in/radustoian/)
