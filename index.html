@@ -372,6 +372,7 @@
     outline: none;
   }
   .nav-home svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .nav-home img { width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%; object-fit: cover; }
   .nav-home-text { font-weight: 600; font-size: 15px; color: inherit; white-space: nowrap; }
 
   .nav-links {
@@ -535,7 +536,7 @@
 
   .hero h1{ font-family: var(--font-display); font-weight: 500; font-size: clamp(2.6rem, 5.4vw, 4.1rem); line-height: 1.03; color: var(--ink); letter-spacing: -0.01em; }
   
-  .hero .company-info{ display: flex; align-items: center; gap: 8px; font-size: 1.05rem; color: var(--ink); font-weight: 600; }
+  .hero .company-info{ display: flex; align-items: center; gap: 26px; font-size: 1.05rem; color: var(--ink); font-weight: 600; }
   .hero .company-info img{ width: 26px; height: 26px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); box-shadow: var(--sh-chip); background: rgba(255,255,255,0.9); }
   
   /* External Link with arrow */
@@ -640,6 +641,9 @@
   .slider-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .slider-btn svg { width: 18px; height: 18px; }
 
+  .testimonial-link { margin-right: auto; font-size: 0.85rem; color: var(--ink-soft); transition: color 0.2s; text-align: left; padding-right: 12px; }
+  .testimonial-link:hover { color: var(--p-300); }
+
   .case-card {
     height: 100%; display: flex; flex-direction: column;
     background: var(--sheen), linear-gradient(135deg, rgba(28, 14, 46, 0.4) 0%, rgba(12, 4, 22, 0.2) 100%);
@@ -649,7 +653,7 @@
     box-shadow: var(--bevel-hi), var(--bevel-lo), var(--sh-card);
   }
   .case-thumb { height: 140px; position: relative; overflow: hidden; background: #000; }
-  .case-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); opacity: 0.8; }
+  .case-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 0.5s var(--ease); opacity: 0.8; }
   .case-card:hover .case-thumb img { transform: scale(1.05); opacity: 1; }
   .case-thumb-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(12, 4, 22, 0.9), transparent); }
   .case-body { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
@@ -741,9 +745,7 @@
   <div class="navbar" id="navbar">
     <div class="nav-glass">
       <a href="#top" class="nav-home" aria-label="Back to top">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-        </svg>
+        <img src="https://substackcdn.com/image/fetch/$s_!W3om!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F569bd52d-2b02-4dde-aecd-4c57d148219c_640x732.webp" alt="Radu Stoian Portrait">
         <span class="nav-home-text">Radu Stoian</span>
       </a>
       
@@ -769,7 +771,12 @@
       <div>
         <h1>Radu Stoian</h1>
         <div class="hero-title-row">
-          <span class="eyebrow-line">Technical Director</span>
+          <div class="company-info">
+            <a href="https://www.linkedin.com/in/radustoian/" target="_blank" rel="noopener" class="em-link">
+              Technical Director
+              <svg class="em-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+            </a>
+          </div>
           <div class="company-info">
             <img src="https://www.enhancemedia.co.uk/wp-content/uploads/2024/08/E-only-Blue-2000px-x-2000px.png" alt="Enhance Media Logo" onerror="this.style.display='none';">
             <a href="https://www.enhancemedia.co.uk/" target="_blank" rel="noopener" class="em-link">
@@ -795,6 +802,10 @@
           <a class="pill-link card-3d" href="https://www.linkedin.com/in/radustoian/" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
             LinkedIn
+          </a>
+          <a class="pill-link card-3d" href="https://x.com/radustoian" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            X
           </a>
         </div>
       </div>
@@ -1041,11 +1052,15 @@
               </div>
             </div>
           </div>
-          <div class="slider-controls">
-            <button class="slider-btn" id="testPrev" aria-label="Previous testimonials">
+          <div class="slider-controls" style="align-items: center;">
+            <a href="https://www.linkedin.com/in/radustoian/details/recommendations/" target="_blank" rel="noopener" class="em-link testimonial-link">
+              See all recommendations received by Radu Stoian from clients and colleagues on LinkedIn.
+              <svg class="em-arrow" style="flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+            </a>
+            <button class="slider-btn" style="flex-shrink: 0;" id="testPrev" aria-label="Previous testimonials">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <button class="slider-btn" id="testNext" aria-label="Next testimonials">
+            <button class="slider-btn" style="flex-shrink: 0;" id="testNext" aria-label="Next testimonials">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             </button>
           </div>
