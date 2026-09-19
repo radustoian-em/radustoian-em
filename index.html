@@ -641,8 +641,11 @@
   .slider-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .slider-btn svg { width: 18px; height: 18px; }
 
-  .testimonial-link { margin-right: auto; font-size: 0.85rem; color: var(--ink-soft); transition: color 0.2s; text-align: left; padding-right: 12px; }
+  .testimonial-note { margin-right: auto; font-size: 0.85rem; color: var(--ink-soft); text-align: left; padding-right: 12px; line-height: 1.5; }
+  .testimonial-link { color: var(--p-400); transition: color 0.2s; }
+  .testimonial-link .link-text { border-bottom: 1px solid var(--p-600); transition: border-color 0.2s; }
   .testimonial-link:hover { color: var(--p-300); }
+  .testimonial-link:hover .link-text { border-color: var(--p-400); }
 
   .case-card {
     height: 100%; display: flex; flex-direction: column;
@@ -1053,10 +1056,7 @@
             </div>
           </div>
           <div class="slider-controls" style="align-items: center;">
-            <a href="https://www.linkedin.com/in/radustoian/details/recommendations/" target="_blank" rel="noopener" class="em-link testimonial-link">
-              See all recommendations received by Radu Stoian from clients and colleagues on LinkedIn.
-              <svg class="em-arrow" style="flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </a>
+            <p class="testimonial-note">See all recommendations received by Radu Stoian from clients and colleagues on <a href="https://www.linkedin.com/in/radustoian/details/recommendations/" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">LinkedIn</span><svg class="em-arrow" style="flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a> or view the <a href="https://radustoian.substack.com/p/radu-stoian-technical-director-at-f99" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">Substack AI-readable backup & analysis</span><svg class="em-arrow" style="flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a></p>
             <button class="slider-btn" style="flex-shrink: 0;" id="testPrev" aria-label="Previous testimonials">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
