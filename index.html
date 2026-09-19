@@ -713,6 +713,8 @@
   }
   @media (max-width: 600px){ .talk-item{ grid-template-columns: 1fr; gap: 6px; padding: 20px 20px; } }
   .talk-format{ font-family: var(--font-mono); font-size: 12px; color: var(--p-400); padding-top: 3px; }
+   .talk-thumb{ width: 100%; max-width: 130px; height: 74px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--glass-border-lo); opacity: 0.85; transition: opacity 0.3s var(--ease); }
+  .talk-item:hover .talk-thumb{ opacity: 1; }
   .talk-item h3{ font-family: var(--font-display); font-weight: 500; font-size: 1.1rem; color: var(--ink); margin-bottom: 6px; }
   .talk-item h3 a{ color: var(--ink); text-decoration:none; }
   .talk-item h3 a:hover{ color: var(--p-300); }
@@ -895,7 +897,9 @@
         <h2 class="section-title">Publications &amp; Insights</h2>
         <div class="talk-list">
           <div class="talk-item card-3d">
-            <div class="talk-format">TA Strategy</div>
+            <div class="talk-format">
+<img src="https://substack-post-media.s3.amazonaws.com/public/images/17c14195-c287-4b4e-8cb9-91e800083987_1280x720.png" alt="TA Strategy Thumbnail" class="talk-thumb" onerror="this.style.display='none';"><span>TA Strategy</span>
+            </div>
             <div>
               <h3><a href="https://radustoian.substack.com/p/the-organic-first-approach-to-talent" target="_blank" rel="noopener">The Organic First Approach to Talent Attraction</a></h3>
               <p>SEO, Google for Jobs, AI visibility, and organic social media lead the way, with paid marketing efficiently filling any remaining gaps in your strategy.</p>
@@ -905,7 +909,7 @@
             </div>
           </div>
           <div class="talk-item card-3d">
-            <div class="talk-format">AI Optimisation</div>
+            <div class="talk-format"><img src="https://www.enhancemedia.co.uk/wp-content/uploads/2025/06/Hero-image-1.jpg" alt="TA Strategy Thumbnail" class="talk-thumb" onerror="this.style.display='none';"><span>AI Optimisation</span></div>
             <div>
               <h3><a href="https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/" target="_blank" rel="noopener">Optimising for AI Isn't About Abandoning SEO</a></h3>
               <p>Discover why preparing for the Agentic AI era is an evolution of your existing search engine optimization efforts, not a complete replacement.</p>
@@ -915,7 +919,7 @@
             </div>
           </div>
           <div class="talk-item card-3d">
-            <div class="talk-format">Employer Branding</div>
+            <div class="talk-format"><img src="https://www.enhancemedia.co.uk/wp-content/uploads/2025/06/AI-Wave-Header-1.jpg" alt="TA Strategy Thumbnail" class="talk-thumb" onerror="this.style.display='none';"><span>Employer Branding</span></div>
             <div>
               <h3><a href="https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/" target="_blank" rel="noopener">AI is the new Gateway to your Employer Brand</a></h3>
               <p>Candidates are no longer starting their journey by visiting careers websites. Instead, they are forming their first impression of an employer through a conversation with AI.</p>
