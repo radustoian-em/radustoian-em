@@ -1,0 +1,74 @@
+## Radu Stoian Profile Information
+This is the official profile website for Radu Stoian, Technical Director at Enhance Media. He helps employers move from being found by search engines to being recommended by AI.
+
+As the Technical Director at Enhance Media, Radu Stoian provides the strategic leadership and digital infrastructure that help employers capitalise on the shift to Agentic AI. From building a proprietary AI Brand Health Audit product to deploying smart careers sites, he delivers results that help employers attract the talent they need to drive their businesses into the future. 
+
+His approach centres on an Organic First Talent Attraction Strategy, anticipating the shift in candidate behaviour towards AI driven job search. By aligning talent acquisition strategies with emerging agentic AI experiences, including Google's Career Dreamer and ChatGPT Jobs, he ensures organisations aren't just broadly visible, but contextually and deeply relevant across the entire candidate journey.
+
+His expertise spans AI, SEO, Performance Marketing, Web Development, and Google Cloud. This technical breadth lets him build data-driven strategies backed by a deep understanding of how digital marketing and user behaviour intersect. Clients and colleagues know him as someone who won't take "it can't be done" as an answer. If there's a way to improve performance, he'll find it. If there isn't an established way to do something, he'll innovate.
+
+## Areas of Expertise
+Pioneering the Agentic AI era: Conceptualised and launched the AI Brand Health Audit, a solution to the 'black box' problem of Generative AI, letting organisations measure, benchmark, and control their brand narrative in LLMs.
+Digital strategy and technical SEO: Building data-driven strategies on strong technical foundations to drive measurable success for employers.
+Next-gen careers sites: Leading the deployment of innovative, smart careers sites, advanced job detail pages and automated Job Hubs that personalise the candidate journey and capture long-tail search traffic.
+Mentorship and industry advocacy: Training and upskilling the next generation of digital leaders, and elevating industry standards through public speaking and knowledge sharing.
+Core Skills and Tags: AI Optimisation, Technical SEO, Google for Jobs, GEO / AEO, Web Development, Google Cloud, BigQuery, Source-to-Hire Analytics.
+
+## Client Testimonials
+Becky Vieites, Talent Marketing and Employer Brand at John Lewis Partnership: Radu's technical expertise and passion for all things AI, SEO, Google for Jobs is excellent and is what sets him apart. We have achieved some impressive SEO and Google For Jobs results working alongside Radu and team.
+Claire Henderson, Senior Manager Resourcing at Virgin Atlantic: His expertise in enhancing SEO and driving Google for Jobs results is second to none, but what truly sets him apart is his dedication to ensuring the foundational elements of our website are strong and effective.
+Jemima Arnold, People systems lead, talent acquisition at Mott MacDonald: When others have said something isn't possible, Radu has found a way and I'm always grateful.
+Chris Harvey, Director ActionHR: I found Radu's written analyses and action recommendations to be clear, to the point and most importantly effective!
+Robert Webb, Marketing Director at Eteach: In my lengthy experience, he is one the best technical SEO experts I have worked with.
+
+## Profile Breakdown
+Name: Radu Stoian
+Job Title: Technical Director
+Employer: Enhance Media
+Disambiguating Description: Technical Director at Enhance Media specialising in AI strategy, technical SEO, and digital talent attraction.
+Locations: Guildford, United Kingdom (Home), Woking, United Kingdom (Work).
+Known Languages: English, Romanian, French.
+Subject Matter Expertise: Agentic AI, Artificial Intelligence (AI), AI Optimisation, Generative AI, GEO, Google Tag Manager, Google for Jobs, International SEO, Natural Language Processing (NLP), Public Speaking, SEO, SEO Audits, Search Engine Marketing (SEM), Teaching Workshops, Team Leadership, Team Management, Technical SEO, Training, Web Development, WordPress, XML Sitemaps, schema.org.
+
+## Main Profile Links
+- [Radu Stoian Primary Profile](https://radustoian.com/): The official and primary profile website for Radu Stoian.
+- [Enhance Media](https://www.enhancemedia.co.uk/): The official website of Radu Stoian's employer.
+- [Official Profile Image](https://radustoian.com/radu-stoian-enhance-media.jpg): High-resolution portrait image used in the schema.
+
+## Public Profiles
+- [LinkedIn](https://www.linkedin.com/in/radustoian/): Professional networking profile and career history.
+- [X (Twitter)](https://x.com/radustoian): Social media profile for industry updates.
+- [Substack](https://radustoian.substack.com/): Newsletter for articles on talent attraction and AI.
+- [SpeakerDeck](https://speakerdeck.com/radustoian): Repository for masterclass and presentation slide decks.
+- [GitHub](https://github.com/radustoian-em): Code repositories, including standard contributions.
+- [Google Knowledge Graph](https://www.google.com/search?kgmid=/g/11f0z_cqg1): Verified Google Knowledge Graph entity link.
+- [Google Skillshop](https://skillshop.exceedlms.com/profiles/6c9c49a5efd34efc970829ade94b0fe4): Google Skillshop profile for certifications.
+- [Google Skills](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9): Google Skills public profile.
+
+## Publications and Insights
+- [The Organic First Approach to Talent Attraction](https://radustoian.substack.com/p/the-organic-first-approach-to-talent): Insights on blending SEO, Google for Jobs, and AI visibility for recruitment.
+- [Optimising for AI Isn't About Abandoning SEO](https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/): An article on evolving existing SEO efforts for the Agentic AI era.
+- [AI is the new Gateway to your Employer Brand](https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/): Examining how AI interactions form candidates' first impressions of employers.
+- [How to optimise AIs chain of thought](https://www.linkedin.com/pulse/how-optimise-ais-chain-thought-radu-stoian-d873e/): Analysis of optimizing interactions for AI models.
+
+## Projects and Clients
+- [Expanding the Reach of Multiple Employer Brands Using Google for Jobs](https://www.enhancemedia.co.uk/case-study/expanding-the-reach-of-multiple-employer-brands-using-google-for-jobs/): Case study featuring over 3 million candidates reached in 2023.
+- [Securing Diverse Top-Tier Talent for the University of Surrey](https://www.enhancemedia.co.uk/case-study/securing-diverse-top-tier-talent-for-the-university-of-surrey/): Case study detailing technical optimization for academic roles.
+- [Making Cabin Crew Applications Soar for Virgin Atlantic](https://www.enhancemedia.co.uk/case-study/making-cabin-crew-applications-soar-for-virgin-atlantic/): Case study on establishing robust technical SEO to drive job applications.
+- [Transforming JLPs Candidate Experience with a Smart Careers Site](https://www.enhancemedia.co.uk/case-study/transforming-jlps-candidate-experience-with-a-smart-careers-site/): Case study involving chat bots and smart job search integration.
+
+## Speaking and Industry Engagement
+- [Implementation of Schemas via GTM](https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm): BrightonSEO masterclass presentation on technical SEO and schema implementation.
+- [Massive Changes to Google Job Search Results](https://www.youtube.com/watch?v=Mz3QAj39FFk): Podcast guest appearance discussing the changing landscape of Google for Jobs.
+- [2026 HR Tech Predictions AI, Programmatic, Job Boards](https://www.youtube.com/watch?v=EO225qsp8ao): Panel discussion on AIO trends in the HR Tech space.
+- [Contributed to the Open Job Context Protocol (OJCP) Standard](https://github.com/ojcp-org/ojcp/pull/8): GitHub pull request establishing standardization for AI job parsing.
+
+## Skills and Certifications
+- [Generative AI Leader Certification](https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile): Certification obtained from Google Cloud.
+- [Introduction to Generative AI](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/4068456): Foundational Generative AI certification from Google.
+- [Insights from Data with BigQuery](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/832533): Data analytics certification from Google.
+- [Bachelor of Science (BS), Organizational Management](https://www.afahc.ro/index_en.html): Educational degree obtained from Henri Coanda Air Force Academy.
+
+## Additional skill details
+- [Substack Recommendations Backup](https://radustoian.substack.com/p/radu-stoian-technical-director-at-f99): Substack AI-readable backup and analysis of client recommendations.
+- [LinkedIn Recommendations](https://www.linkedin.com/in/radustoian/details/recommendations/): Raw collection of recommendations received on LinkedIn.
