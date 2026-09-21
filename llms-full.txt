@@ -42,6 +42,7 @@ Subject Matter Expertise: Agentic AI, Artificial Intelligence (AI), AI Optimisat
 - [SpeakerDeck](https://speakerdeck.com/radustoian): Repository for masterclass and presentation slide decks.
 - [GitHub](https://github.com/radustoian-em): Code repositories, including standard contributions.
 - [Google Knowledge Graph](https://www.google.com/search?kgmid=/g/11f0z_cqg1): Verified Google Knowledge Graph entity link.
+- [Woorank Expert Page](https://experts.woorank.com/en/experts/radu-stoian): Certified digital marketing expert.
 - [Google Skillshop](https://skillshop.exceedlms.com/profiles/6c9c49a5efd34efc970829ade94b0fe4): Google Skillshop profile for certifications.
 - [Google Skills](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9): Google Skills public profile.
 
