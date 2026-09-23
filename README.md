@@ -1,6 +1,6 @@
-# [Radu Stoian](https://www.linkedin.com/in/radustoian/)
+# [Radu Stoian](https://radustoian.com/)
 
-Technical Director at [Enhance Media](https://enhancemedia.co.uk/ai).
+[Technical Director](https://www.linkedin.com/in/radustoian/) at [Enhance Media](https://enhancemedia.co.uk/ai).
 
 My goal is simple: To help employers move from being **'found'** by search engines to being **'recommended'** by AI. 
 
