@@ -10,10 +10,11 @@
 <link rel="describedby" type="text/plain" href="https://radustoian.com/llms.txt">
 <link rel="describedby" type="text/plain" href="https://radustoian.com/llms-full.txt">
 <link rel="describedby" href="https://radustoian.com/metadata.json" type="application/json">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
+
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="profile" />
 <meta property="og:title" content="Radu Stoian - Technical Director at Enhance Media" />
@@ -33,14 +34,14 @@
 <meta name="twitter:site" content="@radustoian" />
 
 <script type="application/ld+json">
-    {
-    "@context" : "https://schema.org",
-      "@type" : "WebSite",
-      "name" : "Radu Stoian",
-      "url" : "https://radustoian.com/",
-      "sameAs" : ["http://radustoian.com/","http://www.radustoian.com/","https://www.radustoian.com/"]
-      }
-  </script>
+{
+  "@context" : "https://schema.org",
+  "@type" : "WebSite",
+  "name" : "Radu Stoian",
+  "url" : "https://radustoian.com/",
+  "sameAs" : ["http://radustoian.com/","http://www.radustoian.com/","https://www.radustoian.com/"]
+}
+</script>
 
 <script type="application/ld+json">
 {
@@ -192,8 +193,8 @@
         "name": "BrightonSEO Masterclass",
         "description": "Delivered masterclasses on technical SEO and digital marketing.",
         "author": {
-    "@id": "https://radustoian.com/#person"
-  }
+          "@id": "https://radustoian.com/#person"
+        }
       },
       {
         "@type": "PodcastEpisode",
@@ -202,8 +203,8 @@
         "name": "Breaking News: Massive changes to Google job search results | ep.39",
         "description": "Shared insights as a guest speaker on the changing landscape of Google job search results and how employers must adapt their SEO strategies.",
         "contributor": {
-    "@id": "https://radustoian.com/#person"
-  }
+          "@id": "https://radustoian.com/#person"
+        }
       },
       {
         "@type": "CreativeWork",
@@ -212,8 +213,8 @@
         "name": "2026 HR Tech Predictions - AI, Programmatic, Job Boards",
         "description": "Featured expert speaker covering Google Jobs, SEO, and AIO trends for 2026 within the HR Tech and job board space.",
         "contributor": {
-    "@id": "https://radustoian.com/#person"
-  }
+          "@id": "https://radustoian.com/#person"
+        }
       }
     ]
   }
@@ -230,7 +231,7 @@
     --p-100: #f3e8ff;
     --p-200: #e9d5ff; 
     --p-300: #d8b4fe; 
-    --p-400: #2b074d; 
+    --p-400: #c084fc; 
     --p-500: #a855f7; 
     --p-600: #9333ea; 
     --p-700: #7e22ce; 
@@ -597,15 +598,15 @@
   .em-link:hover .em-arrow { opacity: 1; transform: translate(0, 0); }
 
   .hero .role{ margin-top: 10px; font-size: 1.2rem; color: var(--ink-soft); font-weight: 500; }
-  .hero .role a{ color: var(--p-400); text-decoration: none; border-bottom: 1px solid var(--p-600); }
-  .hero .role a:hover{ color: var(--p-300); border-color: var(--p-400); }
+  .hero .role a{ color: var(--p-400); text-decoration: none; border-bottom: 1px solid var(--p-400); }
+  .hero .role a:hover{ color: var(--p-300); border-color: var(--p-300); }
 
-.hero-links{ margin-top: 22px; display:flex; gap: 10px; flex-wrap:wrap; }
+  .hero-links{ margin-top: 22px; display:flex; gap: 10px; flex-wrap:wrap; }
   @media (max-width: 640px){ .hero-links{ justify-content:center; } }
 
   .pill-link{
     position:relative; overflow:hidden; display:inline-flex; align-items:center; gap: 7px; padding: 9px 16px; border-radius: 999px;
-    background: linear-gradient(155deg, var(--p-400), var(--p-600)); color: #fff; font-weight: 600;
+    background: linear-gradient(155deg, var(--p-500), var(--p-600)); color: #fff; font-weight: 600;
     font-size: 13.5px; text-decoration:none;
     transition: transform 0.3s var(--tilt-ease), box-shadow 0.3s var(--tilt-ease);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -6px 10px -6px rgba(0,0,0,0.3), 0 10px 26px rgba(168, 85, 247, 0.3);
@@ -615,6 +616,26 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -6px 10px -6px rgba(0,0,0,0.3), 0 16px 36px rgba(168, 85, 247, 0.5);
   }
   .pill-link svg{ width:14px; height:14px; }
+
+  .highlights-grid .highlight-tag {
+    position:relative; overflow:hidden; display:inline-flex; align-items:center; gap: 7px; padding: 9px 16px; border-radius: 999px;
+    background: var(--sheen), linear-gradient(135deg, rgba(30, 15, 50, 0.5) 0%, rgba(12, 4, 22, 0.25) 100%);
+    backdrop-filter: blur(24px) saturate(220%); -webkit-backdrop-filter: blur(24px) saturate(220%);
+    border: 1px solid var(--glass-border); border-top-color: rgba(255, 255, 255, 0.3); border-left-color: rgba(255, 255, 255, 0.2);
+    font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration:none;
+    box-shadow: var(--bevel-hi), var(--bevel-lo), var(--sh-chip);
+    transition: transform 0.3s var(--tilt-ease), box-shadow 0.3s var(--tilt-ease), background 0.3s var(--ease), border-color 0.3s var(--ease);
+  }
+  .highlights-grid .highlight-tag:hover {
+    transform: translateY(-4px) scale(1.02);
+    background: var(--sheen-hover), linear-gradient(135deg, rgba(42, 20, 68, 0.6) 0%, rgba(16, 6, 28, 0.35) 100%);
+    border-top-color: rgba(255, 255, 255, 0.45); border-left-color: rgba(255, 255, 255, 0.35);
+    box-shadow: var(--bevel-hi), var(--bevel-lo), var(--sh-card), 0 0 16px rgba(168, 85, 247, 0.15);
+  }
+  .highlights-grid .highlight-tag svg { width:14px; height:14px; }
+
+  .highlights-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 28px; }
+  .highlight-item { display: flex; align-items: center; justify-content: center; text-align: center; }
 
   section{ scroll-margin-top: 96px; }
   .section-title{ font-family: var(--font-display); font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.1rem); color: var(--ink); margin-bottom: 22px; letter-spacing: -0.01em; }
@@ -691,9 +712,9 @@
 
   .testimonial-note { margin-right: auto; font-size: 0.85rem; color: var(--ink-soft); text-align: left; padding-right: 12px; line-height: 1.5; }
   .testimonial-link { color: var(--p-400); transition: color 0.2s; }
-  .testimonial-link .link-text { border-bottom: 1px solid var(--p-600); transition: border-color 0.2s; }
+  .testimonial-link .link-text { border-bottom: 1px solid var(--p-400); transition: border-color 0.2s; }
   .testimonial-link:hover { color: var(--p-300); }
-  .testimonial-link:hover .link-text { border-color: var(--p-400); }
+  .testimonial-link:hover .link-text { border-color: var(--p-300); }
 
   .case-card {
     height: 100%; display: flex; flex-direction: column;
@@ -748,8 +769,8 @@
   .talk-item h3 a:hover{ color: var(--p-300); }
   .talk-item p{ font-size: 0.94rem; color: var(--ink-soft); line-height: 1.6; max-width: 56ch; }
   .talk-links{ margin-top: 8px; display:flex; gap: 14px; font-size: 0.87rem; }
-  .talk-links a{ color: var(--p-400); text-decoration:none; border-bottom: 1px solid var(--p-600); transition: color 0.2s; }
-  .talk-links a:hover{ color: var(--p-300); border-color: var(--p-400); }
+  .talk-links a{ color: var(--p-400); text-decoration:none; border-bottom: 1px solid var(--p-400); transition: color 0.2s; }
+  .talk-links a:hover{ color: var(--p-300); border-color: var(--p-300); }
 
   .cert-list{ display:flex; flex-direction:column; gap: 10px; }
   .cert-item{
@@ -770,7 +791,7 @@
   
   .btn-solid{
     position:relative; overflow:hidden; display:inline-flex; align-items:center; gap: 8px; padding: 13px 24px; border-radius: 999px;
-    background: linear-gradient(155deg, var(--p-400), var(--p-600)); color: #fff; font-weight: 600; font-size: 0.95rem; text-decoration:none;
+    background: linear-gradient(155deg, var(--p-500), var(--p-600)); color: #fff; font-weight: 600; font-size: 0.95rem; text-decoration:none;
     transition: transform 0.3s var(--tilt-ease), box-shadow 0.3s var(--tilt-ease);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -6px 10px -6px rgba(0,0,0,0.3), 0 10px 26px rgba(168, 85, 247, 0.3);
   }
@@ -863,6 +884,31 @@
         </div>
       </div>
     </header>
+
+    <section id="quick-labels">
+      <div class="highlights-grid">
+        <div class="highlight-tag card-3d">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Digital Strategy
+        </div>
+        <div class="highlight-tag card-3d">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          SEO
+        </div>
+        <div class="highlight-tag card-3d">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/></svg>
+          AI Optimisation
+        </div>
+        <div class="highlight-tag card-3d">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Google for Jobs
+        </div>
+        <div class="highlight-tag card-3d">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          Recruitment Marketing
+        </div>
+      </div>
+    </section>
 
     <section id="about">
       <div class="panel">
