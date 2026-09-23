@@ -1284,6 +1284,56 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
+  // Typewriter AI generation effect for hero role
+  const roleEl = document.querySelector('.hero .role');
+  if (roleEl) {
+    const originalHTML = roleEl.innerHTML.trim().replace(/\s+/g, ' ');
+    roleEl.innerHTML = '';
+    
+    // Add dynamic CSS for the AI blinking cursor
+    const style = document.createElement('style');
+    style.innerHTML = '@keyframes ai-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } } .ai-cursor { display: inline-block; width: 6px; height: 1em; background-color: var(--p-400); margin-left: 4px; vertical-align: text-bottom; animation: ai-blink 1s step-end infinite; }';
+    document.head.appendChild(style);
+
+    let i = 0;
+    let isTag = false;
+    let currentHTML = '';
+    
+    function typeWriter() {
+      if (i < originalHTML.length) {
+        const char = originalHTML.charAt(i);
+        currentHTML += char;
+        
+        if (char === '<') isTag = true;
+        if (char === '>') {
+          isTag = false;
+          i++;
+          typeWriter();
+          return;
+        }
+        
+        if (isTag) {
+          i++;
+          typeWriter(); // Instantly jump over tag characters so HTML doesn't break
+        } else {
+          roleEl.innerHTML = currentHTML + '<span class="ai-cursor"></span>';
+          i++;
+          // Randomize typing speed slightly for LLM generation realism (slower pace)
+          setTimeout(typeWriter, Math.random() * 40 + 30);
+        }
+      } else {
+        // Fade out the cursor when complete
+        roleEl.innerHTML = currentHTML + '<span class="ai-cursor" style="animation: none; opacity: 0.5; transition: opacity 2s;"></span>';
+        setTimeout(() => {
+          const cursor = roleEl.querySelector('.ai-cursor');
+          if (cursor) cursor.style.opacity = '0';
+        }, 2000);
+      }
+    }
+    
+    setTimeout(typeWriter, 400); // Initial delay to let the page settle before typing
+  }
+
   // Global Cursor Glow Logic
   const cursorGlow = document.getElementById('cursorGlow');
   document.addEventListener('mousemove', (e) => {
