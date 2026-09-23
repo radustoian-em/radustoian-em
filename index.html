@@ -645,7 +645,7 @@
 
   #about p{ font-size: 1.02rem; color: var(--ink-soft); max-width: 68ch; line-height: 1.7; }
   #about p + p{ margin-top: 16px; }
-  #about strong{ color: var(--p-200); font-weight: 600; text-shadow: 0 0 8px rgba(233, 213, 255, 0.2); }
+  #about strong, .connect-panel strong{ color: var(--p-200); font-weight: 600; text-shadow: 0 0 8px rgba(233, 213, 255, 0.2); }
 
   .mission-line{
     position:relative; overflow:hidden; font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: 1.3rem; color: var(--p-200);
@@ -781,6 +781,7 @@
     box-shadow: var(--bevel-hi), var(--sh-chip);
   }
   .cert-item a{ font-weight: 500; color: var(--ink); text-decoration:none; font-size: 0.98rem; }
+  .cert-item a::after{ content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 1; }
   .cert-item a:hover{ color: var(--p-400); }
   .cert-meta{ font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft); white-space:nowrap; text-align:right; }
 
@@ -1394,6 +1395,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentIndex = 0;
     const items = track.querySelectorAll('.slider-item');
     const totalItems = items.length;
+    
+    // Drag state variables
+    let isDragging = false;
+    let isDraggingAction = false;
+    let startX = 0;
+    let draggedX = 0;
 
     function getItemsPerView() {
       return window.innerWidth > 640 ? 2 : 1;
@@ -1405,21 +1412,87 @@ document.addEventListener('DOMContentLoaded', () => {
       currentIndex = Math.min(currentIndex, maxIndex);
       currentIndex = Math.max(0, currentIndex);
 
-      const slideWidth = 100 / itemsPerView;
-      track.style.transform = `translateX(-${currentIndex * slideWidth}%)`;
+      const slidePercent = currentIndex * (100 / itemsPerView);
+      const gapOffset = currentIndex * (20 / itemsPerView);
+      
+      track.style.transform = `translateX(calc(-${slidePercent}% - ${gapOffset}px))`;
 
       prevBtn.disabled = currentIndex === 0;
       nextBtn.disabled = currentIndex >= maxIndex;
     }
 
-    prevBtn.addEventListener('click', () => {
-      currentIndex--;
-      updateSlider();
-    });
+    // Drag & Swipe Logic
+    function getPositionX(e) {
+      return e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+    }
 
-    nextBtn.addEventListener('click', () => {
-      currentIndex++;
+    function dragStart(e) {
+      isDragging = true;
+      isDraggingAction = false;
+      startX = getPositionX(e);
+      draggedX = 0;
+      track.style.transition = 'none'; // Disable transition for instant feedback while dragging
+      track.style.cursor = 'grabbing';
+    }
+
+    function dragMove(e) {
+      if (!isDragging) return;
+      const currentX = getPositionX(e);
+      draggedX = currentX - startX;
+      
+      // Determine if it's an actual drag vs a simple tap
+      if (Math.abs(draggedX) > 10) isDraggingAction = true;
+      
+      const itemsPerView = getItemsPerView();
+      const slidePercent = currentIndex * (100 / itemsPerView);
+      const gapOffset = currentIndex * (20 / itemsPerView);
+      
+      // Apply offset mathematically on the fly
+      track.style.transform = `translateX(calc(-${slidePercent}% - ${gapOffset}px + ${draggedX}px))`;
+    }
+
+    function dragEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+      track.style.transition = 'transform 0.5s var(--ease)'; // Re-enable smooth transitions
+      track.style.cursor = 'grab';
+
+      const threshold = 50; // Minimum drag distance to trigger a slide change
+      if (draggedX < -threshold) {
+        currentIndex++;
+      } else if (draggedX > threshold) {
+        currentIndex--;
+      }
+      
       updateSlider();
+    }
+
+    // Button Events
+    prevBtn.addEventListener('click', () => { currentIndex--; updateSlider(); });
+    nextBtn.addEventListener('click', () => { currentIndex++; updateSlider(); });
+
+    // Touch & Mouse Drag Events Initialization
+    track.style.cursor = 'grab';
+    track.addEventListener('mousedown', dragStart);
+    track.addEventListener('touchstart', dragStart, { passive: true });
+    
+    window.addEventListener('mousemove', dragMove);
+    window.addEventListener('mouseup', dragEnd);
+    
+    track.addEventListener('touchmove', dragMove, { passive: true });
+    window.addEventListener('touchend', dragEnd);
+
+    // Prevent accidental navigation when clicking inside a card during a drag action
+    track.addEventListener('click', (e) => {
+      if (isDraggingAction) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+
+    // Prevent default ghost image dragging from interfering with pointer events
+    track.querySelectorAll('img').forEach(img => {
+      img.addEventListener('dragstart', e => e.preventDefault());
     });
 
     window.addEventListener('resize', () => {
