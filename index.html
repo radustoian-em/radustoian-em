@@ -597,7 +597,8 @@
   .em-arrow { width: 14px; height: 14px; opacity: 0; transform: translate(-4px, 4px); transition: all 0.25s var(--ease); color: var(--p-400); }
   .em-link:hover .em-arrow { opacity: 1; transform: translate(0, 0); }
 
-  .hero .role{ margin-top: 10px; font-size: 1.2rem; color: var(--ink-soft); font-weight: 500; }
+  .hero .role{ margin-top: 10px; font-size: 1.2rem; color: var(--ink-soft); font-weight: 500; min-height: 4.5em; }
+  @media (max-width: 640px){ .hero .role{ min-height: 6em; } }
   .hero .role a{ color: var(--p-400); text-decoration: none; border-bottom: 1px solid var(--p-400); }
   .hero .role a:hover{ color: var(--p-300); border-color: var(--p-300); }
 
