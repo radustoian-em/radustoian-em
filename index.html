@@ -772,6 +772,12 @@
   .talk-links{ margin-top: 8px; display:flex; gap: 14px; font-size: 0.87rem; }
   .talk-links a{ color: var(--p-400); text-decoration:none; border-bottom: 1px solid var(--p-400); transition: color 0.2s; }
   .talk-links a:hover{ color: var(--p-300); border-color: var(--p-300); }
+  
+  .talk-links a.article-link { border-bottom: none; display: inline-flex; align-items: center; gap: 4px; }
+  .talk-links a.article-link .link-text { border-bottom: 1px solid var(--p-400); transition: border-color 0.2s; }
+  .talk-links a.article-link:hover .link-text { border-color: var(--p-300); }
+  .talk-links a.article-link .em-arrow { width: 14px; height: 14px; opacity: 0; transform: translate(-4px, 4px); transition: all 0.25s var(--ease); }
+  .talk-links a.article-link:hover .em-arrow { opacity: 1; transform: translate(0, 0); }
 
   .cert-list{ display:flex; flex-direction:column; gap: 10px; }
   .cert-item{
@@ -980,7 +986,7 @@
               <h3><a href="https://radustoian.substack.com/p/the-organic-first-approach-to-talent" target="_blank" rel="noopener">The Organic First Approach to Talent Attraction</a></h3>
               <p>SEO, Google for Jobs, AI visibility, and organic social media lead the way, with paid marketing efficiently filling any remaining gaps in your strategy.</p>
               <div class="talk-links">
-                <a href="https://radustoian.substack.com/p/the-organic-first-approach-to-talent" target="_blank" rel="noopener">Read Article</a>
+                <a href="https://radustoian.substack.com/p/the-organic-first-approach-to-talent" target="_blank" rel="noopener" class="article-link"><span class="link-text">Read Article</span><svg class="em-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
               </div>
             </div>
           </div>
@@ -990,7 +996,7 @@
               <h3><a href="https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/" target="_blank" rel="noopener">Optimising for AI Isn't About Abandoning SEO</a></h3>
               <p>Discover why preparing for the Agentic AI era is an evolution of your existing search engine optimization efforts, not a complete replacement.</p>
               <div class="talk-links">
-                <a href="https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/" target="_blank" rel="noopener">Read Article</a>
+                <a href="https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/" target="_blank" rel="noopener" class="article-link"><span class="link-text">Read Article</span><svg class="em-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
               </div>
             </div>
           </div>
@@ -1000,7 +1006,7 @@
               <h3><a href="https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/" target="_blank" rel="noopener">AI is the new Gateway to your Employer Brand</a></h3>
               <p>Candidates are no longer starting their journey by visiting careers websites. Instead, they are forming their first impression of an employer through a conversation with AI.</p>
               <div class="talk-links">
-                <a href="https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/" target="_blank" rel="noopener">Read Article</a>
+                <a href="https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/" target="_blank" rel="noopener" class="article-link"><span class="link-text">Read Article</span><svg class="em-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
               </div>
             </div>
           </div>
@@ -1189,7 +1195,7 @@
               <h3><a href="https://brightonseo.com/events/october-2024/talks/masterclass-implementation-of-schemas-via-gtm" target="_blank" rel="noopener">Implementation of Schemas via GTM</a></h3>
               <p>A BrightonSEO masterclass on technical SEO and digital marketing, focused on deploying structured data through container setups.</p>
               <div class="talk-links">
-                <a href="https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm" target="_blank" rel="noopener">View speaker deck</a>
+                <a href="https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm" target="_blank" rel="noopener" class="article-link"><span class="link-text">View speaker deck</span><svg class="em-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
               </div>
             </div>
           </div>
@@ -1199,7 +1205,7 @@
               <h3><a href="https://www.linkedin.com/events/breakingnews-massivechangestogo7074030922244771840/" target="_blank" rel="noopener">Massive Changes to Google Job Search Results</a></h3>
               <p>Featured guest speaker covering the changing landscape of Google for Jobs and how employers must adapt their SEO strategies.</p>
               <div class="talk-links">
-                <a href="https://www.youtube.com/watch?v=Mz3QAj39FFk" target="_blank" rel="noopener">Watch on YouTube</a>
+                <a href="https://www.youtube.com/watch?v=Mz3QAj39FFk" target="_blank" rel="noopener" class="article-link"><span class="link-text">Watch on YouTube</span><svg class="em-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
               </div>
             </div>
           </div>
@@ -1209,7 +1215,7 @@
               <h3><a href="https://www.linkedin.com/events/7400522688898830336/" target="_blank" rel="noopener">2026 HR Tech Predictions &mdash; AI, Programmatic, Job Boards</a></h3>
               <p>Expert panel speaker covering Google for Jobs, technical SEO, and AIO (Artificial Intelligence Optimisation) trends within the HR Tech space.</p>
               <div class="talk-links">
-                <a href="https://www.youtube.com/watch?v=EO225qsp8ao" target="_blank" rel="noopener">Watch on YouTube</a>
+                <a href="https://www.youtube.com/watch?v=EO225qsp8ao" target="_blank" rel="noopener" class="article-link"><span class="link-text">Watch on YouTube</span><svg class="em-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
               </div>
             </div>
           </div>
@@ -1219,7 +1225,7 @@
     <h3><a href="https://www.linkedin.com/posts/radustoian_ojcp-jobposting-ojcp-activity-7489300566662361088-42f0/" target="_blank" rel="noopener">Contributed to the Open Job Context Protocol (OJCP) Standard</a></h3>
     <p>Submitted technical proposals to standardise the url and official_job_url schema fields, ensuring AI agents can accurately parse and route job postings within the MCP framework.</p>
     <div class="talk-links">
-      <a href="https://github.com/ojcp-org/ojcp/pull/8" target="_blank" rel="noopener">View pull request on GitHub</a>
+      <a href="https://github.com/ojcp-org/ojcp/pull/8" target="_blank" rel="noopener" class="article-link"><span class="link-text">View pull request on GitHub</span><svg class="em-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
     </div>
   </div>
 </div>
