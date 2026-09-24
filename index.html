@@ -1287,7 +1287,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Typewriter AI generation effect for hero role
   const roleEl = document.querySelector('.hero .role');
-  if (roleEl) {
+  const isGoogleCrawler = /Googlebot|Google-InspectionTool|GoogleOther|Google-Extended|Storebot-Google|AdsBot-Google|Mediapartners-Google/i.test(navigator.userAgent);
+  
+  if (roleEl && !isGoogleCrawler) {
     const originalHTML = roleEl.innerHTML.trim().replace(/\s+/g, ' ');
     roleEl.innerHTML = '';
     
