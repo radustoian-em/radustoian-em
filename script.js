@@ -1,165 +1,233 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  // Global Image Error Handler (Removes need for inline onerror)
+  // 1. Global Image Error Handler (replaces inline onerror with cached fallbacks)
   document.querySelectorAll('img').forEach(img => {
     img.addEventListener('error', function() {
-      // Check for fallback source
       if (this.dataset.fallbackSrc && this.src !== this.dataset.fallbackSrc) {
         this.src = this.dataset.fallbackSrc;
-      } 
-      // Check for structural fallbacks
-      else {
+      } else {
         this.style.display = 'none';
         if (this.nextElementSibling && this.nextElementSibling.classList.contains('fallback')) {
           this.nextElementSibling.style.display = 'flex';
         }
       }
-    });
+    }, { once: true });
   });
 
-  // Typewriter AI generation effect for hero role
+  // 2. Typewriter AI effect (deferred to post-paint to prevent initial style invalidation and forced reflow)
   const roleEl = document.querySelector('.hero .role');
-  const isGoogleCrawler = /Googlebot|Google-InspectionTool|GoogleOther|Google-Extended|Storebot-Google|AdsBot-Google|Mediapartners-Google/i.test(navigator.userAgent);
+  const isCrawler = /Googlebot|Google-InspectionTool|GoogleOther|Google-Extended|Storebot-Google|AdsBot-Google|Mediapartners-Google/i.test(navigator.userAgent);
   
-  if (roleEl && !isGoogleCrawler) {
+  if (roleEl && !isCrawler && !prefersReducedMotion) {
     const originalHTML = roleEl.innerHTML.trim().replace(/\s+/g, ' ');
-    roleEl.innerHTML = '';
     
-    const style = document.createElement('style');
-    style.innerHTML = '@keyframes ai-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } } .ai-cursor { display: inline-block; width: 6px; height: 1em; background-color: var(--p-400); margin-left: 4px; vertical-align: text-bottom; animation: ai-blink 1s step-end infinite; }';
-    document.head.appendChild(style);
-
-    let i = 0;
-    let isTag = false;
-    let currentHTML = '';
-    
-    function typeWriter() {
-      if (i < originalHTML.length) {
-        const char = originalHTML.charAt(i);
-        currentHTML += char;
-        
-        if (char === '<') isTag = true;
-        if (char === '>') {
-          isTag = false;
-          i++;
-          typeWriter();
-          return;
-        }
-        
-        if (isTag) {
-          i++;
-          typeWriter(); 
+    // Run after initial page load & paint are completed
+    setTimeout(() => {
+      roleEl.innerHTML = '';
+      let i = 0;
+      let isTag = false;
+      let currentHTML = '';
+      
+      function typeWriter() {
+        if (i < originalHTML.length) {
+          const char = originalHTML.charAt(i);
+          currentHTML += char;
+          
+          if (char === '<') isTag = true;
+          if (char === '>') {
+            isTag = false;
+            i++;
+            typeWriter();
+            return;
+          }
+          
+          if (isTag) {
+            i++;
+            typeWriter(); 
+          } else {
+            roleEl.innerHTML = currentHTML + '<span class="ai-cursor"></span>';
+            i++;
+            setTimeout(typeWriter, 35);
+          }
         } else {
-          roleEl.innerHTML = currentHTML + '<span class="ai-cursor"></span>';
-          i++;
-          setTimeout(typeWriter, Math.random() * 40 + 30);
+          roleEl.innerHTML = currentHTML + '<span class="ai-cursor" style="animation: none; opacity: 0.5; transition: opacity 1.5s;"></span>';
+          setTimeout(() => {
+            const cursor = roleEl.querySelector('.ai-cursor');
+            if (cursor) cursor.remove();
+          }, 1500);
         }
-      } else {
-        roleEl.innerHTML = currentHTML + '<span class="ai-cursor" style="animation: none; opacity: 0.5; transition: opacity 2s;"></span>';
-        setTimeout(() => {
-          const cursor = roleEl.querySelector('.ai-cursor');
-          if (cursor) cursor.style.opacity = '0';
-        }, 2000);
       }
-    }
-    setTimeout(typeWriter, 400); 
+      typeWriter();
+    }, 400);
   }
 
-  // Global Cursor Glow Logic
+  // 3. Desktop-only Cursor Glow (GPU translate3d + requestAnimationFrame, disabled on mobile/touch)
   const cursorGlow = document.getElementById('cursorGlow');
-  document.addEventListener('mousemove', (e) => {
-    cursorGlow.style.left = e.clientX + 'px';
-    cursorGlow.style.top = e.clientY + 'px';
-  });
+  if (cursorGlow) {
+    if (!isFinePointer || prefersReducedMotion) {
+      cursorGlow.style.display = 'none';
+    } else {
+      let mouseX = -1000;
+      let mouseY = -1000;
+      let glowTicking = false;
 
-  // 3D Glass Tilt and Sheen effect
-  const cards = document.querySelectorAll('.card-3d, .panel');
-  cards.forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
-      card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
-      
-      if (card.classList.contains('card-3d')) {
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const rotateX = ((y - centerY) / centerY) * -4;
-        const rotateY = ((x - centerX) / centerX) * 4;
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-      }
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!glowTicking) {
+          glowTicking = true;
+          requestAnimationFrame(() => {
+            cursorGlow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+            glowTicking = false;
+          });
+        }
+      }, { passive: true });
+    }
+  }
+
+  // 4. Desktop-only 3D Glass Tilt & Sheen (Cached rect on mouseenter, throttled via rAF, zero reflow on load)
+  if (isFinePointer && !prefersReducedMotion) {
+    const cards = document.querySelectorAll('.card-3d, .panel');
+    cards.forEach(card => {
+      let rect = null;
+      let isTicking = false;
+      let mouseX = 0;
+      let mouseY = 0;
+      const isCard3d = card.classList.contains('card-3d');
+
+      card.addEventListener('mouseenter', () => {
+        rect = card.getBoundingClientRect();
+      }, { passive: true });
+
+      card.addEventListener('mousemove', (e) => {
+        if (!rect) rect = card.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+
+        if (!isTicking) {
+          isTicking = true;
+          requestAnimationFrame(() => {
+            if (rect && rect.width && rect.height) {
+              const xPercent = (mouseX / rect.width) * 100;
+              const yPercent = (mouseY / rect.height) * 100;
+              card.style.setProperty('--mouse-x', `${xPercent.toFixed(1)}%`);
+              card.style.setProperty('--mouse-y', `${yPercent.toFixed(1)}%`);
+
+              if (isCard3d) {
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((mouseY - centerY) / centerY) * -4;
+                const rotateY = ((mouseX - centerX) / centerX) * 4;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+              }
+            }
+            isTicking = false;
+          });
+        }
+      }, { passive: true });
+
+      card.addEventListener('mouseleave', () => {
+        rect = null;
+        if (isCard3d) {
+          card.style.transform = '';
+        }
+      }, { passive: true });
     });
+  }
 
-    card.addEventListener('mouseleave', () => {
-      if (card.classList.contains('card-3d')) {
-        card.style.transform = '';
-      }
-    });
-  });
-
-  // Mobile Menu Logic (Floating Dropdown)
+  // 5. Mobile Navigation Menu Toggle
   const navToggle = document.getElementById('navToggle');
   const navbar = document.getElementById('navbar');
   const navLinks = document.getElementById('navLinks');
 
-  navToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = navbar.classList.toggle('mobile-open');
-    navToggle.setAttribute('aria-expanded', isOpen);
-    navToggle.style.transform = isOpen ? 'rotate(90deg)' : 'rotate(0)';
-    navToggle.innerHTML = isOpen ? '<svg viewBox="0 0 24 24"><use href="#icon-close"></use></svg>' : '<svg viewBox="0 0 24 24"><use href="#icon-menu"></use></svg>';
-  });
-
-  document.addEventListener('click', (e) => {
-    if(navbar.classList.contains('mobile-open') && !navbar.contains(e.target) && !navToggle.contains(e.target)) {
+  if (navToggle && navbar) {
+    const closeMobileNav = () => {
       navbar.classList.remove('mobile-open');
       navToggle.setAttribute('aria-expanded', 'false');
       navToggle.style.transform = 'rotate(0)';
       navToggle.innerHTML = '<svg viewBox="0 0 24 24"><use href="#icon-menu"></use></svg>';
-    }
-  });
+    };
 
-  navLinks.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      if(window.innerWidth <= 960) {
-        navbar.classList.remove('mobile-open');
-        navToggle.setAttribute('aria-expanded', 'false');
-        navToggle.style.transform = 'rotate(0)';
-        navToggle.innerHTML = '<svg viewBox="0 0 24 24"><use href="#icon-menu"></use></svg>';
+    navToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = navbar.classList.toggle('mobile-open');
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      navToggle.style.transform = isOpen ? 'rotate(90deg)' : 'rotate(0)';
+      navToggle.innerHTML = isOpen 
+        ? '<svg viewBox="0 0 24 24"><use href="#icon-close"></use></svg>' 
+        : '<svg viewBox="0 0 24 24"><use href="#icon-menu"></use></svg>';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (navbar.classList.contains('mobile-open') && !navbar.contains(e.target) && !navToggle.contains(e.target)) {
+        closeMobileNav();
       }
     });
-  });
 
-  // Active section tracking logic for Navigation
+    if (navLinks) {
+      navLinks.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          if (window.innerWidth <= 960) {
+            closeMobileNav();
+          }
+        });
+      });
+    }
+  }
+
+  // 6. High-Performance Active Section Tracking via IntersectionObserver (Zero layout thrashing, no forced reflows)
   const sections = document.querySelectorAll('section[id]');
   const links = document.querySelectorAll('.nav-links a');
-  const setActive = () => {
-    let current = '';
-    sections.forEach(sec => {
-      const rect = sec.getBoundingClientRect();
-      if (rect.top <= 150 && rect.bottom > 150) current = sec.id;
-    });
-    
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
-      current = 'connect';
+  const linkMap = new Map();
+  links.forEach(l => {
+    const href = l.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      linkMap.set(href.slice(1), l);
     }
-    
-    links.forEach(l => {
-      l.style.background = '';
-      l.style.color = '';
-      l.style.boxShadow = '';
-      if (l.getAttribute('href') === '#' + current) {
-        l.style.background = 'rgba(192, 132, 252, 0.12)';
-        l.style.color = 'var(--p-300)';
-        l.style.boxShadow = 'inset 0 0 12px rgba(192, 132, 252, 0.1)';
-      }
-    });
-  };
-  document.addEventListener('scroll', setActive, { passive: true });
-  setActive();
+  });
 
-  // Flattened Slider Setup
+  const setActiveNav = (id) => {
+    links.forEach(l => l.classList.remove('active'));
+    const activeLink = linkMap.get(id);
+    if (activeLink) activeLink.classList.add('active');
+  };
+
+  if ('IntersectionObserver' in window) {
+    const visibleSections = new Set();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = entry.target.id || (entry.target.tagName === 'FOOTER' ? 'connect' : '');
+        if (!id) return;
+
+        if (entry.isIntersecting) {
+          visibleSections.add(id);
+        } else {
+          visibleSections.delete(id);
+        }
+      });
+
+      for (const sec of sections) {
+        if (visibleSections.has(sec.id)) {
+          setActiveNav(sec.id);
+          break;
+        }
+      }
+      if (visibleSections.has('connect')) {
+        setActiveNav('connect');
+      }
+    }, {
+      rootMargin: '-15% 0px -55% 0px',
+      threshold: [0, 0.2]
+    });
+
+    sections.forEach(s => observer.observe(s));
+    const footer = document.querySelector('footer');
+    if (footer) observer.observe(footer);
+  }
+
+  // 7. Flattened Responsive Slider (Pixel-accurate card steps, zero reflow on load)
   function setupSlider(trackId, prevBtnId, nextBtnId) {
     const track = document.getElementById(trackId);
     const prevBtn = document.getElementById(prevBtnId);
@@ -174,21 +242,36 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDraggingAction = false;
     let startX = 0;
     let draggedX = 0;
+    let rAFId = null;
 
     function getItemsPerView() {
-      return window.innerWidth > 640 ? 2 : 1;
+      return window.matchMedia('(min-width: 641px)').matches ? 2 : 1;
     }
 
-    function updateSlider() {
+    function getStep() {
+      if (items.length > 1 && items[0] && items[1]) {
+        const step = items[1].offsetLeft - items[0].offsetLeft;
+        if (step > 0) return step;
+      }
+      const itemsPerView = getItemsPerView();
+      const vw = track.parentElement ? track.parentElement.clientWidth : track.clientWidth;
+      return itemsPerView === 1 ? (vw + 20) : ((vw + 20) / 2);
+    }
+
+    function updateSlider(animate = true) {
       const itemsPerView = getItemsPerView();
       const maxIndex = Math.max(0, totalItems - itemsPerView);
-      currentIndex = Math.min(currentIndex, maxIndex);
-      currentIndex = Math.max(0, currentIndex);
+      currentIndex = Math.min(Math.max(0, currentIndex), maxIndex);
 
-      const slidePercent = currentIndex * (100 / itemsPerView);
-      const gapOffset = currentIndex * (20 / itemsPerView);
-      
-      track.style.transform = `translateX(calc(-${slidePercent}% - ${gapOffset}px))`;
+      track.style.transition = animate ? 'transform 0.45s var(--ease)' : 'none';
+
+      if (currentIndex === 0) {
+        track.style.transform = 'translateX(0px)';
+      } else {
+        const step = getStep();
+        track.style.transform = `translateX(-${currentIndex * step}px)`;
+      }
+
       prevBtn.disabled = currentIndex === 0;
       nextBtn.disabled = currentIndex >= maxIndex;
     }
@@ -210,35 +293,48 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isDragging) return;
       const currentX = getPositionX(e);
       draggedX = currentX - startX;
-      if (Math.abs(draggedX) > 10) isDraggingAction = true;
+      if (Math.abs(draggedX) > 8) isDraggingAction = true;
       
-      const itemsPerView = getItemsPerView();
-      const slidePercent = currentIndex * (100 / itemsPerView);
-      const gapOffset = currentIndex * (20 / itemsPerView);
-      
-      track.style.transform = `translateX(calc(-${slidePercent}% - ${gapOffset}px + ${draggedX}px))`;
+      if (!rAFId) {
+        rAFId = requestAnimationFrame(() => {
+          const step = getStep();
+          const baseOffset = currentIndex * step;
+          track.style.transform = `translateX(-${baseOffset - draggedX}px)`;
+          rAFId = null;
+        });
+      }
     }
 
     function dragEnd() {
       if (!isDragging) return;
       isDragging = false;
-      track.style.transition = 'transform 0.5s var(--ease)'; 
+      if (rAFId) {
+        cancelAnimationFrame(rAFId);
+        rAFId = null;
+      }
       track.style.cursor = 'grab';
 
-      const threshold = 50;
+      const threshold = 40;
       if (draggedX < -threshold) currentIndex++;
       else if (draggedX > threshold) currentIndex--;
       
-      updateSlider();
+      updateSlider(true);
     }
 
-    prevBtn.addEventListener('click', () => { currentIndex--; updateSlider(); });
-    nextBtn.addEventListener('click', () => { currentIndex++; updateSlider(); });
+    prevBtn.addEventListener('click', () => { 
+      currentIndex--; 
+      updateSlider(true); 
+    });
+
+    nextBtn.addEventListener('click', () => { 
+      currentIndex++; 
+      updateSlider(true); 
+    });
 
     track.style.cursor = 'grab';
     track.addEventListener('mousedown', dragStart);
     track.addEventListener('touchstart', dragStart, { passive: true });
-    window.addEventListener('mousemove', dragMove);
+    window.addEventListener('mousemove', dragMove, { passive: true });
     window.addEventListener('mouseup', dragEnd);
     track.addEventListener('touchmove', dragMove, { passive: true });
     window.addEventListener('touchend', dragEnd);
@@ -254,11 +350,17 @@ document.addEventListener('DOMContentLoaded', () => {
       img.addEventListener('dragstart', e => e.preventDefault());
     });
 
-    window.addEventListener('resize', () => setTimeout(updateSlider, 100));
-    updateSlider();
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        updateSlider(false);
+      }, 80);
+    }, { passive: true });
+
+    updateSlider(false);
   }
 
   setupSlider('expTrack', 'expPrev', 'expNext');
   setupSlider('testTrack', 'testPrev', 'testNext');
-
 });
