@@ -1,5 +1,21 @@
-// script.js
 document.addEventListener('DOMContentLoaded', () => {
+
+  // Global Image Error Handler (Removes need for inline onerror)
+  document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('error', function() {
+      // Check for fallback source
+      if (this.dataset.fallbackSrc && this.src !== this.dataset.fallbackSrc) {
+        this.src = this.dataset.fallbackSrc;
+      } 
+      // Check for structural fallbacks
+      else {
+        this.style.display = 'none';
+        if (this.nextElementSibling && this.nextElementSibling.classList.contains('fallback')) {
+          this.nextElementSibling.style.display = 'flex';
+        }
+      }
+    });
+  });
 
   // Typewriter AI generation effect for hero role
   const roleEl = document.querySelector('.hero .role');
@@ -9,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const originalHTML = roleEl.innerHTML.trim().replace(/\s+/g, ' ');
     roleEl.innerHTML = '';
     
-    // Add dynamic CSS for the AI blinking cursor
     const style = document.createElement('style');
     style.innerHTML = '@keyframes ai-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } } .ai-cursor { display: inline-block; width: 6px; height: 1em; background-color: var(--p-400); margin-left: 4px; vertical-align: text-bottom; animation: ai-blink 1s step-end infinite; }';
     document.head.appendChild(style);
@@ -33,15 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (isTag) {
           i++;
-          typeWriter(); // Instantly jump over tag characters so HTML doesn't break
+          typeWriter(); 
         } else {
           roleEl.innerHTML = currentHTML + '<span class="ai-cursor"></span>';
           i++;
-          // Randomize typing speed slightly for LLM generation realism (slower pace)
           setTimeout(typeWriter, Math.random() * 40 + 30);
         }
       } else {
-        // Fade out the cursor when complete
         roleEl.innerHTML = currentHTML + '<span class="ai-cursor" style="animation: none; opacity: 0.5; transition: opacity 2s;"></span>';
         setTimeout(() => {
           const cursor = roleEl.querySelector('.ai-cursor');
@@ -49,8 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2000);
       }
     }
-    
-    setTimeout(typeWriter, 400); // Initial delay to let the page settle before typing
+    setTimeout(typeWriter, 400); 
   }
 
   // Global Cursor Glow Logic
@@ -67,12 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      
-      // Update dynamic glare position
       card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
       card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
       
-      // Only apply 3D rotation to elements meant to tilt
       if (card.classList.contains('card-3d')) {
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
@@ -99,11 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isOpen = navbar.classList.toggle('mobile-open');
     navToggle.setAttribute('aria-expanded', isOpen);
     navToggle.style.transform = isOpen ? 'rotate(90deg)' : 'rotate(0)';
-    if(isOpen) {
-      navToggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-    } else {
-      navToggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>';
-    }
+    navToggle.innerHTML = isOpen ? '<svg viewBox="0 0 24 24"><use href="#icon-close"></use></svg>' : '<svg viewBox="0 0 24 24"><use href="#icon-menu"></use></svg>';
   });
 
   document.addEventListener('click', (e) => {
@@ -111,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
       navbar.classList.remove('mobile-open');
       navToggle.setAttribute('aria-expanded', 'false');
       navToggle.style.transform = 'rotate(0)';
-      navToggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>';
+      navToggle.innerHTML = '<svg viewBox="0 0 24 24"><use href="#icon-menu"></use></svg>';
     }
   });
 
@@ -121,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         navbar.classList.remove('mobile-open');
         navToggle.setAttribute('aria-expanded', 'false');
         navToggle.style.transform = 'rotate(0)';
-        navToggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>';
+        navToggle.innerHTML = '<svg viewBox="0 0 24 24"><use href="#icon-menu"></use></svg>';
       }
     });
   });
@@ -154,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('scroll', setActive, { passive: true });
   setActive();
 
-  // Slider Carousel Setup Function
+  // Flattened Slider Setup
   function setupSlider(trackId, prevBtnId, nextBtnId) {
     const track = document.getElementById(trackId);
     const prevBtn = document.getElementById(prevBtnId);
@@ -162,10 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!track || !prevBtn || !nextBtn) return;
 
     let currentIndex = 0;
-    const items = track.querySelectorAll('.slider-item');
+    const items = track.children; 
     const totalItems = items.length;
     
-    // Drag state variables
     let isDragging = false;
     let isDraggingAction = false;
     let startX = 0;
@@ -185,12 +189,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const gapOffset = currentIndex * (20 / itemsPerView);
       
       track.style.transform = `translateX(calc(-${slidePercent}% - ${gapOffset}px))`;
-
       prevBtn.disabled = currentIndex === 0;
       nextBtn.disabled = currentIndex >= maxIndex;
     }
 
-    // Drag & Swipe Logic
     function getPositionX(e) {
       return e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
     }
@@ -200,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
       isDraggingAction = false;
       startX = getPositionX(e);
       draggedX = 0;
-      track.style.transition = 'none'; // Disable transition for instant feedback while dragging
+      track.style.transition = 'none'; 
       track.style.cursor = 'grabbing';
     }
 
@@ -208,50 +210,39 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isDragging) return;
       const currentX = getPositionX(e);
       draggedX = currentX - startX;
-      
-      // Determine if it's an actual drag vs a simple tap
       if (Math.abs(draggedX) > 10) isDraggingAction = true;
       
       const itemsPerView = getItemsPerView();
       const slidePercent = currentIndex * (100 / itemsPerView);
       const gapOffset = currentIndex * (20 / itemsPerView);
       
-      // Apply offset mathematically on the fly
       track.style.transform = `translateX(calc(-${slidePercent}% - ${gapOffset}px + ${draggedX}px))`;
     }
 
     function dragEnd() {
       if (!isDragging) return;
       isDragging = false;
-      track.style.transition = 'transform 0.5s var(--ease)'; // Re-enable smooth transitions
+      track.style.transition = 'transform 0.5s var(--ease)'; 
       track.style.cursor = 'grab';
 
-      const threshold = 50; // Minimum drag distance to trigger a slide change
-      if (draggedX < -threshold) {
-        currentIndex++;
-      } else if (draggedX > threshold) {
-        currentIndex--;
-      }
+      const threshold = 50;
+      if (draggedX < -threshold) currentIndex++;
+      else if (draggedX > threshold) currentIndex--;
       
       updateSlider();
     }
 
-    // Button Events
     prevBtn.addEventListener('click', () => { currentIndex--; updateSlider(); });
     nextBtn.addEventListener('click', () => { currentIndex++; updateSlider(); });
 
-    // Touch & Mouse Drag Events Initialization
     track.style.cursor = 'grab';
     track.addEventListener('mousedown', dragStart);
     track.addEventListener('touchstart', dragStart, { passive: true });
-    
     window.addEventListener('mousemove', dragMove);
     window.addEventListener('mouseup', dragEnd);
-    
     track.addEventListener('touchmove', dragMove, { passive: true });
     window.addEventListener('touchend', dragEnd);
 
-    // Prevent accidental navigation when clicking inside a card during a drag action
     track.addEventListener('click', (e) => {
       if (isDraggingAction) {
         e.preventDefault();
@@ -259,17 +250,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, true);
 
-    // Prevent default ghost image dragging from interfering with pointer events
     track.querySelectorAll('img').forEach(img => {
       img.addEventListener('dragstart', e => e.preventDefault());
     });
 
-    window.addEventListener('resize', () => {
-      // Small delay to allow CSS grid/flex to recalculate
-      setTimeout(updateSlider, 100);
-    });
-
-    updateSlider(); // Initial state setup
+    window.addEventListener('resize', () => setTimeout(updateSlider, 100));
+    updateSlider();
   }
 
   setupSlider('expTrack', 'expPrev', 'expNext');
