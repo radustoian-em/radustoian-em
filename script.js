@@ -16,16 +16,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { once: true });
   });
 
-  // 2. Typewriter AI effect (deferred to post-paint to prevent initial style invalidation and forced reflow)
+  // 2. Typewriter AI effect (accessible & non-destructive)
   const roleEl = document.querySelector('.hero .role');
-  const isCrawler = /Googlebot|Google-InspectionTool|GoogleOther|Google-Extended|Storebot-Google|AdsBot-Google|Mediapartners-Google/i.test(navigator.userAgent);
+  const isCrawler = /Googlebot|Google-InspectionTool|GoogleOther|Google-Extended|Storebot-Google|AdsBot-Google|Mediapartners-Google|bingbot|Baiduspider|YandexBot|DuckDuckBot|Applebot|GPTBot|ClaudeBot|PerplexityBot/i.test(navigator.userAgent);
   
   if (roleEl && !isCrawler && !prefersReducedMotion) {
     const originalHTML = roleEl.innerHTML.trim().replace(/\s+/g, ' ');
+    const plainText = roleEl.textContent.trim();
+    roleEl.setAttribute('aria-label', plainText);
     
     // Run after initial page load & paint are completed
     setTimeout(() => {
+      const visualSpan = document.createElement('span');
+      visualSpan.setAttribute('aria-hidden', 'true');
       roleEl.innerHTML = '';
+      roleEl.appendChild(visualSpan);
+
       let i = 0;
       let isTag = false;
       let currentHTML = '';
@@ -47,14 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
             i++;
             typeWriter(); 
           } else {
-            roleEl.innerHTML = currentHTML + '<span class="ai-cursor"></span>';
+            visualSpan.innerHTML = currentHTML + '<span class="ai-cursor"></span>';
             i++;
             setTimeout(typeWriter, 35);
           }
         } else {
-          roleEl.innerHTML = currentHTML + '<span class="ai-cursor" style="animation: none; opacity: 0.5; transition: opacity 1.5s;"></span>';
+          visualSpan.innerHTML = currentHTML + '<span class="ai-cursor" style="animation: none; opacity: 0.5; transition: opacity 1.5s;"></span>';
           setTimeout(() => {
-            const cursor = roleEl.querySelector('.ai-cursor');
+            const cursor = visualSpan.querySelector('.ai-cursor');
             if (cursor) cursor.remove();
           }, 1500);
         }
@@ -147,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       navbar.classList.remove('mobile-open');
       navToggle.setAttribute('aria-expanded', 'false');
       navToggle.style.transform = 'rotate(0)';
-      navToggle.innerHTML = '<svg viewBox="0 0 24 24"><use href="#icon-menu"></use></svg>';
+      navToggle.innerHTML = '<svg viewBox="0 0 24 24"><use href="icons.svg#icon-menu"></use></svg>';
     };
 
     navToggle.addEventListener('click', (e) => {
@@ -156,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
       navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       navToggle.style.transform = isOpen ? 'rotate(90deg)' : 'rotate(0)';
       navToggle.innerHTML = isOpen 
-        ? '<svg viewBox="0 0 24 24"><use href="#icon-close"></use></svg>' 
-        : '<svg viewBox="0 0 24 24"><use href="#icon-menu"></use></svg>';
+        ? '<svg viewBox="0 0 24 24"><use href="icons.svg#icon-close"></use></svg>' 
+        : '<svg viewBox="0 0 24 24"><use href="icons.svg#icon-menu"></use></svg>';
     });
 
     document.addEventListener('click', (e) => {
@@ -277,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getPositionX(e) {
-      return e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+      return e.type.includes('mouse') ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
     }
 
     function dragStart(e) {
@@ -287,6 +293,11 @@ document.addEventListener('DOMContentLoaded', () => {
       draggedX = 0;
       track.style.transition = 'none'; 
       track.style.cursor = 'grabbing';
+
+      window.addEventListener('mousemove', dragMove, { passive: true });
+      window.addEventListener('mouseup', dragEnd);
+      window.addEventListener('touchmove', dragMove, { passive: true });
+      window.addEventListener('touchend', dragEnd);
     }
 
     function dragMove(e) {
@@ -314,6 +325,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       track.style.cursor = 'grab';
 
+      window.removeEventListener('mousemove', dragMove);
+      window.removeEventListener('mouseup', dragEnd);
+      window.removeEventListener('touchmove', dragMove);
+      window.removeEventListener('touchend', dragEnd);
+
       const threshold = 40;
       if (draggedX < -threshold) currentIndex++;
       else if (draggedX > threshold) currentIndex--;
@@ -334,10 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
     track.style.cursor = 'grab';
     track.addEventListener('mousedown', dragStart);
     track.addEventListener('touchstart', dragStart, { passive: true });
-    window.addEventListener('mousemove', dragMove, { passive: true });
-    window.addEventListener('mouseup', dragEnd);
-    track.addEventListener('touchmove', dragMove, { passive: true });
-    window.addEventListener('touchend', dragEnd);
 
     track.addEventListener('click', (e) => {
       if (isDraggingAction) {

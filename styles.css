@@ -32,7 +32,7 @@
 
     --font-display: 'Fraunces', serif;
     --font-body: 'Inter', sans-serif;
-    --font-mono: 'Inter', sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
     --tilt-ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -40,6 +40,38 @@
 
   *{ box-sizing: border-box; margin:0; padding:0; }
   html{ scroll-behavior:smooth; }
+
+  /* Accessibility Helpers */
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    left: 20px;
+    background: #8b22e2;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    z-index: 1000;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--sh-panel);
+    transition: top 0.2s var(--ease);
+  }
+  .skip-link:focus {
+    top: 20px;
+    outline: 2px solid #ffffff;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
 
   body{
     font-family: var(--font-body); color: var(--ink);
@@ -175,7 +207,7 @@
 
   .pill-link{
     position:relative; overflow:hidden; display:inline-flex; align-items:center; gap: 7px; padding: 9px 16px; border-radius: 999px;
-    background: linear-gradient(155deg, var(--p-500), var(--p-600)); color: #fff; font-weight: 600; font-size: 13.5px; text-decoration:none;
+    background: linear-gradient(155deg, #8b22e2, var(--p-600)); color: #fff; font-weight: 600; font-size: 13.5px; text-decoration:none;
     transition: transform 0.3s var(--tilt-ease), box-shadow 0.3s var(--tilt-ease); box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -6px 10px -6px rgba(0,0,0,0.3), 0 10px 26px rgba(168, 85, 247, 0.3);
   }
   .pill-link:hover{ transform: translateY(-3px) scale(1.02); box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -6px 10px -6px rgba(0,0,0,0.3), 0 16px 36px rgba(168, 85, 247, 0.5); }
@@ -335,7 +367,7 @@
   
   .btn-solid{
     position:relative; overflow:hidden; display:inline-flex; align-items:center; gap: 8px; padding: 13px 24px; border-radius: 999px;
-    background: linear-gradient(155deg, var(--p-500), var(--p-600)); color: #fff; font-weight: 600; font-size: 0.95rem; text-decoration:none;
+    background: linear-gradient(155deg, #8b22e2, var(--p-600)); color: #fff; font-weight: 600; font-size: 0.95rem; text-decoration:none;
     transition: transform 0.3s var(--tilt-ease), box-shadow 0.3s var(--tilt-ease); box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -6px 10px -6px rgba(0,0,0,0.3), 0 10px 26px rgba(168, 85, 247, 0.3);
   }
   .btn-solid:hover{ transform: translateY(-3px) scale(1.02); box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -6px 10px -6px rgba(0,0,0,0.3), 0 16px 36px rgba(168, 85, 247, 0.5); }
