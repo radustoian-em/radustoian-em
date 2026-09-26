@@ -16,20 +16,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { once: true });
   });
 
-  // 2. Typewriter AI effect (accessible & non-destructive)
+  // 2. Typewriter AI effect (Agentic Browsing & ARIA 1.3 compliant, no prohibited aria-label on <p>)
   const roleEl = document.querySelector('.hero .role');
   const isCrawler = /Googlebot|Google-InspectionTool|GoogleOther|Google-Extended|Storebot-Google|AdsBot-Google|Mediapartners-Google|bingbot|Baiduspider|YandexBot|DuckDuckBot|Applebot|GPTBot|ClaudeBot|PerplexityBot/i.test(navigator.userAgent);
   
   if (roleEl && !isCrawler && !prefersReducedMotion) {
     const originalHTML = roleEl.innerHTML.trim().replace(/\s+/g, ' ');
-    const plainText = roleEl.textContent.trim();
-    roleEl.setAttribute('aria-label', plainText);
     
     // Run after initial page load & paint are completed
     setTimeout(() => {
+      // Accessible text node for AI agents and assistive tech (avoids prohibited aria-label on <p>)
+      const srSpan = document.createElement('span');
+      srSpan.className = 'sr-only';
+      srSpan.innerHTML = originalHTML;
+
+      // Visual typing span hidden from the accessibility tree
       const visualSpan = document.createElement('span');
       visualSpan.setAttribute('aria-hidden', 'true');
+
       roleEl.innerHTML = '';
+      roleEl.appendChild(srSpan);
       roleEl.appendChild(visualSpan);
 
       let i = 0;
@@ -60,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           visualSpan.innerHTML = currentHTML + '<span class="ai-cursor" style="animation: none; opacity: 0.5; transition: opacity 1.5s;"></span>';
           setTimeout(() => {
-            const cursor = visualSpan.querySelector('.ai-cursor');
-            if (cursor) cursor.remove();
+            // Restore clean semantic HTML once typewriter completes
+            roleEl.innerHTML = originalHTML;
           }, 1500);
         }
       }
