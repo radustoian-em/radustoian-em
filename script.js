@@ -143,34 +143,62 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Mobile Navigation Menu Toggle
+  // 5. Mobile Navigation Menu Toggle (with body scroll lock, backdrop & a11y Escape handler)
   const navToggle = document.getElementById('navToggle');
   const navbar = document.getElementById('navbar');
   const navLinks = document.getElementById('navLinks');
+  const navBackdrop = document.getElementById('navBackdrop');
 
   if (navToggle && navbar) {
     const closeMobileNav = () => {
       navbar.classList.remove('mobile-open');
+      document.body.classList.remove('menu-open');
+      if (navBackdrop) navBackdrop.classList.remove('active');
       navToggle.setAttribute('aria-expanded', 'false');
       navToggle.style.transform = 'rotate(0)';
       navToggle.innerHTML = '<svg viewBox="0 0 24 24"><use href="icons.svg#icon-menu"></use></svg>';
     };
 
+    const openMobileNav = () => {
+      navbar.classList.add('mobile-open');
+      document.body.classList.add('menu-open');
+      if (navBackdrop) navBackdrop.classList.add('active');
+      navToggle.setAttribute('aria-expanded', 'true');
+      navToggle.style.transform = 'rotate(90deg)';
+      navToggle.innerHTML = '<svg viewBox="0 0 24 24"><use href="icons.svg#icon-close"></use></svg>';
+    };
+
     navToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      const isOpen = navbar.classList.toggle('mobile-open');
-      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      navToggle.style.transform = isOpen ? 'rotate(90deg)' : 'rotate(0)';
-      navToggle.innerHTML = isOpen 
-        ? '<svg viewBox="0 0 24 24"><use href="icons.svg#icon-close"></use></svg>' 
-        : '<svg viewBox="0 0 24 24"><use href="icons.svg#icon-menu"></use></svg>';
+      if (navbar.classList.contains('mobile-open')) {
+        closeMobileNav();
+      } else {
+        openMobileNav();
+      }
     });
+
+    if (navBackdrop) {
+      navBackdrop.addEventListener('click', closeMobileNav);
+    }
 
     document.addEventListener('click', (e) => {
       if (navbar.classList.contains('mobile-open') && !navbar.contains(e.target) && !navToggle.contains(e.target)) {
         closeMobileNav();
       }
     });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navbar.classList.contains('mobile-open')) {
+        closeMobileNav();
+        navToggle.focus();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 960 && navbar.classList.contains('mobile-open')) {
+        closeMobileNav();
+      }
+    }, { passive: true });
 
     if (navLinks) {
       navLinks.querySelectorAll('a').forEach(a => {
