@@ -5,11 +5,11 @@ As the Technical Director at Enhance Media, Radu Stoian provides the strategic l
 
 His approach centres on an Organic First Talent Attraction Strategy, anticipating the shift in candidate behaviour towards AI driven job search. By aligning talent acquisition strategies with emerging agentic AI experiences, including Google's Career Dreamer and ChatGPT Jobs, he ensures organisations aren't just broadly visible, but contextually and deeply relevant across the entire candidate journey.
 
-His expertise spans AI, SEO, Performance Marketing, Web Development, and Google Cloud. This technical breadth lets him build data-driven strategies backed by a deep understanding of how digital marketing and user behaviour intersect. Clients and colleagues know him as someone who won't take "it can't be done" as an answer. If there's a way to improve performance, he'll find it. If there isn't an established way to do something, he'll innovate.
+His expertise spans AI, SEO, Google for Jobs, Recruitment Marketing, Web Development, and Google Cloud. This technical breadth lets him build data-driven strategies backed by a deep understanding of how digital marketing and user behaviour intersect. Clients and colleagues know him as someone who won't take "it can't be done" as an answer. If there's a way to improve performance, he'll find it. If there isn't an established way to do something, he'll innovate.
 
 ## Areas of Expertise
 Pioneering the Agentic AI era: Conceptualised and launched the AI Brand Health Audit, a solution to the 'black box' problem of Generative AI, letting organisations measure, benchmark, and control their brand narrative in LLMs.
-Digital strategy and technical SEO: Building data-driven strategies on strong technical foundations to drive measurable success for employers.
+Talent attraction strategies: Building data-driven talent attraction strategies that combine employer brand, search, Google for Jobs, AI, social, and paid marketing to reach and engage the right candidates at the right time.
 Next-gen careers sites: Leading the deployment of innovative, smart careers sites, advanced job detail pages and automated Job Hubs that personalise the candidate journey and capture long-tail search traffic.
 Mentorship and industry advocacy: Training and upskilling the next generation of digital leaders, and elevating industry standards through public speaking and knowledge sharing.
 Core Skills and Tags: AI Optimisation, Technical SEO, Google for Jobs, GEO / AEO, Web Development, Google Cloud, BigQuery, Source-to-Hire Analytics.
@@ -42,7 +42,6 @@ Subject Matter Expertise: Agentic AI, Artificial Intelligence (AI), AI Optimisat
 - [SpeakerDeck](https://speakerdeck.com/radustoian): Repository for masterclass and presentation slide decks.
 - [GitHub](https://github.com/radustoian-em): Code repositories, including standard contributions.
 - [Google Knowledge Graph](https://www.google.com/search?kgmid=/g/11f0z_cqg1): Verified Google Knowledge Graph entity link.
-- [Woorank Expert Page](https://experts.woorank.com/en/experts/radu-stoian): Certified digital marketing expert.
 - [Google Skillshop](https://skillshop.exceedlms.com/profiles/6c9c49a5efd34efc970829ade94b0fe4): Google Skillshop profile for certifications.
 - [Google Skills](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9): Google Skills public profile.
 
