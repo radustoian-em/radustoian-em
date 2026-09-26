@@ -9,8 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
         this.src = this.dataset.fallbackSrc;
       } else {
         this.style.display = 'none';
-        if (this.nextElementSibling && this.nextElementSibling.classList.contains('fallback')) {
-          this.nextElementSibling.style.display = 'flex';
+        const fallback = this.closest('.hero-portrait')?.querySelector('.fallback') || (this.nextElementSibling && this.nextElementSibling.classList.contains('fallback') ? this.nextElementSibling : null);
+        if (fallback) {
+          fallback.style.display = 'flex';
         }
       }
     }, { once: true });
