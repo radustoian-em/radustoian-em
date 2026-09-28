@@ -76,6 +76,8 @@ The repository is structured as a flat, highly performant static web application
 radustoian-em/
 ├── .git/                                 # Git version control metadata
 ├── _headers                             # Cloudflare Pages HTTP security and caching directives
+├── docs/
+│   └── SITE_KNOWLEDGE_BASE.md           # This technical architecture knowledge base
 ├── icons.svg                            # 24-symbol external SVG sprite sheet
 ├── index.html                           # Main document with semantic markup & JSON-LD
 ├── llms.txt                             # Standardized summary file for LLMs & AI crawlers
@@ -88,24 +90,23 @@ radustoian-em/
 ├── styles.css                           # Complete design system & responsive styling (418 lines)
 ├── wrangler.toml                        # Cloudflare Workers / Pages configuration
 │
-├── [Raster & Vector Assets]
-│   ├── ai-employer-brand.png            # Article thumbnail (Employer Branding)
-│   ├── ai-optimisation.png              # Article thumbnail (AI Optimisation)
-│   ├── android-chrome-192x192.png       # PWA standard icon
-│   ├── android-chrome-512x512.png       # PWA high-resolution icon
-│   ├── apple-touch-icon.png             # iOS home screen touch icon
-│   ├── enhance-media-small-logo.png     # Enhance Media corporate mark (26x26)
-│   ├── favicon-16x16.png                # Browser tab favicon 16px
-│   ├── favicon-32x32.png                # Browser tab favicon 32px
-│   ├── favicon.ico                      # Legacy multi-size icon
-│   ├── jlp-jobs-case-study1.webp        # John Lewis Partnership case study slide
-│   ├── jlp-smart-job-search-case-study.webp # JLP Smart Search case study slide
-│   ├── organic-first-approach.png       # Article thumbnail (TA Strategy)
-│   ├── radu-stoian-enhance-media.jpg    # Desktop hero portrait & OpenGraph image (640x732)
-│   ├── radu-stoian-enhance-media.webp   # Mobile responsive hero portrait (200x200)
-│   ├── university-of-surrey-case-study.jpg # University of Surrey case study slide
-│   └── virgin-atlantic-case-study.jpg   # Virgin Atlantic case study slide
-└── SITE_KNOWLEDGE_BASE.md               # This technical architecture knowledge base
+└── [Raster & Vector Assets]
+    ├── ai-employer-brand.png            # Article thumbnail (Employer Branding)
+    ├── ai-optimisation.png              # Article thumbnail (AI Optimisation)
+    ├── android-chrome-192x192.png       # PWA standard icon
+    ├── android-chrome-512x512.png       # PWA high-resolution icon
+    ├── apple-touch-icon.png             # iOS home screen touch icon
+    ├── enhance-media-small-logo.png     # Enhance Media corporate mark (26x26)
+    ├── favicon-16x16.png                # Browser tab favicon 16px
+    ├── favicon-32x32.png                # Browser tab favicon 32px
+    ├── favicon.ico                      # Legacy multi-size icon
+    ├── jlp-jobs-case-study1.webp        # John Lewis Partnership case study slide
+    ├── jlp-smart-job-search-case-study.webp # JLP Smart Search case study slide
+    ├── organic-first-approach.png       # Article thumbnail (TA Strategy)
+    ├── radu-stoian-enhance-media.jpg    # Desktop hero portrait & OpenGraph image (640x732)
+    ├── radu-stoian-enhance-media.webp   # Mobile responsive hero portrait (200x200)
+    ├── university-of-surrey-case-study.jpg # University of Surrey case study slide
+    └── virgin-atlantic-case-study.jpg   # Virgin Atlantic case study slide
 ```
 
 ---
