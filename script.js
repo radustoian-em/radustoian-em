@@ -207,15 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, { passive: true });
 
-    if (navLinks) {
-      navLinks.querySelectorAll('a').forEach(a => {
-        a.addEventListener('click', () => {
-          if (window.innerWidth <= 960) {
-            closeMobileNav();
-          }
-        });
+    navbar.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        if (window.innerWidth <= 960) {
+          closeMobileNav();
+        }
       });
-    }
+    });
   }
 
   // 6. High-Performance Active Section Tracking via IntersectionObserver (Zero layout thrashing, no forced reflows)
