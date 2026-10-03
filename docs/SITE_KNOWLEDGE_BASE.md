@@ -75,13 +75,9 @@ The repository is structured as a flat, highly performant static web application
 ```
 radustoian-em/
 ├── .git/                                 # Git version control metadata
-├── .assetsignore                        # Ignores server-side code from public asset upload
 ├── _headers                             # Cloudflare Pages HTTP security and caching directives
-├── _worker.js                           # Cloudflare Pages & Workers edge router for Markdown content negotiation
 ├── docs/
 │   └── SITE_KNOWLEDGE_BASE.md           # This technical architecture knowledge base
-├── functions/
-│   └── _middleware.js                   # Cloudflare Pages edge middleware for Markdown content negotiation
 ├── icons.svg                            # 24-symbol external SVG sprite sheet
 ├── index.html                           # Main document with semantic markup & JSON-LD
 ├── index.md.txt                         # High-fidelity Markdown representation of homepage (.md.txt)
@@ -192,9 +188,9 @@ The site is built to bridge conventional search engine visibility with modern LL
 > **Page Copy & AI Synchronization Invariant:** Whenever the homepage copy in `index.html` is updated, the `.md.txt` file (`index.md.txt` / `.md.txt`) and the contents of `llms-full.txt` must always be updated in parallel to maintain parity across AI ingestion layers.
 
 ### Markdown Content Negotiation (`Accept: text/markdown`)
-The site supports HTTP content negotiation for autonomous agents:
-- **Agents:** When a request includes the `Accept: text/markdown` header, Cloudflare edge middleware (`functions/_middleware.js`) returns `index.md.txt` with `Content-Type: text/markdown; charset=utf-8`, `Vary: Accept`, and token estimation headers (`x-markdown-tokens`, `x-original-tokens`).
-- **Browsers:** Requests without `text/markdown` receive standard semantic HTML with `Vary: Accept` and discovery Link header (`Link: </index.md.txt>; rel="alternate"; type="text/markdown"`).
+The site supports HTTP content negotiation for autonomous agents via a dedicated Cloudflare Worker deployed in the Cloudflare dashboard and bound to `radustoian.com/*`:
+- **Agents:** When a request includes the `Accept: text/markdown` header, the Cloudflare Worker intercepts the request and returns `index.md.txt` with `Content-Type: text/markdown; charset=utf-8`, `Vary: Accept`, `Cache-Control: private, no-cache, no-store, must-revalidate` (preventing edge cache collisions between HTML and Markdown representations), and token estimation headers (`x-markdown-tokens: 4774`, `x-original-tokens: 10588`).
+- **Browsers:** Standard browser requests pass through to Cloudflare Pages static origin to receive semantic HTML with `Vary: Accept` and discovery Link header (`Link: </index.md.txt>; rel="alternate"; type="text/markdown"`).
 - **Direct Route:** Accessible directly via `/index.md.txt` or `/.md.txt`.
 
 ### Document Linking via `rel="describedby"` and `rel="alternate"`

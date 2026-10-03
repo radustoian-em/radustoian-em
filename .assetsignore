@@ -1,7 +1,0 @@
-# Cloudflare Static Assets Ignore List
-# Prevents server-side execution code from being uploaded as public static assets
-
-_worker.js
-functions/
-.git/
-docs/
