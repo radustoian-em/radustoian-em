@@ -80,11 +80,14 @@ radustoian-em/
 │   └── SITE_KNOWLEDGE_BASE.md           # This technical architecture knowledge base
 ├── icons.svg                            # 24-symbol external SVG sprite sheet
 ├── index.html                           # Main document with semantic markup & JSON-LD
+├── js/
+│   ├── script.js                        # Modular, dependency-free JavaScript engine (412 lines)
+│   └── webmcp.js                        # WebMCP tool declarations for in-browser AI agents
 ├── llms.txt                             # Standardized summary file for LLMs & AI crawlers
 ├── llms-full.txt                        # Exhaustive context and biographical markdown for deep ingestion
 ├── metadata.json                        # Standalone JSON-LD Schema.org profile document
 ├── README.md                            # GitHub repository overview
-├── script.js                            # Modular, dependency-free JavaScript engine (412 lines)
+├── script.js                            # Legacy root copy for backward compatibility (delete after 1 Dec 2026)
 ├── site.webmanifest                     # Progressive Web App (PWA) manifest
 ├── sitemap.xml                          # XML Sitemap with priority and change frequencies
 ├── styles.css                           # Complete design system & responsive styling (418 lines)
@@ -151,7 +154,8 @@ Security and caching are configured at the edge via Cloudflare's `_headers` synt
 | :--- | :--- | :--- | :--- |
 | `/*.html`, `/` | Revalidate immediately | `public, max-age=0, must-revalidate` | Ensures new deployments are served immediately to visitors without stale HTML holding old hashes. |
 | `*.jpg`, `*.jpeg`, `*.png`, `*.webp`, `*.svg`, `*.ico` | Long-term immutable | `public, max-age=31536000, immutable` | Static media cached in browser and edge caches for 1 full year (31,536,000s). |
-| `/styles.css`, `/script.js` | Stale-while-revalidate | `public, max-age=86400, stale-while-revalidate=604800` | 24-hour fresh cache with a 7-day stale-while-revalidate window for instant repeat visits. |
+| `/styles.css`, `/js/*` | Stale-while-revalidate | `public, max-age=86400, stale-while-revalidate=604800` | 24-hour fresh cache with a 7-day stale-while-revalidate window for instant repeat visits. |
+| `/script.js` | Stale-while-revalidate | `public, max-age=86400, stale-while-revalidate=604800` | Legacy fallback copy for backward compatibility with cached clients. Scheduled for removal after 1st December 2026. |
 | `/site.webmanifest`, `/llms.txt`, `/llms-full.txt`, `/metadata.json` | Stale-while-revalidate | `public, max-age=86400, stale-while-revalidate=604800` | High-availability specification files cached 1 day with 7 days background revalidation. |
 
 ---
@@ -381,7 +385,10 @@ graph TD
 
 ## 7. JavaScript Animation & Interaction Engine (`script.js`)
 
-[`script.js`](file:///home/radu/antigravity/radu/script.js) is written in pure vanilla JavaScript without external dependencies. It is structured into seven distinct modules.
+[`js/script.js`](file:///home/radu/antigravity/radu/js/script.js) is written in pure vanilla JavaScript without external dependencies. It is structured into seven distinct modules.
+
+> [!NOTE]
+> **Backward Compatibility Duplication**: A copy of `script.js` is temporarily preserved at the root directory (`/script.js`) alongside `/js/script.js` to ensure cached browsers, external proxies, or lingering clients do not encounter 404 errors during the transition period. **The root `/script.js` is scheduled for deletion after 1st December 2026.**
 
 ### Performance & Accessibility Guardrails
 Execution begins with device capability and preference detection:

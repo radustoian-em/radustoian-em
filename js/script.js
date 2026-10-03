@@ -1,6 +1,3 @@
-// NOTE: This root copy of script.js is maintained for backward compatibility with cached clients.
-// Scheduled for deletion after 1st December 2026. The primary script is at /js/script.js.
-
 document.addEventListener('DOMContentLoaded', () => {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
