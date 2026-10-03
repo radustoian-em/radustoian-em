@@ -1,0 +1,357 @@
+---
+title: Radu Stoian - Technical Director, Enhance Media
+description: Radu Stoian is the Technical Director at Enhance Media. He helps employers move from search results to AI recommendations.
+image: https://radustoian.com/radu-stoian-enhance-media.jpg
+canonical: https://radustoian.com
+---
+
+# Radu Stoian
+
+**Technical Director** at [Enhance Media](https://www.enhancemedia.co.uk/)  
+**Location:** Woking / Guildford, United Kingdom  
+
+> Transforming Talent Attraction by helping employers move from being *found* by search engines to being *recommended* by AI.
+
+### Connect & Public Profiles
+- [Substack](https://radustoian.substack.com/)
+- [GitHub](https://github.com/radustoian-em)
+- [LinkedIn](https://www.linkedin.com/in/radustoian/)
+- [X (Twitter)](https://x.com/radustoian)
+
+### Core Highlights
+- Digital Strategy
+- SEO
+- AI Optimisation
+- Google for Jobs
+- Recruitment Marketing
+
+---
+
+## About Radu Stoian
+
+As the Technical Director at Enhance Media, I provide the strategic leadership and digital infrastructure that help employers capitalise on the shift to Agentic AI. From building a proprietary **AI Brand Health Audit** product to deploying smart careers sites, I deliver results that help employers attract the talent they need to drive their businesses into the future.
+
+*My goal is simple: to help employers move from being ‘found’ by search engines to being ‘recommended’ by AI.*
+
+My approach centres on an **Organic First Talent Attraction Strategy**, anticipating the shift in candidate behaviour towards AI driven job search. By aligning talent acquisition strategies with emerging agentic AI experiences, including Google's Career Dreamer and ChatGPT Jobs, I ensure organisations aren't just broadly visible, but contextually and deeply relevant across the entire candidate journey.
+
+My expertise spans **AI, SEO, Google for Jobs, Recruitment Marketing, Web Development, and Google Cloud**. This technical breadth lets me build data-driven strategies backed by a deep understanding of how digital marketing and user behaviour intersect.
+
+Clients and colleagues know me as someone who won’t take “it can’t be done” as an answer. If there’s a way to improve performance, I’ll find it. If there isn’t an established way to do something, I’ll innovate.
+
+---
+
+## Areas of Expertise
+
+### Pioneering the Agentic AI Era
+I don’t just explore AI, I build the tools to manage it. I conceptualised and launched the AI Brand Health Audit, a solution to the ‘black box’ problem of Generative AI, letting organisations measure, benchmark, and control their brand narrative in LLMs.
+
+### Talent Attraction Strategies
+Building data-driven talent attraction strategies that combine employer brand, search, Google for Jobs, AI, social, and paid marketing to reach and engage the right candidates at the right time.
+
+### Next-Gen Careers Sites
+Leading the deployment of innovative, smart careers sites, advanced job detail pages and automated Job Hubs that personalise the candidate journey and capture long-tail search traffic.
+
+### Mentorship & Industry Advocacy
+Training and upskilling the next generation of digital leaders, and elevating industry standards through public speaking and knowledge sharing, including masterclasses at BrightonSEO.
+
+**Skills & Tags:** AI Optimisation | Technical SEO | Google for Jobs | GEO / AEO | Web Development | Google Cloud | BigQuery | Source-to-Hire Analytics
+
+---
+
+## Publications & Insights
+
+- **[The Organic First Approach to Talent Attraction](https://radustoian.substack.com/p/the-organic-first-approach-to-talent)** (TA Strategy)  
+  SEO, Google for Jobs, AI visibility, and organic social media lead the way, with paid marketing efficiently filling any remaining gaps in your strategy.
+
+- **[Optimising for AI Isn't About Abandoning SEO](https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/)** (AI Optimisation)  
+  Discover why preparing for the Agentic AI era is an evolution of your existing search engine optimization efforts, not a complete replacement.
+
+- **[AI is the new Gateway to your Employer Brand](https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/)** (Employer Branding)  
+  Candidates are no longer starting their journey by visiting careers websites. Instead, they are forming their first impression of an employer through a conversation with AI.
+
+*More articles available on [LinkedIn Articles](https://www.linkedin.com/in/radustoian/recent-activity/articles/) and [Substack](https://radustoian.substack.com/).*
+
+---
+
+## Projects & Clients
+
+I’ve had the privilege of working with major brands developing digital strategies, running AI & SEO campaigns, and implementing complex Google for Jobs and Source-to-Hire analytics solutions.
+
+- **[Expanding the Reach of Multiple Employer Brands Using Google for Jobs](https://www.enhancemedia.co.uk/case-study/expanding-the-reach-of-multiple-employer-brands-using-google-for-jobs/)** (John Lewis Partnership)
+  - Over 3 million potential candidates reached in 2023.
+  - Conversion rate for GFJ referred visits more than doubled.
+  - 38% increase in job applications generated during peak hiring.
+
+- **[Securing Diverse Top-Tier Talent for the University of Surrey](https://www.enhancemedia.co.uk/case-study/securing-diverse-top-tier-talent-for-the-university-of-surrey/)** (University of Surrey)
+  - Optimised technical foundation for academic roles.
+  - Maximized visibility for highly specialized academic searches.
+
+- **[Making Cabin Crew Applications Soar for Virgin Atlantic](https://www.enhancemedia.co.uk/case-study/making-cabin-crew-applications-soar-for-virgin-atlantic/)** (Virgin Atlantic)
+  - Transformed digital presence into a "Talent Magnet".
+  - Established robust foundational technical SEO elements.
+  - Drove significant enhancements across Google for Jobs.
+
+- **[Transforming JLP's Candidate Experience with a Smart Careers Site](https://www.enhancemedia.co.uk/case-study/transforming-jlps-candidate-experience-with-a-smart-careers-site/)** (John Lewis Partnership)
+  - 50k candidates monthly use the "jobs near me" tool.
+  - 2.5k visitors monthly interact with the chatbot.
+  - EVP content page visits increased by 10% overall.
+
+---
+
+## Client Testimonials
+
+- **Becky Vieites** (Talent Marketing and Employer Brand at John Lewis Partnership):  
+  > “Radu’s technical expertise and passion for all things AI, SEO, Google for Jobs is excellent and is what sets him apart. He does a great job of breaking down complex subjects and engaging his customers. We have achieved some impressive SEO and Google For Jobs results working alongside Radu and team.”
+
+- **Claire Henderson** (Senior Manager – Resourcing at Virgin Atlantic):  
+  > “Radu is a pleasure to work with — engaging and collaborative. His expertise in enhancing SEO and driving Google for Jobs results is second to none, but what truly sets him apart is his dedication to ensuring the foundational elements of our website are strong and effective.”
+
+- **Jemima Arnold** (People systems lead, talent acquisition at Mott MacDonald):  
+  > “Radu and I have worked together for over five years, in his role at Enhance media and mine at Mott MacDonald, and he has significantly contributed to the success of our SEO, analytics and other digital projects. It’s clear that Radu loves what he does, and he strives to find the best solution.”
+
+- **Chris Harvey** (Director - ActionHR):  
+  > “I worked with Radu over several years on technical SEO for our site. I found Radu’s written analyses and action recommendations to be clear, to the point and -- most importantly -- effective! He was always available to answer questions and explain the technical points as well as theory, with examples.”
+
+- **Robert Webb** (Marketing Director at Eteach):  
+  > “Quite simply - outstanding. Radu is one of those rare beasts who delivers what is promised. In my lengthy experience, he is one the best technical SEO experts I have worked with. He is able to translate complex solutions into actionable proposals for my team and his responses always produce results.”
+
+*See all recommendations on [LinkedIn Recommendations](https://www.linkedin.com/in/radustoian/details/recommendations/) or view the [Substack AI analysis](https://radustoian.substack.com/p/radu-stoian-technical-director-at-f99).*
+
+---
+
+## Speaking & Industry Engagement
+
+- **Masterclass: [Implementation of Schemas via GTM](https://brightonseo.com/events/october-2024/talks/masterclass-implementation-of-schemas-via-gtm)**  
+  A BrightonSEO masterclass on technical SEO and digital marketing, focused on deploying structured data through container setups.  
+  [View Speaker Deck](https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm)
+
+- **Podcast Guest: [Massive Changes to Google Job Search Results](https://www.linkedin.com/events/breakingnews-massivechangestogo7074030922244771840/)**  
+  Featured guest speaker covering the changing landscape of Google for Jobs and how employers must adapt their SEO strategies.  
+  [Watch on YouTube](https://www.youtube.com/watch?v=Mz3QAj39FFk)
+
+- **Panel Member: [2026 HR Tech Predictions — AI, Programmatic, Job Boards](https://www.linkedin.com/events/7400522688898830336/)**  
+  Expert panel speaker covering Google for Jobs, technical SEO, and AIO (Artificial Intelligence Optimisation) trends within the HR Tech space.  
+  [Watch on YouTube](https://www.youtube.com/watch?v=EO225qsp8ao)
+
+- **Technical Contribution: [Contributed to the Open Job Context Protocol (OJCP) Standard](https://www.linkedin.com/posts/radustoian_ojcp-jobposting-ojcp-activity-7489300566662361088-42f0/)**  
+  Submitted technical proposals to standardise the `url` and `official_job_url` schema fields, ensuring AI agents can accurately parse and route job postings within the MCP framework.  
+  [View Accepted Standard](https://github.com/ojcp-org/ojcp/blob/main/docs/rfcs/0002-official-job-url.md)
+
+---
+
+## Skills & Certifications
+
+- **[Generative AI Leader Certification](https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile)** — Google (Sep 2025)
+- **[Introduction to Generative AI](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/4068456)** — Google (Jun 2023)
+- **[Insights from Data with BigQuery](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/832533)** — Google (Apr 2021)
+
+**Competencies:** AI Optimisation | Technical SEO | Google for Jobs | GEO / AEO | Web Development | Google Cloud | BigQuery | Source-to-Hire Analytics  
+More details on [LinkedIn Skills](https://www.linkedin.com/in/radustoian/details/skills/) and [Google Skills Profile](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9).
+
+---
+
+## Let's Connect
+
+Looking to transform your employer brand's visibility or share ideas with your audience? Let’s talk.
+
+- **Interested in being recommended by AI?**  
+  Let’s combine technical SEO, smart careers sites, and AI optimisation to ensure AI recommends your employer brand.
+- **Invite me to speak or join podcasts:**  
+  Available for conferences and podcasts to discuss AI, SEO, Google for Jobs, and the future of talent attraction.
+- [Connect on LinkedIn](https://www.linkedin.com/in/radustoian/)
+
+---
+
+```json
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://radustoian.com/#website",
+      "name": "Radu Stoian",
+      "url": "https://radustoian.com/",
+      "sameAs": [
+        "http://radustoian.com/",
+        "http://www.radustoian.com/",
+        "https://www.radustoian.com/"
+      ]
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": "https://radustoian.com/#profilepage",
+      "mainEntity": {
+        "@type": "Person",
+        "name": "Radu Stoian",
+        "@id": "https://radustoian.com/#person",
+        "image": "https://radustoian.com/radu-stoian-enhance-media.jpg",
+        "url": "https://radustoian.com",
+        "sameAs": [
+          "https://www.linkedin.com/in/radustoian/",
+          "https://x.com/radustoian",
+          "https://radustoian.substack.com/",
+          "https://speakerdeck.com/radustoian",
+          "https://github.com/radustoian-em",
+          "https://www.google.com/search?kgmid=/g/11f0z_cqg1",
+          "https://experts.woorank.com/en/experts/radu-stoian",
+          "https://skillshop.exceedlms.com/profiles/6c9c49a5efd34efc970829ade94b0fe4",
+          "https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9"
+        ],
+        "jobTitle": "Technical Director",
+        "hasOccupation": {
+          "@type": "Occupation",
+          "name": "Technical Director",
+          "description": "Leading digital strategy and AI innovation within the recruitment marketing sector."
+        },
+        "disambiguatingDescription": "Technical Director at Enhance Media specialising in AI strategy, technical SEO, and digital talent attraction.",
+        "description": "Radu Stoian is the Technical Director at Enhance Media. He manages a vibrant team of digital marketing experts and oversees the successful delivery of innovative solutions across AI, SEO, analytics, and web development. He provides the strategic leadership and digital infrastructure necessary for the Agentic AI era, helping employers achieve active recommendations from AI systems alongside high visibility on search engines.",
+        "homeLocation": {
+          "@type": "Place",
+          "name": "Guildford, United Kingdom"
+        },
+        "workLocation": {
+          "@type": "Place",
+          "name": "Woking, United Kingdom",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Woking",
+            "addressCountry": "GB"
+          }
+        },
+        "worksFor": {
+          "@type": "Organization",
+          "name": "Enhance Media",
+          "url": "https://www.enhancemedia.co.uk/"
+        },
+        "knowsAbout": [
+          "Agentic AI",
+          "Artificial Intelligence (AI)",
+          "AI Optimisation",
+          "Generative AI",
+          "GEO",
+          "Google Tag Manager",
+          "Google for Jobs",
+          "International SEO",
+          "Natural Language Processing (NLP)",
+          "Public Speaking",
+          "SEO",
+          "SEO Audits",
+          "Search Engine Marketing (SEM)",
+          "Teaching Workshops",
+          "Team Leadership",
+          "Team Management",
+          "Technical SEO",
+          "Training",
+          "Web Development",
+          "WordPress",
+          "XML Sitemaps",
+          "schema.org"
+        ],
+        "hasCredential": [
+          {
+            "@type": "EducationalOccupationalCredential",
+            "name": "Google Cloud Generative AI Leader",
+            "url": "https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile",
+            "credentialCategory": "Certification",
+            "description": "A first-of-its-kind credential designed specifically for visionary professionals leading generative AI initiatives.",
+            "recognizedBy": {
+              "@type": "Organization",
+              "name": "Google Cloud"
+            }
+          },
+          {
+            "@type": "EducationalOccupationalCredential",
+            "name": "Bachelor of Science (BS), Organizational Management",
+            "credentialCategory": "Degree",
+            "recognizedBy": {
+              "@type": "EducationalOrganization",
+              "name": "Henri Coanda Air Force Academy",
+              "url": "https://www.afahc.ro/index_en.html"
+            }
+          }
+        ],
+        "alumniOf": [
+          {
+            "@type": "EducationalOrganization",
+            "name": "Henri Coanda Air Force Academy",
+            "url": "https://www.afahc.ro/index_en.html"
+          }
+        ],
+        "knowsLanguage": [
+          {
+            "@type": "Language",
+            "name": "English"
+          },
+          {
+            "@type": "Language",
+            "name": "Romanian"
+          },
+          {
+            "@type": "Language",
+            "name": "French"
+          }
+        ],
+        "subjectOf": [
+          {
+            "@type": "CreativeWork",
+            "@id": "https://www.linkedin.com/pulse/how-optimise-ais-chain-thought-radu-stoian-d873e/",
+            "url": "https://www.linkedin.com/pulse/how-optimise-ais-chain-thought-radu-stoian-d873e/",
+            "name": "How to optimise AI's chain of thought",
+            "author": {
+              "@id": "https://radustoian.com/#person"
+            }
+          },
+          {
+            "@type": "CreativeWork",
+            "@id": "https://www.linkedin.com/pulse/organic-first-approach-talent-attraction-radu-stoian-augne/",
+            "url": "https://www.linkedin.com/pulse/organic-first-approach-talent-attraction-radu-stoian-augne/",
+            "name": "Organic first approach to talent attraction",
+            "author": {
+              "@id": "https://radustoian.com/#person"
+            }
+          },
+          {
+            "@type": "CreativeWork",
+            "@id": "https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/",
+            "url": "https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/",
+            "name": "Optimising AI is an upgrade to SEO",
+            "author": {
+              "@id": "https://radustoian.com/#person"
+            }
+          },
+          {
+            "@type": "CreativeWork",
+            "url": "https://brightonseo.com/events/october-2024/talks/masterclass-implementation-of-schemas-via-gtm",
+            "name": "BrightonSEO Masterclass",
+            "description": "Delivered masterclasses on technical SEO and digital marketing.",
+            "author": {
+              "@id": "https://radustoian.com/#person"
+            }
+          },
+          {
+            "@type": "PodcastEpisode",
+            "url": "https://www.linkedin.com/events/breakingnews-massivechangestogo7074030922244771840/",
+            "sameAs": "https://www.youtube.com/watch?v=Mz3QAj39FFk",
+            "name": "Breaking News: Massive changes to Google job search results | ep.39",
+            "description": "Shared insights as a guest speaker on the changing landscape of Google job search results and how employers must adapt their SEO strategies.",
+            "contributor": {
+              "@id": "https://radustoian.com/#person"
+            }
+          },
+          {
+            "@type": "CreativeWork",
+            "url": "https://www.linkedin.com/events/7400522688898830336/",
+            "sameAs": "https://www.youtube.com/watch?v=EO225qsp8ao",
+            "name": "2026 HR Tech Predictions - AI, Programmatic, Job Boards",
+            "description": "Featured expert speaker covering Google Jobs, SEO, and AIO trends for 2026 within the HR Tech and job board space.",
+            "contributor": {
+              "@id": "https://radustoian.com/#person"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
