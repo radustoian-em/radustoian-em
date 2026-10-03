@@ -78,8 +78,11 @@ radustoian-em/
 ├── _headers                             # Cloudflare Pages HTTP security and caching directives
 ├── docs/
 │   └── SITE_KNOWLEDGE_BASE.md           # This technical architecture knowledge base
+├── functions/
+│   └── _middleware.js                   # Cloudflare Pages edge middleware for Markdown content negotiation
 ├── icons.svg                            # 24-symbol external SVG sprite sheet
 ├── index.html                           # Main document with semantic markup & JSON-LD
+├── index.md.txt                         # High-fidelity Markdown representation of homepage (.md.txt)
 ├── js/
 │   ├── script.js                        # Modular, dependency-free JavaScript engine (412 lines)
 │   └── webmcp.js                        # WebMCP tool declarations for in-browser AI agents
@@ -157,6 +160,7 @@ Security and caching are configured at the edge via Cloudflare's `_headers` synt
 | `/styles.css`, `/js/*` | Stale-while-revalidate | `public, max-age=86400, stale-while-revalidate=604800` | 24-hour fresh cache with a 7-day stale-while-revalidate window for instant repeat visits. |
 | `/script.js` | Stale-while-revalidate | `public, max-age=86400, stale-while-revalidate=604800` | Legacy fallback copy for backward compatibility with cached clients. Scheduled for removal after 1st December 2026. |
 | `/site.webmanifest`, `/llms.txt`, `/llms-full.txt`, `/metadata.json` | Stale-while-revalidate | `public, max-age=86400, stale-while-revalidate=604800` | High-availability specification files cached 1 day with 7 days background revalidation. |
+| `/index.md.txt`, `/*.md.txt` | Stale-while-revalidate | `public, max-age=86400, stale-while-revalidate=604800` | Markdown representations for AI agents with `text/markdown` MIME type and `Vary: Accept`. |
 
 ---
 
@@ -177,12 +181,27 @@ The site is built to bridge conventional search engine visibility with modern LL
    - Contains full professional biography, core expertise, client testimonials (John Lewis Partnership, Virgin Atlantic, Mott MacDonald, ActionHR, Eteach), list of verified public profiles, publications, case studies, speaking history, and credentials.
    - Allows AI agents to answer nuanced questions regarding Radu Stoian's track record without scraping and parsing DOM structures.
 
-### Document Linking via `rel="describedby"`
+3. **[`index.md.txt`](file:///home/radu/antigravity/radu/index.md.txt)**:
+   - Complete Markdown representation of the homepage for AI agents.
+   - Follows Cloudflare's *Markdown for Agents* standard with YAML frontmatter metadata and concluding JSON-LD structured data block.
+   - Consumes ~4,773 estimated tokens compared to ~10,588 tokens for the raw HTML (a 55%+ token reduction).
+
+> [!NOTE]
+> **Page Copy & AI Synchronization Invariant:** Whenever the homepage copy in `index.html` is updated, the `.md.txt` file (`index.md.txt` / `.md.txt`) and the contents of `llms-full.txt` must always be updated in parallel to maintain parity across AI ingestion layers.
+
+### Markdown Content Negotiation (`Accept: text/markdown`)
+The site supports HTTP content negotiation for autonomous agents:
+- **Agents:** When a request includes the `Accept: text/markdown` header, Cloudflare edge middleware (`functions/_middleware.js`) returns `index.md.txt` with `Content-Type: text/markdown; charset=utf-8`, `Vary: Accept`, and token estimation headers (`x-markdown-tokens`, `x-original-tokens`).
+- **Browsers:** Requests without `text/markdown` receive standard semantic HTML with `Vary: Accept` and discovery Link header (`Link: </index.md.txt>; rel="alternate"; type="text/markdown"`).
+- **Direct Route:** Accessible directly via `/index.md.txt` or `/.md.txt`.
+
+### Document Linking via `rel="describedby"` and `rel="alternate"`
 In [`index.html`](file:///home/radu/antigravity/radu/index.html), explicit machine-readable links inform AI agents and scrapers where to fetch semantic context:
 
 ```html
-<link rel="describedby" type="text/plain" href="https://radustoian.com/llms.txt">
-<link rel="describedby" type="text/plain" href="https://radustoian.com/llms-full.txt">
+<link rel="alternate" type="text/markdown" href="https://radustoian.com/index.md.txt">
+<link rel="describedby" type="text/markdown" href="https://radustoian.com/llms.txt">
+<link rel="describedby" type="text/markdown" href="https://radustoian.com/llms-full.txt">
 <link rel="describedby" href="https://radustoian.com/metadata.json" type="application/json">
 ```
 
@@ -192,6 +211,10 @@ The profile highlights contributions to the **Open Job Context Protocol (OJCP)**
 ---
 
 ## 5. Structured Data & Schema.org Specification
+
+> [!IMPORTANT]
+> **CRITICAL RULE: Never change the JSON Schema.**  
+> The JSON-LD structured data graph is canonical and carefully calibrated across search engines, Google Knowledge Graph, and LLMs. The schema structure, types, properties, and `@graph` entity hierarchy must remain immutable.
 
 ### JSON-LD Entity Graph Architecture
 The structured data uses Schema.org's `@graph` architecture to connect multiple entities into a unified knowledge graph. The primary entities are defined in both [`index.html`](file:///home/radu/antigravity/radu/index.html) (inlined) and [`metadata.json`](file:///home/radu/antigravity/radu/metadata.json):
@@ -682,6 +705,15 @@ The LCP candidate on both mobile and desktop is the hero portrait image. The fol
 ---
 
 ## 10. Maintenance, Operations & Development Workflows
+
+### Core Maintenance Rules & Invariants
+
+> [!IMPORTANT]
+> **Strict Operational Rules:**
+> 1. **Never change the JSON Schema.**  
+>    The Schema.org JSON-LD structured data graph is canonical and fixed. Do not modify, reformat, or alter the schema architecture or entity definitions in `index.html` or `metadata.json`.
+> 2. **If the page copy is updated, also update the `.md.txt` file and the contents of the `llms-full.txt` files.**  
+>    Any editorial or textual modifications made to `index.html` must be immediately mirrored across `index.md.txt` (and `.md.txt`) and `llms-full.txt` to keep the human HTML view and AI ingestion endpoints completely synchronized.
 
 ### Local Development & Preview
 To run and preview the site locally using Cloudflare's runtime emulator:

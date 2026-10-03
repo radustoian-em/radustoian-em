@@ -8,9 +8,13 @@
 # HTML files - revalidate immediately for continuous fresh deployments
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
+  Vary: Accept
+  Link: </index.md.txt>; rel="alternate"; type="text/markdown"
 
 /
   Cache-Control: public, max-age=0, must-revalidate
+  Vary: Accept
+  Link: </index.md.txt>; rel="alternate"; type="text/markdown"
 
 # Immutable static media (1 year cache)
 /*.jpg
@@ -35,6 +39,34 @@
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 /metadata.json
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Markdown representations for AI agents
+/index.md.txt
+  Content-Type: text/markdown; charset=utf-8
+  Vary: Accept
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Content-Signal: ai-train=yes, search=yes, ai-input=yes
+  Link: <https://radustoian.com/>; rel="canonical"
+  x-markdown-tokens: 4773
+  x-original-tokens: 10588
+
+/.md.txt
+  Content-Type: text/markdown; charset=utf-8
+  Vary: Accept
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Content-Signal: ai-train=yes, search=yes, ai-input=yes
+  Link: <https://radustoian.com/>; rel="canonical"
+  x-markdown-tokens: 4773
+  x-original-tokens: 10588
+
+/*.md.txt
+  Content-Type: text/markdown; charset=utf-8
+  Vary: Accept
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Content-Signal: ai-train=yes, search=yes, ai-input=yes
+  Link: <https://radustoian.com/>; rel="canonical"
+  x-markdown-tokens: 4773
+  x-original-tokens: 10588
 
 # CSS and JavaScript (cached with stale-while-revalidate)
 /styles.css

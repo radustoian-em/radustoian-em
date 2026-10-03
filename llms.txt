@@ -5,6 +5,8 @@
 ## Main Profile
 
 - [Radu Stoian](https://radustoian.com/): The primary profile page for Radu Stoian, Technical Director at Enhance Media detailing his public profiles, expertise, skills, projects, client testimonials, speaking and industry engagements.
+- [Homepage Markdown](https://radustoian.com/index.md.txt): Direct markdown representation of the homepage for AI agents and content negotiation.
 
 ## Full Markdown File
 - [Full Profile Context](https://radustoian.com/llms-full.txt): A single markdown file combining all details about Radu Stoian for deep AI ingestion.
+
