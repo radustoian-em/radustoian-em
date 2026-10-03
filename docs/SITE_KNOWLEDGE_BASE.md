@@ -75,6 +75,7 @@ The repository is structured as a flat, highly performant static web application
 ```
 radustoian-em/
 ├── .git/                                 # Git version control metadata
+├── .assetsignore                        # Ignores server-side code from public asset upload
 ├── _headers                             # Cloudflare Pages HTTP security and caching directives
 ├── _worker.js                           # Cloudflare Pages & Workers edge router for Markdown content negotiation
 ├── docs/
