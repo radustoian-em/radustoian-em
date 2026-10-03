@@ -41,7 +41,7 @@
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
 # Markdown representations for AI agents
-/index.md.txt
+/*.md.txt
   Content-Type: text/markdown; charset=utf-8
   Vary: Accept
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
@@ -51,15 +51,6 @@
   x-original-tokens: 10588
 
 /.md.txt
-  Content-Type: text/markdown; charset=utf-8
-  Vary: Accept
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
-  Content-Signal: ai-train=yes, search=yes, ai-input=yes
-  Link: <https://radustoian.com/>; rel="canonical"
-  x-markdown-tokens: 4773
-  x-original-tokens: 10588
-
-/*.md.txt
   Content-Type: text/markdown; charset=utf-8
   Vary: Accept
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
