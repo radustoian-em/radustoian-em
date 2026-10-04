@@ -1,11 +1,16 @@
 {
   "$schema": "https://modelcontextprotocol.io/schemas/server-card/v1.json",
+  "serverInfo": {
+    "name": "Radu Stoian WebMCP Tools",
+    "version": "1.0.0"
+  },
   "name": "Radu Stoian WebMCP Tools",
-  "description": "Model Context Protocol tools exposed client-side for browsing profile, case studies, and testimonials on radustoian.com",
   "version": "1.0.0",
+  "description": "Model Context Protocol tools exposed client-side for browsing profile, case studies, and testimonials on radustoian.com",
+  "endpoint": "https://radustoian.com/js/webmcp.js",
   "transport": {
     "type": "webmcp",
-    "scriptUrl": "https://radustoian.com/js/webmcp.js"
+    "endpoint": "https://radustoian.com/js/webmcp.js"
   },
   "capabilities": {
     "tools": {
