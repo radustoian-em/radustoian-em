@@ -100,7 +100,8 @@ radustoian-em/
     ├── android-chrome-192x192.png       # PWA standard icon
     ├── android-chrome-512x512.png       # PWA high-resolution icon
     ├── apple-touch-icon.png             # iOS home screen touch icon
-    ├── enhance-media-small-logo.png     # Enhance Media corporate mark (26x26)
+    ├── enhance-media-small-logo.png     # Legacy PNG fallback for cached clients (scheduled removal Nov 2026)
+    ├── enhance-media-small-logo.webp    # Enhance Media corporate mark (36x36, rendered 24x24)
     ├── favicon-16x16.png                # Browser tab favicon 16px
     ├── favicon-32x32.png                # Browser tab favicon 32px
     ├── favicon.ico                      # Legacy multi-size icon
@@ -643,7 +644,8 @@ Rather than embedding heavy inline SVG paths repeatedly in HTML, the application
 | :--- | :--- | :--- | :--- | :--- |
 | `radu-stoian-enhance-media.webp` | WebP | 200 x 200 | 59.0 KB | Default hero portrait on mobile (<640px); `fetchpriority="high"`, `decoding="sync"`. |
 | `radu-stoian-enhance-media.jpg` | JPEG | 640 x 732 | 68.2 KB | Desktop hero portrait (>640px) via `<picture>` & canonical OpenGraph / Twitter card image. |
-| `enhance-media-small-logo.png` | PNG | 26 x 26 | 1.8 KB | Hero company badge; `decoding="async"`. |
+| `enhance-media-small-logo.webp` | WebP | 36 x 36 | 1.2 KB | Hero company badge (displayed at 24 x 24); `decoding="async"`. |
+| `enhance-media-small-logo.png` | PNG | 28 x 28 | 1.8 KB | Legacy fallback for cached clients (scheduled for removal November 2026). |
 | `jlp-jobs-case-study1.webp` | WebP | 400 x 240 | 131.2 KB | Project slide 1 (John Lewis Partnership); `loading="lazy"`. |
 | `university-of-surrey-case-study.jpg` | JPEG | 400 x 240 | 29.1 KB | Project slide 2 (University of Surrey); `loading="lazy"`. |
 | `virgin-atlantic-case-study.jpg` | JPEG | 400 x 240 | 57.8 KB | Project slide 3 (Virgin Atlantic); `loading="lazy"`. |
