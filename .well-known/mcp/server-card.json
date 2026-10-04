@@ -6,7 +6,7 @@
   },
   "name": "Radu Stoian WebMCP Tools",
   "version": "1.0.0",
-  "description": "Model Context Protocol tools exposed client-side for browsing profile, case studies, and testimonials on radustoian.com",
+  "description": "Model Context Protocol tools exposed client-side for section navigation, carousel browsing, case studies, testimonials, publications & Substack articles, speaking engagements, and certificates/skills on radustoian.com",
   "endpoint": "https://radustoian.com/js/webmcp.js",
   "transport": {
     "type": "webmcp",

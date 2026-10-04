@@ -278,4 +278,209 @@
       return ok(links);
     }
   });
+
+  // ---------- Tool 6: Publications & Substack articles ----------
+  register({
+    name: 'listPublications',
+    title: 'List publications & Substack articles',
+    description:
+      'Extracts Radu Stoian\'s main publications and insights (titles, topics, summaries, and URLs) ' +
+      'and specifically identifies direct links to his articles on Substack.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        platform: {
+          type: 'string',
+          enum: ['all', 'substack', 'linkedin'],
+          description: 'Filter publications by platform ("all", "substack", or "linkedin"). Default is "all".'
+        }
+      }
+    },
+    annotations: { readOnlyHint: true },
+    execute: async ({ platform = 'all' } = {}) => {
+      const container = document.getElementById('insights');
+      if (!container) return fail('Publications section ("insights") not found on page.');
+
+      const cards = Array.from(container.querySelectorAll('.talk-item'));
+      const publications = cards.map((card) => {
+        const titleEl = card.querySelector('h3 a') || card.querySelector('h3');
+        const title = clean(titleEl);
+        const link = card.querySelector('h3 a')?.href || card.querySelector('.talk-links a')?.href || null;
+        const topic = clean(card.querySelector('.talk-format span')) || clean(card.querySelector('.talk-format'));
+        const summary = clean(card.querySelector('p'));
+        const isSubstack = Boolean(link && link.includes('substack.com'));
+        const isLinkedIn = Boolean(link && link.includes('linkedin.com'));
+
+        return {
+          title,
+          topic,
+          summary,
+          url: link,
+          platform: isSubstack ? 'Substack' : (isLinkedIn ? 'LinkedIn' : 'Other'),
+          isSubstack
+        };
+      });
+
+      // Identify all Substack article links specifically
+      const substackArticles = [];
+      const seenUrls = new Set();
+
+      publications.forEach((pub) => {
+        if (pub.isSubstack && pub.url && !seenUrls.has(pub.url)) {
+          seenUrls.add(pub.url);
+          substackArticles.push({
+            title: pub.title,
+            url: pub.url,
+            topic: pub.topic,
+            summary: pub.summary
+          });
+        }
+      });
+
+      // Also identify any other Substack article post links across the page (e.g. /p/ paths)
+      document.querySelectorAll('a[href*="substack.com/p/"]').forEach((a) => {
+        if (!seenUrls.has(a.href)) {
+          seenUrls.add(a.href);
+          substackArticles.push({
+            title: clean(a),
+            url: a.href,
+            topic: 'Article / Recommendation',
+            summary: clean(a.closest('p, .talk-item, .testimonial-card'))
+          });
+        }
+      });
+
+      const substackProfileUrl = document.querySelector('a[href*="radustoian.substack.com"]:not([href*="/p/"])')?.href
+        || 'https://radustoian.substack.com/';
+
+      let filtered = publications;
+      if (platform === 'substack') {
+        filtered = publications.filter((p) => p.isSubstack);
+      } else if (platform === 'linkedin') {
+        filtered = publications.filter((p) => p.platform === 'LinkedIn');
+      }
+
+      return ok({
+        totalPublications: filtered.length,
+        publications: filtered,
+        substackArticles,
+        substackProfileUrl
+      });
+    }
+  });
+
+  // ---------- Tool 7: Speaking & industry engagements ----------
+  register({
+    name: 'listSpeakingEngagements',
+    title: 'List speaking & industry engagements',
+    description:
+      'Extracts Radu Stoian\'s main speaking appearances, podcast guest spots, conference masterclasses, ' +
+      'and industry technical contributions with event URLs and media/resource links.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        format: {
+          type: 'string',
+          description: 'Optional filter by format or keyword (e.g. "Masterclass", "Podcast", "Panel", "Technical Contribution").'
+        }
+      }
+    },
+    annotations: { readOnlyHint: true },
+    execute: async ({ format } = {}) => {
+      const container = document.getElementById('speaking');
+      if (!container) return fail('Speaking section ("speaking") not found on page.');
+
+      const cards = Array.from(container.querySelectorAll('.talk-item'));
+      const engagements = cards.map((card) => {
+        const formatLabel = clean(card.querySelector('.talk-format'));
+        const titleLink = card.querySelector('h3 a');
+        const title = clean(titleLink || card.querySelector('h3'));
+        const eventUrl = titleLink?.href || null;
+        const description = clean(card.querySelector('p'));
+        const resourceLink = card.querySelector('.talk-links a');
+        const resource = resourceLink ? {
+          label: clean(resourceLink),
+          url: resourceLink.href
+        } : null;
+
+        return {
+          title,
+          format: formatLabel,
+          description,
+          eventUrl,
+          resource
+        };
+      });
+
+      const filtered = format
+        ? engagements.filter((e) =>
+            e.format.toLowerCase().includes(format.toLowerCase()) ||
+            e.title.toLowerCase().includes(format.toLowerCase())
+          )
+        : engagements;
+
+      return ok({
+        totalEngagements: filtered.length,
+        engagements: filtered
+      });
+    }
+  });
+
+  // ---------- Tool 8: Certificates & skills ----------
+  register({
+    name: 'listCertificatesAndSkills',
+    title: 'List certificates, skills & profile links',
+    description:
+      'Extracts Radu Stoian\'s main certificates and core skills, and identifies external links ' +
+      'to all skills and certifications on LinkedIn and Google Skills.',
+    inputSchema: { type: 'object', properties: {} },
+    annotations: { readOnlyHint: true },
+    execute: async () => {
+      const container = document.getElementById('skills');
+      if (!container) return fail('Skills section ("skills") not found on page.');
+
+      const certCards = Array.from(container.querySelectorAll('.cert-item'));
+      const certificates = certCards.map((card) => {
+        const link = card.querySelector('a');
+        const meta = clean(card.querySelector('.cert-meta'));
+        const [issuer = '', date = ''] = meta.split('·').map((s) => s.trim());
+        return {
+          title: clean(link),
+          issuer,
+          date,
+          url: link?.href || null
+        };
+      });
+
+      const skillTags = Array.from(container.querySelectorAll('.skill-tag'))
+        .map(clean)
+        .filter(Boolean);
+
+      const linkedInSkillsUrl = container.querySelector('a[href*="linkedin.com"][href*="skills"]')?.href
+        || document.querySelector('a[href*="linkedin.com"][href*="skills"]')?.href
+        || null;
+
+      const googleSkillsUrl = container.querySelector('a[href*="skills.google"]')?.href
+        || document.querySelector('a[href*="skills.google"]')?.href
+        || null;
+
+      return ok({
+        totalCertificates: certificates.length,
+        certificates,
+        skills: skillTags,
+        externalProfiles: {
+          linkedInSkills: {
+            platform: 'LinkedIn Skills',
+            description: 'Comprehensive list of verified professional skills and endorsements on LinkedIn',
+            url: linkedInSkillsUrl
+          },
+          googleSkills: {
+            platform: 'Google Skills',
+            description: 'Public profile of verified Google Cloud and AI skills and badges',
+            url: googleSkillsUrl
+          }
+        }
+      });
+    }
+  });
 })();
