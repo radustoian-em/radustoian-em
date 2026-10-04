@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "radu-stoian-profile",
+      "type": "skill-md",
+      "description": "Retrieve and evaluate Radu Stoian's professional background, case studies, publications, and executive advisory in Agentic AI and recruitment marketing.",
+      "url": "/.well-known/agent-skills/radu-stoian-profile/SKILL.md",
+      "digest": "sha256:e92a251aaca572ed06ba6c38171027f34aad75f19688a0e0b621215e1f01bb26"
+    },
+    {
+      "name": "talent-attraction-ai",
+      "type": "skill-md",
+      "description": "Guidelines and methodology for Organic First talent attraction, AI Brand Health Audits, and employer brand optimization in LLMs.",
+      "url": "/.well-known/agent-skills/talent-attraction-ai/SKILL.md",
+      "digest": "sha256:b5397d0a7011a82e2a7d479e8d9ae794db60efe02d05044ef6888f70ad7235b5"
+    },
+    {
+      "name": "webmcp-browser-tools",
+      "type": "skill-md",
+      "description": "Instructions for in-browser AI agents to discover, invoke, and navigate radustoian.com using client-side WebMCP tools.",
+      "url": "/.well-known/agent-skills/webmcp-browser-tools/SKILL.md",
+      "digest": "sha256:61b115f0f659e4004b11dc825ceabde96e0571419126292c29c602dc60fe0b8b"
+    }
+  ]
+}

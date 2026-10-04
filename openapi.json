@@ -92,6 +92,24 @@
           }
         }
       }
+    },
+    "/.well-known/agent-skills/index.json": {
+      "get": {
+        "summary": "Agent Skills Discovery Index",
+        "description": "Agent Skills Discovery RFC v0.2.0 index of machine-readable capabilities",
+        "responses": {
+          "200": {
+            "description": "Agent skills discovery index",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

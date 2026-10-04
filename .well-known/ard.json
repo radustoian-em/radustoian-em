@@ -19,6 +19,17 @@
       ]
     },
     {
+      "identifier": "urn:air:radustoian.com:skills:agent-skills-index",
+      "displayName": "Agent Skills Discovery Index",
+      "type": "application/json",
+      "url": "https://radustoian.com/.well-known/agent-skills/index.json",
+      "representativeQueries": [
+        "What agent skills are available on radustoian.com?",
+        "Discover skills published by Radu Stoian per RFC v0.2.0",
+        "Agent skills index for Radu Stoian"
+      ]
+    },
+    {
       "identifier": "urn:air:radustoian.com:agent:profile",
       "displayName": "Radu Stoian Profile Agent Card",
       "type": "application/agent-card+json",
