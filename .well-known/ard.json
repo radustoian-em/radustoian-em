@@ -1,0 +1,72 @@
+{
+  "$schema": "https://agenticresourcediscovery.org/schemas/v0.91/manifest.json",
+  "name": "Radu Stoian - AI Agent & Resource Discovery",
+  "description": "Agentic discovery manifest for Radu Stoian, Technical Director at Enhance Media. Indexes browser agent tools (WebMCP), LLM summaries, Markdown feeds, and knowledge graph metadata.",
+  "url": "https://radustoian.com",
+  "publisher": {
+    "name": "Radu Stoian",
+    "url": "https://radustoian.com",
+    "organization": "Enhance Media"
+  },
+  "resources": [
+    {
+      "id": "urn:radustoian:tools:webmcp",
+      "name": "WebMCP Browser Agent Tools",
+      "description": "Client-side Model Context Protocol (WebMCP) tools registered via document.modelContext for AI browser agents to programmatically query profile details, browse case studies, inspect testimonials, and navigate sections.",
+      "type": "application/vnd.webmcp+javascript",
+      "url": "https://radustoian.com/js/webmcp.js",
+      "documentationUrl": "https://radustoian.com/#expertise",
+      "representativeQueries": [
+        "What interactive tools are available on radustoian.com?",
+        "Navigate and read case studies on Radu Stoian's website using WebMCP",
+        "Inspect client testimonials for Radu Stoian"
+      ]
+    },
+    {
+      "id": "urn:radustoian:context:llms-txt",
+      "name": "LLM Digest (llms.txt)",
+      "description": "Concise summary file following the llms.txt standard, detailing Radu Stoian's professional profile, expertise in AI optimization and recruitment marketing, key projects, and links to detailed documents.",
+      "type": "text/markdown",
+      "url": "https://radustoian.com/llms.txt",
+      "representativeQueries": [
+        "Who is Radu Stoian and what is his role at Enhance Media?",
+        "Quick overview of Radu Stoian's AI and SEO expertise",
+        "Summary of radustoian.com for LLMs"
+      ]
+    },
+    {
+      "id": "urn:radustoian:context:llms-full",
+      "name": "Full Profile Context (llms-full.txt)",
+      "description": "Exhaustive markdown document combining all details about Radu Stoian, including career milestones, case studies (John Lewis Partnership, Virgin Atlantic, University of Surrey), speaking engagements, and credentials for deep ingestion.",
+      "type": "text/markdown",
+      "url": "https://radustoian.com/llms-full.txt",
+      "representativeQueries": [
+        "Detailed background and case studies for Radu Stoian",
+        "What results did Radu Stoian deliver for Virgin Atlantic and John Lewis?",
+        "Full list of Radu Stoian's speaking engagements and publications"
+      ]
+    },
+    {
+      "id": "urn:radustoian:context:markdown-homepage",
+      "name": "Homepage Markdown Feed",
+      "description": "Clean, content-negotiated plain markdown representation of the primary homepage at radustoian.com for AI agents.",
+      "type": "text/markdown",
+      "url": "https://radustoian.com/index.md.txt",
+      "representativeQueries": [
+        "Fetch markdown representation of radustoian.com homepage",
+        "Read Radu Stoian's profile in markdown"
+      ]
+    },
+    {
+      "id": "urn:radustoian:data:metadata-json",
+      "name": "Schema.org Profile Graph",
+      "description": "Comprehensive Linked Data (JSON-LD) graph conforming to Schema.org ProfilePage and Person entities, specifying credentials, alumni details, social links, and works.",
+      "type": "application/ld+json",
+      "url": "https://radustoian.com/metadata.json",
+      "representativeQueries": [
+        "Schema.org structured data for Radu Stoian",
+        "Credentials and recognized certifications for Radu Stoian"
+      ]
+    }
+  ]
+}

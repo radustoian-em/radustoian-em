@@ -10,3 +10,6 @@
 ## Full Markdown File
 - [Full Profile Context](https://radustoian.com/llms-full.txt): A single markdown file combining all details about Radu Stoian for deep AI ingestion.
 
+## Agent Resource Discovery
+- [Agent Discovery Manifest](https://radustoian.com/.well-known/ard.json): Machine-readable ARD v0.91 catalog indexing WebMCP tools, markdown alternates, and knowledge graph schemas.
+
