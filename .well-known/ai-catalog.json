@@ -1,0 +1,62 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Radu Stoian",
+    "origin": "https://radustoian.com"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:radustoian.com:tools:webmcp",
+      "displayName": "WebMCP Browser Agent Tools",
+      "type": "application/vnd.webmcp+javascript",
+      "url": "https://radustoian.com/js/webmcp.js",
+      "representativeQueries": [
+        "What interactive tools are available on radustoian.com?",
+        "Navigate and read case studies on Radu Stoian's website using WebMCP",
+        "Inspect client testimonials for Radu Stoian"
+      ]
+    },
+    {
+      "identifier": "urn:air:radustoian.com:context:llms-txt",
+      "displayName": "LLM Digest (llms.txt)",
+      "type": "text/markdown",
+      "url": "https://radustoian.com/llms.txt",
+      "representativeQueries": [
+        "Who is Radu Stoian and what is his role at Enhance Media?",
+        "Quick overview of Radu Stoian's AI and SEO expertise",
+        "Summary of radustoian.com for LLMs"
+      ]
+    },
+    {
+      "identifier": "urn:air:radustoian.com:context:llms-full",
+      "displayName": "Full Profile Context (llms-full.txt)",
+      "type": "text/markdown",
+      "url": "https://radustoian.com/llms-full.txt",
+      "representativeQueries": [
+        "Detailed background and case studies for Radu Stoian",
+        "What results did Radu Stoian deliver for Virgin Atlantic and John Lewis?",
+        "Full list of Radu Stoian's speaking engagements and publications"
+      ]
+    },
+    {
+      "identifier": "urn:air:radustoian.com:context:markdown-homepage",
+      "displayName": "Homepage Markdown Feed",
+      "type": "text/markdown",
+      "url": "https://radustoian.com/index.md.txt",
+      "representativeQueries": [
+        "Fetch markdown representation of radustoian.com homepage",
+        "Read Radu Stoian's profile in markdown"
+      ]
+    },
+    {
+      "identifier": "urn:air:radustoian.com:data:metadata-json",
+      "displayName": "Schema.org Profile Graph",
+      "type": "application/ld+json",
+      "url": "https://radustoian.com/metadata.json",
+      "representativeQueries": [
+        "Schema.org structured data for Radu Stoian",
+        "Credentials and recognized certifications for Radu Stoian"
+      ]
+    }
+  ]
+}
