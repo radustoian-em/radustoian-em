@@ -12,7 +12,10 @@
       "representativeQueries": [
         "What interactive tools are available on radustoian.com?",
         "Navigate and read case studies on Radu Stoian's website using WebMCP",
-        "Inspect client testimonials for Radu Stoian"
+        "Inspect client testimonials for Radu Stoian",
+        "Extract Radu Stoian's publications and Substack article links using WebMCP",
+        "List speaking and industry engagements using WebMCP",
+        "Extract certificates and verified LinkedIn and Google Skills profile links using WebMCP"
       ]
     },
     {

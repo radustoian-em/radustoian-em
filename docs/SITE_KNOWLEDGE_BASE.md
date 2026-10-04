@@ -19,6 +19,7 @@
    - [`llms.txt` and `llms-full.txt` Specifications](#llmstxt-and-llms-fulltxt-specifications)
    - [Document Linking via `rel="describedby"`](#document-linking-via-reldescribedby)
    - [Open Job Context Protocol (OJCP) Context](#open-job-context-protocol-ojcp-context)
+   - [WebMCP In-Browser Tool Suite (`js/webmcp.js`)](#webmcp-in-browser-tool-suite-jswebmcpjs)
 5. [Structured Data & Schema.org Specification](#5-structured-data--schemaorg-specification)
    - [JSON-LD Entity Graph Architecture](#json-ld-entity-graph-architecture)
    - [Entity Disambiguation & SameAs Profiles](#entity-disambiguation--sameas-profiles)
@@ -83,7 +84,7 @@ radustoian-em/
 ├── index.md.txt                         # High-fidelity Markdown representation of homepage (.md.txt)
 ├── js/
 │   ├── script.js                        # Modular, dependency-free JavaScript engine (412 lines)
-│   └── webmcp.js                        # WebMCP tool declarations for in-browser AI agents
+│   └── webmcp.js                        # WebMCP in-browser AI agent tools (8 tools: navigation, carousels, case studies, testimonials, contacts, publications, speaking, skills)
 ├── llms.txt                             # Standardized summary file for LLMs & AI crawlers
 ├── llms-full.txt                        # Exhaustive context and biographical markdown for deep ingestion
 ├── metadata.json                        # Standalone JSON-LD Schema.org profile document
@@ -207,6 +208,23 @@ In [`index.html`](file:///home/radu/antigravity/radu/index.html), explicit machi
 ### Open Job Context Protocol (OJCP) Context
 The profile highlights contributions to the **Open Job Context Protocol (OJCP)** (pull request #8: standardizing `url` and `official_job_url` schema fields). This connection directly impacts how Model Context Protocol (MCP) agents extract and verify corporate job postings without intermediate aggregator interference.
 
+### WebMCP In-Browser Tool Suite (`js/webmcp.js`)
+The site implements the emerging [WebMCP specification](https://webmachinelearning.github.io/webmcp/) via `document.modelContext.registerTool` (or `navigator.modelContext`), exposing native structured tools to AI-enabled browsers and autonomous web agents with `readOnlyHint: true` annotations:
+
+| Tool Name | Title | Input Parameters | Description |
+| :--- | :--- | :--- | :--- |
+| `navigateToSection` | Go to page section | `section` (enum: `top`, `about`, `expertise`, `insights`, `projects`, `testimonials`, `speaking`, `skills`, `connect`) | Scrolls the page smoothly or instantly to a section and returns its heading and text content. |
+| `showCarouselSlide` | Browse case studies or testimonials | `carousel` (`caseStudies` \| `testimonials`), `action` (`next` \| `previous` \| `goto`), `index` (optional 1-based integer) | Controls interactive multi-view carousels, awaiting CSS transitions before reporting visible cards and boundary states. |
+| `listCaseStudies` | List client case studies | None (`{}`) | Returns all client case studies (John Lewis Partnership, University of Surrey, Virgin Atlantic, JLP Smart Careers) with titles, metric highlights, and case study links. |
+| `listTestimonials` | List client testimonials | None (`{}`) | Returns all verified client testimonials (names, roles, companies, and complete quotes). |
+| `getContactLinks` | Get contact & profile links | None (`{}`) | Extracts deduplicated social and profile links (LinkedIn, X, Substack, GitHub). |
+| `listPublications` | List publications & Substack articles | `platform` (optional enum: `all`, `substack`, `linkedin`) | Extracts main publications (titles, topics, summaries, URLs) and specifically identifies all direct links to Radu's articles on Substack. |
+| `listSpeakingEngagements` | List speaking & industry engagements | `format` (optional string filter) | Returns conference masterclasses (BrightonSEO), podcast appearances, expert panels, and open standards contributions (OJCP) with event links and media resources (YouTube, Speaker Deck, GitHub). |
+| `listCertificatesAndSkills` | List certificates, skills & profile links | None (`{}`) | Returns professional certificates (Google Cloud GenAI Leader, Intro to GenAI, BigQuery), skill tags, and verified external profile links to all skills and certifications on LinkedIn and Google Skills. |
+
+> [!NOTE]
+> **CSS Styling & WebMCP Synchronization Invariant:** Following any CSS styling or layout modifications (e.g. changes to class names, DOM selectors, card structures, or carousel transition timings), verify whether the WebMCP tools in `js/webmcp.js` require corresponding updates. WebMCP tools rely directly on DOM element queries, class selectors (such as `.talk-item`, `.cert-item`, `.skill-tag`), and carousel transition events (`transitionend` on `#expTrack` and `#testTrack`).
+
 ---
 
 ## 5. Structured Data & Schema.org Specification
@@ -278,6 +296,9 @@ The `subjectOf` array links directly to notable creative and educational contrib
 ---
 
 ## 6. Design System & Styling Engine (`styles.css`)
+
+> [!IMPORTANT]
+> **CSS & WebMCP Synchronization Invariant:** After making any CSS styling, structural, or layout changes, check if the WebMCP browser agent tools (`js/webmcp.js`) should also be updated. WebMCP tools rely on element classes, track transitions, and DOM layout metrics to navigate sections, manipulate carousels, and extract structured data for AI agents.
 
 ### Design Tokens (CSS Custom Properties)
 All global variables are defined in the `:root` scope of [`styles.css`](file:///home/radu/antigravity/radu/styles.css):
