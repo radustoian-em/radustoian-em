@@ -5,6 +5,18 @@
   },
   "entries": [
     {
+      "identifier": "urn:air:radustoian.com:tools:mcp-server",
+      "displayName": "Radu Stoian MCP Server (Streamable HTTP)",
+      "type": "application/mcp+json",
+      "url": "https://radustoian.com/mcp",
+      "representativeQueries": [
+        "Ask questions about Radu Stoian using MCP",
+        "Query Radu Stoian's credentials, speaking engagements, and case studies via MCP server",
+        "Dynamic question answering about Radu Stoian with fail-safe knowledge retrieval",
+        "Connect to the live MCP endpoint at radustoian.com/mcp"
+      ]
+    },
+    {
       "identifier": "urn:air:radustoian.com:tools:webmcp",
       "displayName": "WebMCP Browser Agent Tools",
       "type": "application/mcp-server-card+json",

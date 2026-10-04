@@ -7,9 +7,9 @@
 - [Radu Stoian](https://radustoian.com/): The primary profile page for Radu Stoian, Technical Director at Enhance Media detailing his public profiles, expertise, skills, projects, client testimonials, speaking and industry engagements.
 - [Homepage Markdown](https://radustoian.com/index.md.txt): Direct markdown representation of the homepage for AI agents and content negotiation.
 
-## Full Markdown File
+## Documentation & Full Context
 - [Full Profile Context](https://radustoian.com/llms-full.txt): A single markdown file combining all details about Radu Stoian for deep AI ingestion.
+- [Technical Architecture & Knowledge Base](https://radustoian.com/docs/SITE_KNOWLEDGE_BASE.md): Comprehensive site architecture, AEO/GEO methodology, and AI agent ecosystem documentation.
 
 ## Agent Resource Discovery
 - [Agent Discovery Manifest](https://radustoian.com/.well-known/ard.json): Machine-readable ARD v0.91 catalog indexing WebMCP tools, markdown alternates, and knowledge graph schemas.
-

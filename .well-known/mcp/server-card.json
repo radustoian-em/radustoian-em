@@ -1,20 +1,77 @@
 {
   "$schema": "https://modelcontextprotocol.io/schemas/server-card/v1.json",
   "serverInfo": {
-    "name": "Radu Stoian WebMCP Tools",
-    "version": "1.0.0"
+    "name": "radustoian-mcp",
+    "version": "2.0.0"
   },
-  "name": "Radu Stoian WebMCP Tools",
-  "version": "1.0.0",
-  "description": "Model Context Protocol tools exposed client-side for section navigation, carousel browsing, case studies, testimonials, publications & Substack articles, speaking engagements, and certificates/skills on radustoian.com",
-  "endpoint": "https://radustoian.com/js/webmcp.js",
-  "transport": {
-    "type": "webmcp",
-    "endpoint": "https://radustoian.com/js/webmcp.js"
-  },
+  "name": "Radu Stoian MCP Server & Agent Tools",
+  "version": "2.0.0",
+  "description": "Model Context Protocol (MCP) server providing dynamic question answering, section retrieval, and external investigation links over radustoian.com knowledge files with fail-safe fallback, plus client-side WebMCP tools.",
+  "endpoint": "https://radustoian.com/mcp",
+  "transports": [
+    {
+      "type": "streamable-http",
+      "endpoint": "https://radustoian.com/mcp",
+      "protocol": "jsonrpc-2.0"
+    },
+    {
+      "type": "webmcp",
+      "endpoint": "https://radustoian.com/js/webmcp.js"
+    }
+  ],
   "capabilities": {
     "tools": {
       "listChanged": false
     }
-  }
+  },
+  "tools": [
+    {
+      "name": "ask-question",
+      "description": "Answers generic or specific questions about Radu Stoian by dynamically retrieving the most relevant content block from profile documents (llms-full.txt, index.md.txt, metadata.json, index.html). If no specific block is matched, automatically provides the entire content of llms-full.txt as a fail-safe default answer along with external investigation links.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "The question to ask about Radu Stoian"
+          }
+        },
+        "required": [
+          "question"
+        ]
+      }
+    },
+    {
+      "name": "get-section",
+      "description": "Returns the full text and content blocks of a specific section from llms-full.txt (e.g. 'Skills and Certifications', 'Projects and Clients', 'Client Testimonials', 'Publications and Insights').",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "type": "string",
+            "description": "Name or keyword of the section to retrieve"
+          }
+        },
+        "required": [
+          "section"
+        ]
+      }
+    },
+    {
+      "name": "get-investigation-links",
+      "description": "Returns external links and public profiles for AI agents to investigate Radu Stoian (LinkedIn, GitHub, Substack, SpeakerDeck, Credly, Google Skills, etc.).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "server-info",
+      "description": "Returns information about this MCP server, runtime environment, and available data sources.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
 }

@@ -20,6 +20,7 @@
    - [Document Linking via `rel="describedby"`](#document-linking-via-reldescribedby)
    - [Open Job Context Protocol (OJCP) Context](#open-job-context-protocol-ojcp-context)
    - [WebMCP In-Browser Tool Suite (`js/webmcp.js`)](#webmcp-in-browser-tool-suite-jswebmcpjs)
+   - [Model Context Protocol (MCP) Server (`https://radustoian.com/mcp`)](#model-context-protocol-mcp-server-httpsradustoiancommcp)
    - [Agent Skills Discovery Index (`/.well-known/agent-skills/index.json`)](#agent-skills-discovery-index-well-knownagent-skillsindexjson)
 5. [Structured Data & Schema.org Specification](#5-structured-data--schemaorg-specification)
    - [JSON-LD Entity Graph Architecture](#json-ld-entity-graph-architecture)
@@ -101,7 +102,7 @@ radustoian-em/
 ├── llms.txt                             # Standardized summary file for LLMs & AI crawlers
 ├── llms-full.txt                        # Exhaustive context and biographical markdown for deep ingestion
 ├── metadata.json                        # Standalone JSON-LD Schema.org profile document
-├── README.md                            # GitHub repository overview
+├── README.md                            # GitHub profile page for @radustoian-em (DO NOT UPDATE)
 ├── script.js                            # Legacy root copy for backward compatibility (delete after 1 Dec 2026)
 ├── site.webmanifest                     # Progressive Web App (PWA) manifest
 ├── sitemap.xml                          # XML Sitemap with priority and change frequencies
@@ -238,6 +239,23 @@ The site implements the emerging [WebMCP specification](https://webmachinelearni
 > [!NOTE]
 > **CSS Styling & WebMCP Synchronization Invariant:** Following any CSS styling or layout modifications (e.g. changes to class names, DOM selectors, card structures, or carousel transition timings), verify whether the WebMCP tools in `js/webmcp.js` require corresponding updates. WebMCP tools rely directly on DOM element queries, class selectors (such as `.talk-item`, `.cert-item`, `.skill-tag`), and carousel transition events (`transitionend` on `#expTrack` and `#testTrack`).
 
+### Model Context Protocol (MCP) Server (`https://radustoian.com/mcp`)
+The site deploys a live **Model Context Protocol (MCP)** server on Cloudflare Workers, providing remote autonomous AI agents with structured JSON-RPC 2.0 access over Streamable HTTP (`POST https://radustoian.com/mcp`). Unlike client-side WebMCP, this server operates independently of web browsers and can be invoked directly by agentic frameworks, multi-agent systems, and IDE tools.
+
+#### Key Architectural Characteristics
+- **Transport:** Streamable HTTP (JSON responses, protocol version `2025-06-18`).
+- **Dynamic Information Retrieval (IR):** Employs BM25 term weighting, stopword filtering, lightweight stemming, and synonym expansion to score every block of site content dynamically against incoming questions without hardcoded Q&A trees.
+- **Hierarchical Knowledge Ingestion:** Evaluates content across `llms-full.txt` (primary), `index.md.txt` (secondary), `metadata.json` (Schema.org JSON-LD), and `index.html` (DOM fallback).
+- **Fail-Safe Default Mechanism:** If a question cannot be answered with high confidence from a specific block, the server automatically provides the **entire content of `llms-full.txt`** as a fail-safe default answer along with 29 verified external investigation links so the agent always receives full context.
+
+#### Available MCP Tools
+| Tool Name | Parameters | Description |
+| :--- | :--- | :--- |
+| `ask-question` | `question` (string, required) | Dynamically retrieves the most relevant block and section for any question about Radu Stoian, with fail-safe fallback to complete `llms-full.txt`. |
+| `get-section` | `section` (string, required) | Returns the raw text, parsed block array, and links of any specific section in `llms-full.txt`. |
+| `get-investigation-links` | None (`{}`) | Returns 29 external public profile, publication, and certification links for off-site agent exploration. |
+| `server-info` | None (`{}`) | Returns server version, runtime environment, protocol version, and knowledge source URLs. |
+
 ### Agent Skills Discovery Index (`/.well-known/agent-skills/index.json`)
 The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/cloudflare/agent-skills-discovery-rfc) sponsored by Cloudflare, Anthropic, and AgentSkills.io. It publishes a machine-readable discovery manifest at `/.well-known/agent-skills/index.json` pointing to single-file skill documents (`type: "skill-md"`), each accompanied by cryptographic SHA-256 integrity digests:
 
@@ -245,6 +263,13 @@ The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/c
 {
   "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
   "skills": [
+    {
+      "name": "mcp-server-tools",
+      "type": "skill-md",
+      "description": "Instructions for autonomous AI agents to connect to the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering, section retrieval, and fail-safe retrieval.",
+      "url": "/.well-known/agent-skills/mcp-server-tools/SKILL.md",
+      "digest": "sha256:37104b6300097a8ca2b2123afd65d4851a4f70723b2cf6971c560b82e09ac085"
+    },
     {
       "name": "radu-stoian-profile",
       "type": "skill-md",
@@ -822,4 +847,4 @@ git push origin agy-feature
 3. **Updating Schema Credentials / Roles**:
    - Modify the inlined `<script type="application/ld+json">` in `index.html`.
    - Synchronize identical changes into `metadata.json`.
-   - Update biographical text in `llms.txt`, `llms-full.txt`, and `README.md`.
+   - Update biographical text in `llms.txt` and `llms-full.txt` (*Invariant: Do NOT update `README.md`, as it functions as the personal GitHub profile page for `@radustoian-em` and is maintained independently*).

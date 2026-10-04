@@ -20,6 +20,25 @@
           "type": "text/html"
         }
       ]
+    },
+    {
+      "anchor": "https://radustoian.com/mcp",
+      "service-desc": [
+        {
+          "href": "https://radustoian.com/openapi.json",
+          "type": "application/openapi+json"
+        },
+        {
+          "href": "https://radustoian.com/.well-known/mcp/server-card.json",
+          "type": "application/mcp-server-card+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://radustoian.com/docs/SITE_KNOWLEDGE_BASE.md",
+          "type": "text/markdown"
+        }
+      ]
     }
   ]
 }
