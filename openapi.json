@@ -101,6 +101,11 @@
           "200": {
             "description": "Agent skills discovery index",
             "content": {
+              "application/ai-registry+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
               "application/json": {
                 "schema": {
                   "type": "object"

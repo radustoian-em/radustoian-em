@@ -14,14 +14,13 @@
         "Navigate and read case studies on Radu Stoian's website using WebMCP",
         "Inspect client testimonials for Radu Stoian",
         "Extract Radu Stoian's publications and Substack article links using WebMCP",
-        "List speaking and industry engagements using WebMCP",
-        "Extract certificates and verified LinkedIn and Google Skills profile links using WebMCP"
+        "List speaking engagements, credentials, and verified certificates using WebMCP"
       ]
     },
     {
       "identifier": "urn:air:radustoian.com:skills:agent-skills-index",
       "displayName": "Agent Skills Discovery Index",
-      "type": "application/json",
+      "type": "application/ai-registry+json",
       "url": "https://radustoian.com/.well-known/agent-skills/index.json",
       "representativeQueries": [
         "What agent skills are available on radustoian.com?",
