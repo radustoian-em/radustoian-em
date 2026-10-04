@@ -20,6 +20,7 @@
    - [Document Linking via `rel="describedby"`](#document-linking-via-reldescribedby)
    - [Open Job Context Protocol (OJCP) Context](#open-job-context-protocol-ojcp-context)
    - [WebMCP In-Browser Tool Suite (`js/webmcp.js`)](#webmcp-in-browser-tool-suite-jswebmcpjs)
+   - [Agent Skills Discovery Index (`/.well-known/agent-skills/index.json`)](#agent-skills-discovery-index-well-knownagent-skillsindexjson)
 5. [Structured Data & Schema.org Specification](#5-structured-data--schemaorg-specification)
    - [JSON-LD Entity Graph Architecture](#json-ld-entity-graph-architecture)
    - [Entity Disambiguation & SameAs Profiles](#entity-disambiguation--sameas-profiles)
@@ -76,6 +77,18 @@ The repository is structured as a flat, highly performant static web application
 ```
 radustoian-em/
 ├── .git/                                 # Git version control metadata
+├── .well-known/                          # Well-known standards and AI agent discovery manifests
+│   ├── agent-card.json                   # A2A / WebMCP agent card specification
+│   ├── agent-skills/                     # Agent Skills Discovery RFC v0.2.0 directory
+│   │   ├── index.json                    # Canonical skills discovery manifest ($schema + sha256 digests)
+│   │   ├── radu-stoian-profile/SKILL.md  # Profile and executive advisory skill
+│   │   ├── talent-attraction-ai/SKILL.md # Talent attraction and AI brand health audit skill
+│   │   └── webmcp-browser-tools/SKILL.md # In-browser WebMCP tool execution skill
+│   ├── ai-catalog.json                   # Machine-readable ARD v0.91 catalog
+│   ├── api-catalog                       # RFC 9264 linkset catalog
+│   ├── ard.json                          # Agent Resource Discovery v0.91 manifest
+│   └── mcp/
+│       └── server-card.json              # MCP server card specification for WebMCP
 ├── _headers                             # Cloudflare Pages HTTP security and caching directives
 ├── docs/
 │   └── SITE_KNOWLEDGE_BASE.md           # This technical architecture knowledge base
@@ -224,6 +237,41 @@ The site implements the emerging [WebMCP specification](https://webmachinelearni
 
 > [!NOTE]
 > **CSS Styling & WebMCP Synchronization Invariant:** Following any CSS styling or layout modifications (e.g. changes to class names, DOM selectors, card structures, or carousel transition timings), verify whether the WebMCP tools in `js/webmcp.js` require corresponding updates. WebMCP tools rely directly on DOM element queries, class selectors (such as `.talk-item`, `.cert-item`, `.skill-tag`), and carousel transition events (`transitionend` on `#expTrack` and `#testTrack`).
+
+### Agent Skills Discovery Index (`/.well-known/agent-skills/index.json`)
+The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/cloudflare/agent-skills-discovery-rfc) sponsored by Cloudflare, Anthropic, and AgentSkills.io. It publishes a machine-readable discovery manifest at `/.well-known/agent-skills/index.json` pointing to single-file skill documents (`type: "skill-md"`), each accompanied by cryptographic SHA-256 integrity digests:
+
+```json
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "radu-stoian-profile",
+      "type": "skill-md",
+      "description": "Retrieve and evaluate Radu Stoian's professional background, case studies, publications, and executive advisory in Agentic AI and recruitment marketing.",
+      "url": "/.well-known/agent-skills/radu-stoian-profile/SKILL.md",
+      "digest": "sha256:e92a251aaca572ed06ba6c38171027f34aad75f19688a0e0b621215e1f01bb26"
+    },
+    {
+      "name": "talent-attraction-ai",
+      "type": "skill-md",
+      "description": "Guidelines and methodology for Organic First talent attraction, AI Brand Health Audits, and employer brand optimization in LLMs.",
+      "url": "/.well-known/agent-skills/talent-attraction-ai/SKILL.md",
+      "digest": "sha256:b5397d0a7011a82e2a7d479e8d9ae794db60efe02d05044ef6888f70ad7235b5"
+    },
+    {
+      "name": "webmcp-browser-tools",
+      "type": "skill-md",
+      "description": "Instructions for in-browser AI agents to discover, invoke, and navigate radustoian.com using client-side WebMCP tools.",
+      "url": "/.well-known/agent-skills/webmcp-browser-tools/SKILL.md",
+      "digest": "sha256:61b115f0f659e4004b11dc825ceabde96e0571419126292c29c602dc60fe0b8b"
+    }
+  ]
+}
+```
+
+- **Progressive Loading**: Enables AI agents to read skill descriptions with minimal token overhead (~100 tokens), fetching the full `SKILL.md` instructions only upon activation.
+- **Scanner Verification**: Guarantees a `pass` status on `isitagentready.com`'s `checks.discovery.agentSkills.status`.
 
 ---
 
