@@ -1,0 +1,97 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Radu Stoian Profile & Agent Endpoints API",
+    "description": "Public content negotiation and agent resource endpoints for radustoian.com",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Radu Stoian",
+      "url": "https://radustoian.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://radustoian.com",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Homepage",
+        "description": "Returns HTML or Markdown profile depending on Accept header",
+        "responses": {
+          "200": {
+            "description": "Successful profile response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llms.txt": {
+      "get": {
+        "summary": "LLM Digest",
+        "description": "Curated markdown digest for AI models",
+        "responses": {
+          "200": {
+            "description": "LLM digest file",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metadata.json": {
+      "get": {
+        "summary": "Schema.org Profile Graph",
+        "description": "Linked Data JSON-LD graph of profile credentials and publications",
+        "responses": {
+          "200": {
+            "description": "JSON-LD graph",
+            "content": {
+              "application/ld+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/ard.json": {
+      "get": {
+        "summary": "Agentic Resource Discovery Manifest",
+        "description": "ARD v0.91 discovery manifest for AI agents",
+        "responses": {
+          "200": {
+            "description": "ARD manifest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
