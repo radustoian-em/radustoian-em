@@ -1,3 +1,4 @@
+<!-- NOTE: DO NOT UPDATE THIS FILE — It is used as the GitHub profile README for radustoian-em and is managed independently. -->
 # [Radu Stoian](https://radustoian.com/)
 
 [Technical Director](https://www.linkedin.com/in/radustoian/) at [Enhance Media](https://enhancemedia.co.uk/ai).
