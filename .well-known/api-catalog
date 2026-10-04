@@ -1,0 +1,25 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://radustoian.com/",
+      "service-desc": [
+        {
+          "href": "https://radustoian.com/openapi.json",
+          "type": "application/openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://radustoian.com/",
+          "type": "text/html"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://radustoian.com/",
+          "type": "text/html"
+        }
+      ]
+    }
+  ]
+}
