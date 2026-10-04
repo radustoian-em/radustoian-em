@@ -1,0 +1,19 @@
+{
+  "name": "Radu Stoian Profile Agent",
+  "description": "AI agent card and knowledge profile for Radu Stoian, Technical Director at Enhance Media.",
+  "version": "1.0.0",
+  "url": "https://radustoian.com",
+  "provider": {
+    "organization": "Enhance Media",
+    "url": "https://www.enhancemedia.co.uk/"
+  },
+  "capabilities": {
+    "protocols": ["a2a", "webmcp"],
+    "metadata": "https://radustoian.com/metadata.json",
+    "skills": [
+      "https://radustoian.com/llms.txt",
+      "https://radustoian.com/llms-full.txt",
+      "https://radustoian.com/index.md.txt"
+    ]
+  }
+}

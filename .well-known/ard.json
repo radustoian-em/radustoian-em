@@ -7,8 +7,8 @@
     {
       "identifier": "urn:air:radustoian.com:tools:webmcp",
       "displayName": "WebMCP Browser Agent Tools",
-      "type": "application/vnd.webmcp+javascript",
-      "url": "https://radustoian.com/js/webmcp.js",
+      "type": "application/mcp-server-card+json",
+      "url": "https://radustoian.com/.well-known/mcp/server-card.json",
       "representativeQueries": [
         "What interactive tools are available on radustoian.com?",
         "Navigate and read case studies on Radu Stoian's website using WebMCP",
@@ -16,9 +16,19 @@
       ]
     },
     {
+      "identifier": "urn:air:radustoian.com:agent:profile",
+      "displayName": "Radu Stoian Profile Agent Card",
+      "type": "application/agent-card+json",
+      "url": "https://radustoian.com/.well-known/agent-card.json",
+      "representativeQueries": [
+        "Who is Radu Stoian and what are his credentials?",
+        "Connect to Radu Stoian's profile agent"
+      ]
+    },
+    {
       "identifier": "urn:air:radustoian.com:context:llms-txt",
       "displayName": "LLM Digest (llms.txt)",
-      "type": "text/markdown",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
       "url": "https://radustoian.com/llms.txt",
       "representativeQueries": [
         "Who is Radu Stoian and what is his role at Enhance Media?",
@@ -29,7 +39,7 @@
     {
       "identifier": "urn:air:radustoian.com:context:llms-full",
       "displayName": "Full Profile Context (llms-full.txt)",
-      "type": "text/markdown",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
       "url": "https://radustoian.com/llms-full.txt",
       "representativeQueries": [
         "Detailed background and case studies for Radu Stoian",
@@ -40,21 +50,11 @@
     {
       "identifier": "urn:air:radustoian.com:context:markdown-homepage",
       "displayName": "Homepage Markdown Feed",
-      "type": "text/markdown",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
       "url": "https://radustoian.com/index.md.txt",
       "representativeQueries": [
         "Fetch markdown representation of radustoian.com homepage",
         "Read Radu Stoian's profile in markdown"
-      ]
-    },
-    {
-      "identifier": "urn:air:radustoian.com:data:metadata-json",
-      "displayName": "Schema.org Profile Graph",
-      "type": "application/ld+json",
-      "url": "https://radustoian.com/metadata.json",
-      "representativeQueries": [
-        "Schema.org structured data for Radu Stoian",
-        "Credentials and recognized certifications for Radu Stoian"
       ]
     }
   ]
