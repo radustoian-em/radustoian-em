@@ -20,66 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { once: true });
   });
 
-  // 2. Typewriter AI effect (Agentic Browsing & ARIA 1.3 compliant, no prohibited aria-label on <p>)
-  const roleEl = document.querySelector('.hero .role');
-  const isCrawler = /Googlebot|Google-InspectionTool|GoogleOther|Google-Extended|Storebot-Google|AdsBot-Google|Mediapartners-Google|bingbot|Baiduspider|YandexBot|DuckDuckBot|Applebot|GPTBot|ClaudeBot|PerplexityBot/i.test(navigator.userAgent);
-  
-  if (roleEl && !isCrawler && !prefersReducedMotion) {
-    const originalHTML = roleEl.innerHTML.trim().replace(/\s+/g, ' ');
-    
-    // Run after initial page load & paint are completed
-    setTimeout(() => {
-      // Accessible text node for AI agents and assistive tech (avoids prohibited aria-label on <p>)
-      const srSpan = document.createElement('span');
-      srSpan.className = 'sr-only';
-      srSpan.innerHTML = originalHTML;
-
-      // Visual typing span hidden from the accessibility tree
-      const visualSpan = document.createElement('span');
-      visualSpan.setAttribute('aria-hidden', 'true');
-
-      roleEl.innerHTML = '';
-      roleEl.appendChild(srSpan);
-      roleEl.appendChild(visualSpan);
-
-      let i = 0;
-      let isTag = false;
-      let currentHTML = '';
-      
-      function typeWriter() {
-        if (i < originalHTML.length) {
-          const char = originalHTML.charAt(i);
-          currentHTML += char;
-          
-          if (char === '<') isTag = true;
-          if (char === '>') {
-            isTag = false;
-            i++;
-            typeWriter();
-            return;
-          }
-          
-          if (isTag) {
-            i++;
-            typeWriter(); 
-          } else {
-            visualSpan.innerHTML = currentHTML + '<span class="ai-cursor"></span>';
-            i++;
-            setTimeout(typeWriter, 35);
-          }
-        } else {
-          visualSpan.innerHTML = currentHTML + '<span class="ai-cursor" style="animation: none; opacity: 0.5; transition: opacity 1.5s;"></span>';
-          setTimeout(() => {
-            // Restore clean semantic HTML once typewriter completes
-            roleEl.innerHTML = originalHTML;
-          }, 1500);
-        }
-      }
-      typeWriter();
-    }, 400);
-  }
-
-  // 3. Desktop-only Cursor Glow (GPU translate3d + requestAnimationFrame, disabled on mobile/touch)
+  // 2. Desktop-only Cursor Glow (GPU translate3d + requestAnimationFrame, disabled on mobile/touch)
   const cursorGlow = document.getElementById('cursorGlow');
   if (cursorGlow) {
     if (!isFinePointer || prefersReducedMotion) {
@@ -103,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 4. Desktop-only 3D Glass Tilt & Sheen (Cached rect on mouseenter, throttled via rAF, zero reflow on load)
+  // 3. Desktop-only 3D Glass Tilt & Sheen (Cached rect on mouseenter, throttled via rAF, zero reflow on load)
   if (isFinePointer && !prefersReducedMotion) {
     const cards = document.querySelectorAll('.card-3d, .panel');
     cards.forEach(card => {
@@ -153,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Mobile Navigation Menu Toggle (with body scroll lock, backdrop & a11y Escape handler)
+  // 4. Mobile Navigation Menu Toggle (with body scroll lock, backdrop & a11y Escape handler)
   const navToggle = document.getElementById('navToggle');
   const navbar = document.getElementById('navbar');
   const navLinks = document.getElementById('navLinks');
@@ -219,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 6. High-Performance Active Section Tracking via IntersectionObserver (Zero layout thrashing, no forced reflows)
+  // 5. High-Performance Active Section Tracking via IntersectionObserver (Zero layout thrashing, no forced reflows)
   const sections = document.querySelectorAll('section[id]');
   const links = document.querySelectorAll('.nav-links a');
   const linkMap = new Map();
@@ -269,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (footer) observer.observe(footer);
   }
 
-  // 7. Flattened Responsive Slider (Pixel-accurate card steps, zero reflow on load)
+  // 6. Flattened Responsive Slider (Pixel-accurate card steps, zero reflow on load)
   function setupSlider(trackId, prevBtnId, nextBtnId) {
     const track = document.getElementById(trackId);
     const prevBtn = document.getElementById(prevBtnId);

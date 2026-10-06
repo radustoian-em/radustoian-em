@@ -235,8 +235,7 @@
   .em-arrow { width: 14px; height: 14px; opacity: 0; transform: translate(-4px, 4px); transition: all 0.25s var(--ease); color: var(--p-400); }
   .em-link:hover .em-arrow { opacity: 1; transform: translate(0, 0); }
 
-  .hero .role{ margin-top: 10px; font-size: 1.2rem; color: var(--ink-soft); font-weight: 500; min-height: 4.5em; }
-  @media (max-width: 640px){ .hero .role{ min-height: 6em; } }
+  .hero .role{ margin-top: 10px; font-size: 1.2rem; color: var(--ink-soft); font-weight: 500; }
   .hero .role a{ color: var(--p-400); text-decoration: none; border-bottom: 1px solid var(--p-400); }
   .hero .role a:hover{ color: var(--p-300); border-color: var(--p-300); }
   .hero-links{ margin-top: 22px; display:flex; gap: 10px; flex-wrap:wrap; }
@@ -414,6 +413,3 @@
   a{ -webkit-tap-highlight-color: transparent; }
   a:focus-visible, button:focus-visible{ outline: 2px solid var(--p-400); outline-offset: 2px; border-radius: 4px; }
 
-  /* AI Typewriter Cursor */
-  @keyframes ai-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-  .ai-cursor { display: inline-block; width: 6px; height: 1em; background-color: var(--p-400); margin-left: 4px; vertical-align: text-bottom; animation: ai-blink 1s step-end infinite; }
