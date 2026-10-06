@@ -38,12 +38,11 @@
 7. [JavaScript Animation & Interaction Engine (`script.js`)](#7-javascript-animation--interaction-engine-scriptjs)
    - [Performance & Accessibility Guardrails](#performance--accessibility-guardrails)
    - [Module 1: Global Image Fallback Handler](#module-1-global-image-fallback-handler)
-   - [Module 2: Agentic-Safe Typewriter Engine](#module-2-agentic-safe-typewriter-engine)
-   - [Module 3: Hardware-Accelerated Cursor Glow](#module-3-hardware-accelerated-cursor-glow)
-   - [Module 4: 3D Interactive Card Tilt & Dynamic Sheen Tracker](#module-4-3d-interactive-card-tilt--dynamic-sheen-tracker)
-   - [Module 5: Mobile Navigation Engine & Scroll Lock](#module-5-mobile-navigation-engine--scroll-lock)
-   - [Module 6: High-Performance IntersectionObserver Active Nav Tracker](#module-6-high-performance-intersectionobserver-active-nav-tracker)
-   - [Module 7: Responsive Multi-View Touch & Pointer Carousel Engine](#module-7-responsive-multi-view-touch--pointer-carousel-engine)
+   - [Module 2: Hardware-Accelerated Cursor Glow](#module-2-hardware-accelerated-cursor-glow)
+   - [Module 3: 3D Interactive Card Tilt & Dynamic Sheen Tracker](#module-3-3d-interactive-card-tilt--dynamic-sheen-tracker)
+   - [Module 4: Mobile Navigation Engine & Scroll Lock](#module-4-mobile-navigation-engine--scroll-lock)
+   - [Module 5: High-Performance IntersectionObserver Active Nav Tracker](#module-5-high-performance-intersectionobserver-active-nav-tracker)
+   - [Module 6: Responsive Multi-View Touch & Pointer Carousel Engine](#module-6-responsive-multi-view-touch--pointer-carousel-engine)
 8. [SVG Sprite System & Asset Inventory](#8-svg-sprite-system--asset-inventory)
    - [SVG Symbol Library (`icons.svg`)](#svg-symbol-library-iconssvg)
    - [Image Assets & Optimization Matrix](#image-assets--optimization-matrix)
@@ -501,7 +500,7 @@ graph TD
 
 ## 7. JavaScript Animation & Interaction Engine (`script.js`)
 
-[`js/script.js`](file:///home/radu/antigravity/radu/js/script.js) is written in pure vanilla JavaScript without external dependencies. It is structured into seven distinct modules.
+[`js/script.js`](file:///home/radu/antigravity/radu/js/script.js) is written in pure vanilla JavaScript without external dependencies. It is structured into six distinct modules. (The hero role paragraph is rendered as clean static semantic HTML, eliminating runtime DOM replacements, hidden `.sr-only` spans, and bot-sniffing User-Agent checks).
 
 > [!NOTE]
 > **Backward Compatibility Duplication**: A copy of `script.js` is temporarily preserved at the root directory (`/script.js`) alongside `/js/script.js` to ensure cached browsers, external proxies, or lingering clients do not encounter 404 errors during the transition period. **The root `/script.js` is scheduled for deletion after 1st December 2026.**
@@ -512,7 +511,7 @@ Execution begins with device capability and preference detection:
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 ```
-If the user has enabled OS-level reduced motion (`prefers-reduced-motion`), all tilt effects, typewriter animations, and ambient cursor glows are gracefully disabled. If the device does not have a fine pointer (e.g., touchscreens), hover-driven 3D tilt and mouse follower effects are skipped.
+If the user has enabled OS-level reduced motion (`prefers-reduced-motion`), all tilt effects and ambient cursor glows are gracefully disabled. If the device does not have a fine pointer (e.g., touchscreens), hover-driven 3D tilt and mouse follower effects are skipped.
 
 ---
 
@@ -539,43 +538,7 @@ document.querySelectorAll('img').forEach(img => {
 
 ---
 
-### Module 2: Agentic-Safe Typewriter Engine
-Animates the hero role text:
-> *"Transforming Talent Attraction by helping employers move from being found by search engines to being recommended by AI."*
-
-#### Accessibility & Crawler Integrity Architecture:
-```javascript
-const roleEl = document.querySelector('.hero .role');
-const isCrawler = /Googlebot|Google-InspectionTool|GoogleOther|Google-Extended|Storebot-Google|AdsBot-Google|Mediapartners-Google|bingbot|Baiduspider|YandexBot|DuckDuckBot|Applebot|GPTBot|ClaudeBot|PerplexityBot/i.test(navigator.userAgent);
-
-if (roleEl && !isCrawler && !prefersReducedMotion) {
-  const originalHTML = roleEl.innerHTML.trim().replace(/\s+/g, ' ');
-  setTimeout(() => {
-    // 1. Fully accessible text node for screen readers & AI crawlers
-    const srSpan = document.createElement('span');
-    srSpan.className = 'sr-only';
-    srSpan.innerHTML = originalHTML;
-
-    // 2. Purely visual typing node hidden from accessibility tree
-    const visualSpan = document.createElement('span');
-    visualSpan.setAttribute('aria-hidden', 'true');
-
-    roleEl.innerHTML = '';
-    roleEl.appendChild(srSpan);
-    roleEl.appendChild(visualSpan);
-    // ... Typewriter loop ...
-  }, 400);
-}
-```
-
-1. **Bot & Crawler Bypass**: Search engine bots and LLM scrapers (Googlebot, GPTBot, ClaudeBot, PerplexityBot, etc.) receive the complete static HTML immediately with zero delay.
-2. **ARIA 1.3 Permitted Attributes Compliance**: In HTML/ARIA specifications, a `<p>` tag cannot legally hold an `aria-label` without a valid role. The engine circumvents this validation issue by splitting the DOM into an invisible `.sr-only` span containing the full text and an `aria-hidden="true"` span that executes the typing character by character.
-3. **HTML Tag Parser**: Detects `<` and `>` tokens to jump past tags like `<em>found</em>` without printing broken HTML syntax.
-4. **Clean Restoration**: Once the typewriter completes its cycle, it restores the clean semantic HTML to prevent lingering wrapper markup.
-
----
-
-### Module 3: Hardware-Accelerated Cursor Glow
+### Module 2: Hardware-Accelerated Cursor Glow
 Creates an ambient radial spotlight that follows the cursor on desktop screens:
 - **Element**: `#cursorGlow` (`width: 600px`, `height: 600px`).
 - **Throttling**: Batched via `requestAnimationFrame` and mousemove passive listeners.
@@ -584,7 +547,7 @@ Creates an ambient radial spotlight that follows the cursor on desktop screens:
 
 ---
 
-### Module 4: 3D Interactive Card Tilt & Dynamic Sheen Tracker
+### Module 3: 3D Interactive Card Tilt & Dynamic Sheen Tracker
 Applies physics-based 3D rotation and dynamic specular reflections to `.card-3d` and `.panel` elements:
 
 ```javascript
@@ -624,7 +587,7 @@ card.addEventListener('mousemove', (e) => {
 
 ---
 
-### Module 5: Mobile Navigation Engine & Scroll Lock
+### Module 4: Mobile Navigation Engine & Scroll Lock
 Provides responsive menu handling for screens under 960px:
 - **Toggle Button**: Toggles `.mobile-open` on the navigation menu and `.menu-open` on `document.body` to prevent background scroll-through.
 - **Icon Morphing**: Dynamically switches the SVG symbol from `icons.svg#icon-menu` to `icons.svg#icon-close` and rotates the button 90 degrees.
@@ -635,7 +598,7 @@ Provides responsive menu handling for screens under 960px:
 
 ---
 
-### Module 6: High-Performance IntersectionObserver Active Nav Tracker
+### Module 5: High-Performance IntersectionObserver Active Nav Tracker
 Tracks the reader's scroll position and highlights the corresponding link in `.nav-links`:
 
 ```javascript
@@ -669,7 +632,7 @@ const observer = new IntersectionObserver((entries) => {
 
 ---
 
-### Module 7: Responsive Multi-View Touch & Pointer Carousel Engine
+### Module 6: Responsive Multi-View Touch & Pointer Carousel Engine
 Powers both the **Projects & Clients** (`#expTrack`) and **Client Testimonials** (`#testTrack`) carousels without third-party slider libraries.
 
 #### Key Mechanics:
@@ -780,7 +743,7 @@ The LCP candidate on both mobile and desktop is the hero portrait image. The fol
 1. **Explicit Aspect Ratios**: All `<img>` tags specify explicit `width` and `height` HTML attributes.
 2. **Stable Container Reservations**:
    - The hero portrait wrapper is strictly bounded at `200px` x `200px`.
-   - The animated role paragraph contains a minimum height reservation (`min-height: 4.5em` on desktop, `min-height: 6em` on mobile) preventing surrounding panels from shifting as the typewriter cycles.
+   - The hero role paragraph is rendered statically with natural responsive typography, preventing layout reflows and eliminating DOM shifts on initial load.
    - The carousel viewports set fixed card dimensions (`min-height: 440px`) ensuring track height remains constant across slide transitions.
 
 ### Accessibility (a11y) & WCAG Compliance
