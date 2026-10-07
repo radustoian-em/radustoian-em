@@ -5,16 +5,10 @@
       "service-desc": [
         {
           "href": "https://radustoian.com/openapi.json",
-          "type": "application/openapi+json"
+          "type": "application/vnd.oai.openapi+json"
         }
       ],
       "service-doc": [
-        {
-          "href": "https://radustoian.com/",
-          "type": "text/html"
-        }
-      ],
-      "status": [
         {
           "href": "https://radustoian.com/",
           "type": "text/html"
@@ -26,17 +20,11 @@
       "service-desc": [
         {
           "href": "https://radustoian.com/openapi.json",
-          "type": "application/openapi+json"
+          "type": "application/vnd.oai.openapi+json"
         },
         {
           "href": "https://radustoian.com/.well-known/mcp/server-card.json",
           "type": "application/mcp-server-card+json"
-        }
-      ],
-      "service-doc": [
-        {
-          "href": "https://radustoian.com/docs/SITE_KNOWLEDGE_BASE.md",
-          "type": "text/markdown"
         }
       ]
     }
