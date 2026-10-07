@@ -209,13 +209,16 @@ The site supports HTTP content negotiation for autonomous agents via a dedicated
 - **Direct Route:** Accessible directly via `/index.md.txt` or `/.md.txt`.
 
 ### Document Linking via `rel="describedby"` and `rel="alternate"`
-In [`index.html`](file:///home/radu/antigravity/radu/index.html), explicit machine-readable links inform AI agents and scrapers where to fetch semantic context:
+In [`index.html`](file:///home/radu/antigravity/radu/index.html), explicit machine-readable links inform AI agents and scrapers where to fetch semantic context without duplicate or conflicting declarations:
 
 ```html
-<link rel="alternate" type="text/markdown" href="https://radustoian.com/index.md.txt">
-<link rel="describedby" type="text/markdown" href="https://radustoian.com/llms.txt">
+<link rel="alternate" type="text/markdown" href="https://radustoian.com/index.md.txt" title="Markdown Version">
 <link rel="describedby" type="text/markdown" href="https://radustoian.com/llms-full.txt">
-<link rel="describedby" href="https://radustoian.com/metadata.json" type="application/json">
+<link rel="describedby" type="application/json" href="https://radustoian.com/metadata.json">
+<link rel="ard" type="application/json" href="https://radustoian.com/.well-known/ard.json">
+<link rel="ai-catalog" type="application/json" href="https://radustoian.com/.well-known/ai-catalog.json">
+<link rel="api-catalog" type="application/linkset+json" href="https://radustoian.com/.well-known/api-catalog">
+<link rel="mcp-server-card" type="application/json" href="https://radustoian.com/.well-known/mcp/server-card.json">
 ```
 
 ### Open Job Context Protocol (OJCP) Context
