@@ -1,21 +1,184 @@
 {
   "name": "Radu Stoian Profile Agent",
-  "description": "AI agent card and knowledge profile for Radu Stoian, Technical Director at Enhance Media. Offers dynamic question answering via live Model Context Protocol (MCP) server.",
-  "version": "2.0.0",
+  "description": "AI agent card and knowledge profile for Radu Stoian, Technical Director at Enhance Media. Offers dynamic question answering via live Model Context Protocol (MCP) server, talent attraction AI methodology, and professional advisory.",
+  "version": "1.0.0",
   "url": "https://radustoian.com",
+  "documentationUrl": "https://radustoian.com/llms-full.txt",
+  "iconUrl": "https://radustoian.com/android-chrome-192x192.png",
   "provider": {
     "organization": "Enhance Media",
     "url": "https://www.enhancemedia.co.uk/"
   },
   "capabilities": {
-    "protocols": ["a2a", "mcp", "webmcp"],
-    "mcpServer": "https://radustoian.com/mcp",
-    "metadata": "https://radustoian.com/metadata.json",
-    "skills": [
-      "https://radustoian.com/llms.txt",
-      "https://radustoian.com/llms-full.txt",
-      "https://radustoian.com/index.md.txt",
-      "https://radustoian.com/.well-known/agent-skills/index.json"
-    ]
-  }
+    "streaming": true,
+    "pushNotifications": false,
+    "extendedAgentCard": false
+  },
+  "defaultInputModes": [
+    "text/plain",
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "text/plain",
+    "application/json"
+  ],
+  "supportedInterfaces": [
+    {
+      "url": "https://radustoian.com/mcp",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0",
+      "transportProtocol": "JSONRPC"
+    },
+    {
+      "url": "https://radustoian.com/mcp",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0",
+      "transportProtocol": "HTTP+JSON"
+    }
+  ],
+  "skills": [
+    {
+      "id": "ask-question",
+      "name": "Ask Question",
+      "description": "Answers questions about Radu Stoian by dynamically retrieving relevant profile context, case studies, and career history with fail-safe retrieval.",
+      "tags": [
+        "qa",
+        "profile",
+        "mcp",
+        "knowledge-retrieval"
+      ],
+      "examples": [
+        "What is Radu Stoian's background?",
+        "What is Radu Stoian's role at Enhance Media?",
+        "What are Radu Stoian's areas of expertise in AI and recruitment marketing?"
+      ],
+      "inputModes": [
+        "text/plain",
+        "application/json"
+      ],
+      "outputModes": [
+        "text/plain",
+        "application/json"
+      ]
+    },
+    {
+      "id": "get-section",
+      "name": "Get Profile Section",
+      "description": "Retrieves specific structured sections from Radu Stoian's profile context, including Skills and Certifications, Projects and Clients, Client Testimonials, and Publications.",
+      "tags": [
+        "sections",
+        "profile",
+        "case-studies",
+        "testimonials",
+        "credentials"
+      ],
+      "examples": [
+        "Get the Skills and Certifications section",
+        "Retrieve the Projects and Clients section",
+        "Show Client Testimonials"
+      ],
+      "inputModes": [
+        "text/plain",
+        "application/json"
+      ],
+      "outputModes": [
+        "text/plain",
+        "application/json"
+      ]
+    },
+    {
+      "id": "talent-attraction-ai",
+      "name": "Talent Attraction & AI Advisory",
+      "description": "Provides methodology and strategic guidance on Organic First talent attraction, AI Brand Health Audits, and employer brand optimization across AI answer engines and LLMs.",
+      "tags": [
+        "talent-attraction",
+        "employer-branding",
+        "ai-audit",
+        "recruitment-marketing",
+        "organic-first"
+      ],
+      "examples": [
+        "Explain the Organic First approach to talent attraction",
+        "How to perform an AI Brand Health Audit for employer branding?",
+        "How do LLMs perceive employer brands?"
+      ],
+      "inputModes": [
+        "text/plain",
+        "application/json"
+      ],
+      "outputModes": [
+        "text/plain",
+        "application/json"
+      ]
+    },
+    {
+      "id": "get-investigation-links",
+      "name": "Get Investigation Links",
+      "description": "Provides authoritative external links and public verification profiles for AI agents to evaluate Radu Stoian across LinkedIn, GitHub, Substack, Credly, Google Skills, and SpeakerDeck.",
+      "tags": [
+        "verification",
+        "external-links",
+        "credentials",
+        "investigation"
+      ],
+      "examples": [
+        "Provide verified links to inspect Radu Stoian's credentials",
+        "Show public profiles for Radu Stoian"
+      ],
+      "inputModes": [
+        "text/plain",
+        "application/json"
+      ],
+      "outputModes": [
+        "text/plain",
+        "application/json"
+      ]
+    },
+    {
+      "id": "radu-stoian-profile",
+      "name": "Radu Stoian Professional Profile",
+      "description": "Evaluates Radu Stoian's professional background, case studies, publications, and executive advisory in Agentic AI and recruitment marketing.",
+      "tags": [
+        "profile",
+        "bio",
+        "case-studies",
+        "credentials"
+      ],
+      "examples": [
+        "Who is Radu Stoian?",
+        "What are Radu's key achievements and case studies?"
+      ],
+      "inputModes": [
+        "text/plain",
+        "application/json"
+      ],
+      "outputModes": [
+        "text/plain",
+        "application/json"
+      ]
+    },
+    {
+      "id": "webmcp-browser-tools",
+      "name": "WebMCP In-Browser Tools",
+      "description": "Provides client-side WebMCP agent tools for in-browser agents to discover, interact with, and navigate case studies and profile sections directly on radustoian.com.",
+      "tags": [
+        "webmcp",
+        "browser-agent",
+        "client-side-tools",
+        "navigation"
+      ],
+      "examples": [
+        "Discover in-browser WebMCP tools",
+        "Navigate case studies with WebMCP"
+      ],
+      "inputModes": [
+        "text/plain",
+        "application/json"
+      ],
+      "outputModes": [
+        "text/plain",
+        "application/json"
+      ]
+    }
+  ]
 }
