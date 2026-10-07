@@ -9,12 +9,10 @@
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
   Vary: Accept
-  Link: </index.md.txt>; rel="alternate"; type="text/markdown"
 
 /
   Cache-Control: public, max-age=0, must-revalidate
   Vary: Accept
-  Link: </index.md.txt>; rel="alternate"; type="text/markdown"
 
 # Immutable static media (1 year cache)
 /*.jpg
