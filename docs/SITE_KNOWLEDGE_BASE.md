@@ -78,7 +78,7 @@ The repository is structured as a flat, highly performant static web application
 radustoian-em/
 ├── .git/                                 # Git version control metadata
 ├── .well-known/                          # Well-known standards and AI agent discovery manifests
-│   ├── agent-card.json                   # A2A / WebMCP agent card specification
+│   ├── agent-card.json                   # A2A Protocol Agent Card manifest (agent-to-agent discovery)
 │   ├── agent-skills/                     # Agent Skills Discovery RFC v0.2.0 directory
 │   │   ├── index.json                    # Canonical skills discovery manifest ($schema + sha256 digests)
 │   │   ├── radu-stoian-profile/SKILL.md  # Profile and executive advisory skill
