@@ -101,6 +101,8 @@ radustoian-em/
 ├── auth.md                               # Auth.md specification for agent authentication discovery
 ├── docs/
 │   └── SITE_KNOWLEDGE_BASE.md           # This technical architecture knowledge base
+├── functions/
+│   └── _middleware.js                   # Cloudflare Pages edge middleware (content negotiation, MCP discovery)
 ├── icons.svg                            # 24-symbol external SVG sprite sheet
 ├── index.html                           # Main document with semantic markup & JSON-LD
 ├── index.md.txt                         # High-fidelity Markdown representation of homepage (.md.txt)
