@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>radustoian.com Agentic AI Discovery & Execution Architecture</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.02); }
+    }
+    .flow-line {
+      background: linear-gradient(180deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%);
+    }
+    .badge-glow {
+      box-shadow: 0 0 15px -3px rgba(99, 102, 241, 0.4);
+    }
+    .resource-link {
+      transition: all 0.2s ease-in-out;
+    }
+    .resource-link:hover {
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased p-4 md:p-8 font-sans selection:bg-purple-500 selection:text-white">
+
+  <!-- Main Container -->
+  <div class="max-w-6xl mx-auto space-y-10">
+
+    <!-- Header Section -->
+    <header class="text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase bg-purple-900/60 text-purple-300 border border-purple-700/50">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        Interactive Agent Discovery Map • Click any file to view
+      </div>
+      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
+        Agentic Architecture of radustoian.com
+      </h1>
+      <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+        Visualizing how an autonomous AI agent traverses Internet layers from DNS resolution to live tool execution. 
+        <strong class="text-cyan-300">Every resource below is directly clickable</strong> to inspect the live file on <a href="https://radustoian.com" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">radustoian.com</a>.
+      </p>
+    </header>
+
+    <!-- Trigger Stage: User Inquiry -->
+    <section class="relative">
+      <div class="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-purple-950/80 border border-indigo-500/30 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0 text-2xl">
+              💬
+            </div>
+            <div>
+              <span class="text-xs uppercase font-bold tracking-wider text-indigo-400">Step 0 • Incoming User Prompt</span>
+              <h2 class="text-xl md:text-2xl font-bold text-white mt-0.5">
+                "Tell me about Radu Stoian (radustoian.com)"
+              </h2>
+              <p class="text-xs text-slate-400 mt-1">
+                The agent initiates reconnaissance on target domain 
+                <a href="https://radustoian.com" target="_blank" rel="noopener noreferrer" class="text-indigo-300 hover:text-white bg-slate-900/80 px-2 py-0.5 rounded border border-slate-700 inline-flex items-center gap-1 font-mono resource-link">
+                  radustoian.com ↗
+                </a>.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 px-4 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-slate-300 shrink-0">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            Agent Mode: Active Discovery
+          </div>
+        </div>
+      </div>
+      <!-- Connecting Flow Pipe -->
+      <div class="w-0.5 h-8 mx-auto bg-gradient-to-b from-indigo-500 to-purple-500"></div>
+    </section>
+
+    <!-- LAYER 3: The Discovery & Signalling Layer -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="px-3 py-1 bg-cyan-950 border border-cyan-800 text-cyan-300 text-xs font-bold uppercase rounded-lg">
+          Layer 3
+        </div>
+        <h2 class="text-xl md:text-2xl font-bold text-white">The Discovery & Signalling Layer</h2>
+        <span class="text-xs text-slate-400 hidden sm:inline">(Network, Transport & Predictable Endpoints)</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Step 1: DNS -->
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-cyan-500/40 transition-all rounded-xl p-5 flex flex-col justify-between shadow-lg relative group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-cyan-400">01. DNS RESOLUTION</span>
+              <span class="px-2 py-0.5 text-[10px] bg-cyan-900/40 text-cyan-300 rounded border border-cyan-700/50">RFC 9460</span>
+            </div>
+            <h3 class="text-base font-semibold text-slate-100">Service Binding & Security</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Before opening an HTTP connection, the resolver queries DNS for capabilities, transport parameters, and policy records.
+            </p>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-[11px] text-slate-300 space-y-2 overflow-x-auto">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-purple-400 font-bold">HTTPS (SVCB Type 65):</span>
+                  <a href="https://dns.google/resolve?name=radustoian.com&type=HTTPS" target="_blank" rel="noopener noreferrer" class="text-[10px] text-cyan-400 hover:text-cyan-200 underline">
+                    Live DoH ↗
+                  </a>
+                </div>
+                <p class="text-slate-400 text-[10px]">alpn="h3,h2" ech="..."</p>
+                <p class="text-[10px] text-emerald-400">Signals HTTP/3 + Encrypted Client Hello</p>
+              </div>
+              <div class="pt-1 border-t border-slate-800/80">
+                <div class="flex items-center justify-between">
+                  <span class="text-amber-400 font-bold">TXT Records:</span>
+                  <a href="https://dns.google/resolve?name=radustoian.com&type=TXT" target="_blank" rel="noopener noreferrer" class="text-[10px] text-cyan-400 hover:text-cyan-200 underline">
+                    Live DoH ↗
+                  </a>
+                </div>
+                <p class="text-slate-400 text-[10px]">v=spf1 -all (Domain Defense)</p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Authoritative NS</span>
+            <span class="font-mono text-cyan-300">bella.ns.cloudflare.com</span>
+          </div>
+        </div>
+
+        <!-- Step 2: HTTP Headers -->
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-cyan-500/40 transition-all rounded-xl p-5 flex flex-col justify-between shadow-lg relative group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-cyan-400">02. HTTP TRANSPORT</span>
+              <span class="px-2 py-0.5 text-[10px] bg-cyan-900/40 text-cyan-300 rounded border border-cyan-700/50">RFC 8288 Link</span>
+            </div>
+            <h3 class="text-base font-semibold text-slate-100">Header Pointer Signals</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Initial HTTP handshake returns headers pointing to agent entry points and declaring content negotiation availability.
+            </p>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-[10px] text-slate-300 space-y-1.5 overflow-x-auto">
+              <div class="flex items-center justify-between">
+                <span class="text-cyan-400">rel="alternate":</span>
+                <a href="https://radustoian.com/index.md.txt" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline font-semibold">/index.md.txt ↗</a>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-cyan-400">rel="describedby":</span>
+                <a href="https://radustoian.com/llms-full.txt" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline font-semibold">/llms-full.txt ↗</a>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-cyan-400">rel="describedby":</span>
+                <a href="https://radustoian.com/metadata.json" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline font-semibold">/metadata.json ↗</a>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-cyan-400">rel="service":</span>
+                <a href="https://radustoian.com/mcp" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline font-semibold">/mcp ↗</a>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-cyan-400">rel="mcp-server-card":</span>
+                <a href="https://radustoian.com/.well-known/mcp/server-card.json" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline font-semibold">server-card.json ↗</a>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-cyan-400">rel="ard":</span>
+                <a href="https://radustoian.com/.well-known/ard.json" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline font-semibold">ard.json ↗</a>
+              </div>
+              <div class="pt-1 text-emerald-400 border-t border-slate-800 text-[10px]">vary: accept (Accept: text/markdown)</div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Crawling Policy</span>
+            <a href="https://radustoian.com/robots.txt" target="_blank" rel="noopener noreferrer" class="font-mono text-emerald-400 hover:underline">robots.txt ↗</a>
+          </div>
+        </div>
+
+        <!-- Step 3: Well-Known URIs -->
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-cyan-500/40 transition-all rounded-xl p-5 flex flex-col justify-between shadow-lg relative group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-cyan-400">03. WELL-KNOWN URIs</span>
+              <span class="px-2 py-0.5 text-[10px] bg-cyan-900/40 text-cyan-300 rounded border border-cyan-700/50">RFC 8615</span>
+            </div>
+            <h3 class="text-base font-semibold text-slate-100">Standardized Directories</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Standardized <code class="text-cyan-300">/.well-known/</code> paths where agents reliably inspect manifests and catalogs without scraping.
+            </p>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-[11px] text-slate-300 space-y-1.5 overflow-x-auto">
+              <div class="flex items-center justify-between">
+                <a href="https://radustoian.com/.well-known/ard.json" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline">/.well-known/ard.json ↗</a>
+                <span class="text-[9px] text-purple-400">ARD v1.0</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <a href="https://radustoian.com/.well-known/ai-catalog.json" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline">/.well-known/ai-catalog.json ↗</a>
+                <span class="text-[9px] text-purple-400">AI Catalog</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <a href="https://radustoian.com/.well-known/mcp/server-card.json" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline">/.../mcp/server-card.json ↗</a>
+                <span class="text-[9px] text-purple-400">MCP Card</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <a href="https://radustoian.com/.well-known/agent-card.json" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline">/.well-known/agent-card.json ↗</a>
+                <span class="text-[9px] text-purple-400">Agent Card</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <a href="https://radustoian.com/.well-known/agent-skills/index.json" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline">/.../agent-skills/index.json ↗</a>
+                <span class="text-[9px] text-purple-400">Skills Index</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <a href="https://radustoian.com/.well-known/api-catalog" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline">/.well-known/api-catalog ↗</a>
+                <span class="text-[9px] text-purple-400">Linkset</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Sitemap</span>
+            <a href="https://radustoian.com/sitemap.xml" target="_blank" rel="noopener noreferrer" class="font-mono text-cyan-300 hover:underline">sitemap.xml ↗</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Connecting Flow Pipe -->
+      <div class="w-0.5 h-8 mx-auto bg-gradient-to-b from-cyan-500 to-purple-500"></div>
+    </section>
+
+    <!-- LAYER 2: The Documentation Layer -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="px-3 py-1 bg-purple-950 border border-purple-800 text-purple-300 text-xs font-bold uppercase rounded-lg">
+          Layer 2
+        </div>
+        <h2 class="text-xl md:text-2xl font-bold text-white">The Documentation Layer</h2>
+        <span class="text-xs text-slate-400 hidden sm:inline">(Instruction Manuals, Schemas & Domain Skills)</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+
+        <!-- Doc 1: llms.txt -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-2 hover:border-purple-500/40 transition-all shadow-md flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="w-8 h-8 rounded-lg bg-purple-900/40 border border-purple-700/50 flex items-center justify-center text-sm">
+              📄
+            </div>
+            <h3 class="text-sm font-bold text-slate-100">llms.txt & llms-full.txt</h3>
+            <p class="text-[11px] text-slate-400 leading-normal">
+              Curated digest + 10-section exhaustive markdown file containing complete biography, verified case studies, and citations.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-800/80 space-y-1 font-mono text-[11px]">
+            <div>
+              <a href="https://radustoian.com/llms.txt" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                • llms.txt ↗
+              </a>
+            </div>
+            <div>
+              <a href="https://radustoian.com/llms-full.txt" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                • llms-full.txt ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doc 2: Catalogs -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-2 hover:border-purple-500/40 transition-all shadow-md flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="w-8 h-8 rounded-lg bg-purple-900/40 border border-purple-700/50 flex items-center justify-center text-sm">
+              🗂️
+            </div>
+            <h3 class="text-sm font-bold text-slate-100">AI-Readable Catalogs</h3>
+            <p class="text-[11px] text-slate-400 leading-normal">
+              ARD v1.0 manifest with representative natural language query embeddings, plus RFC 9264 API catalog mapping to OpenAPI specs.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-800/80 space-y-1 font-mono text-[11px]">
+            <div>
+              <a href="https://radustoian.com/.well-known/ard.json" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                • ard.json (AIR URNs) ↗
+              </a>
+            </div>
+            <div>
+              <a href="https://radustoian.com/.well-known/api-catalog" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                • api-catalog (Linkset) ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doc 3: Agent Skills -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-2 hover:border-purple-500/40 transition-all shadow-md flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="w-8 h-8 rounded-lg bg-purple-900/40 border border-purple-700/50 flex items-center justify-center text-sm">
+              🧠
+            </div>
+            <h3 class="text-sm font-bold text-slate-100">Agent Skills (4 SKILL.md)</h3>
+            <p class="text-[11px] text-slate-400 leading-normal">
+              Domain instructions: MCP server connection, Radu's career verification, Organic First talent strategy, and WebMCP tools.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-800/80 space-y-1 font-mono text-[10px]">
+            <div>
+              <a href="https://radustoian.com/.well-known/agent-skills/mcp-server-tools/SKILL.md" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block">
+                • mcp-server-tools.md ↗
+              </a>
+            </div>
+            <div>
+              <a href="https://radustoian.com/.well-known/agent-skills/radu-stoian-profile/SKILL.md" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block">
+                • radu-stoian-profile.md ↗
+              </a>
+            </div>
+            <div>
+              <a href="https://radustoian.com/.well-known/agent-skills/talent-attraction-ai/SKILL.md" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block">
+                • talent-attraction-ai.md ↗
+              </a>
+            </div>
+            <div>
+              <a href="https://radustoian.com/.well-known/agent-skills/webmcp-browser-tools/SKILL.md" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block">
+                • webmcp-browser-tools.md ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doc 4: Server Cards -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-2 hover:border-purple-500/40 transition-all shadow-md flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="w-8 h-8 rounded-lg bg-purple-900/40 border border-purple-700/50 flex items-center justify-center text-sm">
+              🪪
+            </div>
+            <h3 class="text-sm font-bold text-slate-100">MCP & Agent Cards</h3>
+            <p class="text-[11px] text-slate-400 leading-normal">
+              Standardized MCP Server Card (v2.0) declaring tools & schemas, paired with Google/Anthropic Agent Card v1.0.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-800/80 space-y-1 font-mono text-[11px]">
+            <div>
+              <a href="https://radustoian.com/.well-known/mcp/server-card.json" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                • server-card.json ↗
+              </a>
+            </div>
+            <div>
+              <a href="https://radustoian.com/.well-known/agent-card.json" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                • agent-card.json ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Connecting Flow Pipe -->
+      <div class="w-0.5 h-8 mx-auto bg-gradient-to-b from-purple-500 to-emerald-500"></div>
+    </section>
+
+    <!-- LAYER 1: The Technical Infrastructure -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="px-3 py-1 bg-emerald-950 border border-emerald-800 text-emerald-300 text-xs font-bold uppercase rounded-lg">
+          Layer 1
+        </div>
+        <h2 class="text-xl md:text-2xl font-bold text-white">The Technical Infrastructure</h2>
+        <span class="text-xs text-slate-400 hidden sm:inline">(Actionable Execution Routes & Tool Engines)</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Route A: Live MCP -->
+        <div class="bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-emerald-500/40 rounded-xl p-5 shadow-xl flex flex-col justify-between space-y-4 relative group">
+          <div class="absolute top-3 right-3 px-2 py-0.5 bg-emerald-900/60 text-emerald-300 text-[10px] font-bold rounded">
+            RECOMMENDED
+          </div>
+          <div class="space-y-2">
+            <span class="text-xs font-mono font-bold text-emerald-400">ROUTE A • REMOTE MCP</span>
+            <h3 class="text-base font-bold text-white">Streamable HTTP MCP</h3>
+            <p class="text-xs text-slate-300">
+              Direct JSON-RPC 2.0 communication with Cloudflare Workers backend.
+            </p>
+            <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
+              <div>
+                <a href="https://radustoian.com/mcp" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline font-semibold block">
+                  POST https://radustoian.com/mcp ↗
+                </a>
+              </div>
+              <div class="text-emerald-400">⚡ ask-question (BM25)</div>
+              <div class="text-emerald-400">⚡ get-section</div>
+              <div class="text-emerald-400">⚡ get-investigation-links</div>
+              <div class="text-emerald-400">⚡ server-info</div>
+            </div>
+            <p class="text-[10px] text-slate-400 italic">
+              Includes fail-safe fallback: automatically serves full text if query misses narrow block.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-800 text-[11px] text-emerald-300 font-semibold">
+            ✓ Highest token efficiency & accuracy
+          </div>
+        </div>
+
+        <!-- Route B: Content Negotiation -->
+        <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 hover:border-emerald-500/30 rounded-xl p-5 shadow-xl flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <span class="text-xs font-mono font-bold text-emerald-400">ROUTE B • NEGOTIATION</span>
+            <h3 class="text-base font-bold text-white">Direct Markdown Stream</h3>
+            <p class="text-xs text-slate-300">
+              HTTP content negotiation bypasses HTML DOM rendering completely.
+            </p>
+            <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
+              <div class="text-purple-300 font-semibold">
+                <a href="https://radustoian.com/" target="_blank" rel="noopener noreferrer" class="hover:underline">GET radustoian.com/ ↗</a>
+              </div>
+              <div class="text-cyan-400">Accept: text/markdown</div>
+              <div>
+                <a href="https://radustoian.com/index.md.txt" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline">
+                  → /index.md.txt ↗
+                </a>
+              </div>
+              <div>
+                <a href="https://radustoian.com/llms-full.txt" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline">
+                  → /llms-full.txt ↗
+                </a>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400">
+              Clean markdown feeds with zero noise, script tags, or styling artifacts.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-800 text-[11px] text-emerald-300 font-semibold">
+            ✓ Lowest network & parsing overhead
+          </div>
+        </div>
+
+        <!-- Route C: WebMCP -->
+        <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 hover:border-emerald-500/30 rounded-xl p-5 shadow-xl flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <span class="text-xs font-mono font-bold text-emerald-400">ROUTE C • BROWSER WebMCP</span>
+            <h3 class="text-base font-bold text-white">In-Browser DOM Tools</h3>
+            <p class="text-xs text-slate-300">
+              W3C WebMCP spec registered on <code class="text-cyan-300">document.modelContext</code>.
+            </p>
+            <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
+              <div>
+                <a href="https://radustoian.com/js/webmcp.js" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                  • /js/webmcp.js (8 Tools) ↗
+                </a>
+              </div>
+              <div>
+                <a href="https://radustoian.com/.webmcp/bridge.js" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                  • /.webmcp/bridge.js (Bridge) ↗
+                </a>
+              </div>
+              <div class="text-[10px] text-slate-400 pt-1">
+                listCaseStudies(), listTestimonials(), listPublications(), showCarouselSlide()
+              </div>
+            </div>
+          </div>
+          <div class="pt-3 border-t border-slate-800 text-[11px] text-emerald-300 font-semibold">
+            ✓ Ideal for browser-based agents
+          </div>
+        </div>
+
+        <!-- Route D: Knowledge Graph -->
+        <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 hover:border-emerald-500/30 rounded-xl p-5 shadow-xl flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <span class="text-xs font-mono font-bold text-emerald-400">ROUTE D • SEMANTIC GRAPH</span>
+            <h3 class="text-base font-bold text-white">Linked Data JSON-LD</h3>
+            <p class="text-xs text-slate-300">
+              Formal Schema.org graph for entity disambiguation and authority checks.
+            </p>
+            <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
+              <div>
+                <a href="https://radustoian.com/metadata.json" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                  • /metadata.json (JSON-LD) ↗
+                </a>
+              </div>
+              <div>
+                <a href="https://radustoian.com/openapi.json" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                  • /openapi.json (OpenAPI) ↗
+                </a>
+              </div>
+              <div class="text-[10px] text-slate-400 pt-1">
+                @type: Person | worksFor: Enhance Media | hasCredential: GenAI Leader
+              </div>
+            </div>
+          </div>
+          <div class="pt-3 border-t border-slate-800 text-[11px] text-emerald-300 font-semibold">
+            ✓ Definitive ground-truth entity facts
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Connecting Flow Pipe -->
+      <div class="w-0.5 h-8 mx-auto bg-gradient-to-b from-emerald-500 to-indigo-500"></div>
+    </section>
+
+    <!-- Synthesis & Final Answer -->
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-sm font-bold text-indigo-300">
+          ✓
+        </div>
+        <div>
+          <span class="text-xs font-mono uppercase font-bold text-indigo-400">Synthesis Phase</span>
+          <h3 class="text-lg font-bold text-white">Grounded Answer Formulated</h3>
+        </div>
+      </div>
+      <div class="bg-slate-950 rounded-xl p-4 border border-slate-800/80 text-xs md:text-sm text-slate-300 leading-relaxed space-y-3">
+        <p>
+          <strong class="text-white">Radu Stoian</strong> is the <a href="https://www.enhancemedia.co.uk/" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:underline">Technical Director at Enhance Media ↗</a>, specializing in the shift from search engine discovery to <strong class="text-emerald-300">Agentic AI recommendations</strong> in talent acquisition.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+          <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 space-y-1">
+            <span class="text-indigo-400 font-bold block mb-1">Key Outcomes</span>
+            <div><a href="https://www.enhancemedia.co.uk/case-study/making-cabin-crew-applications-soar-for-virgin-atlantic/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 underline">• Virgin Atlantic (+142% conv.) ↗</a></div>
+            <div><a href="https://www.enhancemedia.co.uk/case-study/expanding-the-reach-of-multiple-employer-brands-using-google-for-jobs/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 underline">• John Lewis (GFJ & 3M reach) ↗</a></div>
+            <div><a href="https://www.enhancemedia.co.uk/case-study/securing-diverse-top-tier-talent-for-the-university-of-surrey/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 underline">• Univ. of Surrey Case Study ↗</a></div>
+          </div>
+          <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 space-y-1">
+            <span class="text-indigo-400 font-bold block mb-1">Credentials & Standards</span>
+            <div><a href="https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 underline">• Google Cloud GenAI Leader ↗</a></div>
+            <div><a href="https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 underline">• Google Skills Profile ↗</a></div>
+            <div><a href="https://github.com/ojcp-org/ojcp/blob/main/docs/rfcs/0002-official-job-url.md" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 underline">• OJCP RFC Contributor ↗</a></div>
+          </div>
+          <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 space-y-1">
+            <span class="text-indigo-400 font-bold block mb-1">Thought Leadership</span>
+            <div><a href="https://speakerdeck.com/radustoian" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 underline">• BrightonSEO Masterclasses ↗</a></div>
+            <div><a href="https://radustoian.substack.com/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 underline">• Substack Newsletter ↗</a></div>
+            <div><a href="https://www.linkedin.com/in/radustoian/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 underline">• LinkedIn Official Profile ↗</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Master Index Directory of All Accessible Files -->
+    <section class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-base font-bold text-white">🔗 Master Resource Directory</span>
+          <span class="text-xs text-slate-400">(Quick index of all files hosted on radustoian.com)</span>
+        </div>
+        <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 px-2.5 py-1 rounded border border-cyan-800/60">
+          20 Accessible Endpoints
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
+        <a href="https://radustoian.com/" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/ (Homepage)</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/index.md.txt" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/index.md.txt</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/llms.txt" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/llms.txt</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/llms-full.txt" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/llms-full.txt</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/metadata.json" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/metadata.json</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/openapi.json" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/openapi.json</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/robots.txt" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/robots.txt</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/sitemap.xml" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/sitemap.xml</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/ard.json" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>ard.json</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/ai-catalog.json" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>ai-catalog.json</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/api-catalog" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>api-catalog</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/mcp/server-card.json" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>server-card.json</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/agent-card.json" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>agent-card.json</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/agent-skills/index.json" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>skills/index.json</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/agent-skills/mcp-server-tools/SKILL.md" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>mcp-server-tools.md</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/agent-skills/radu-stoian-profile/SKILL.md" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>radu-stoian-profile.md</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/agent-skills/talent-attraction-ai/SKILL.md" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>talent-attraction-ai.md</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/agent-skills/webmcp-browser-tools/SKILL.md" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>webmcp-tools.md</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/js/webmcp.js" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/js/webmcp.js</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.webmcp/bridge.js" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/.webmcp/bridge.js</span> <span>↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 pb-6">
+      Architecture Infographic &bull; radustoian.com Agentic Implementation &bull; Generated by Antigravity for AI Agents
+    </footer>
+
+  </div>
+
+</body>
+</html>
