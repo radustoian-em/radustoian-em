@@ -444,5 +444,43 @@
         }
       }
     }
+  },
+  "security": [],
+  "components": {
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "description": "OAuth 2.0 Authorization Server per RFC 8414",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://radustoian.com/oauth/token",
+            "scopes": {
+              "read:profile": "Read public profile, credentials, and case studies",
+              "read:ai": "Execute BM25 queries and agent tools"
+            }
+          },
+          "authorizationCode": {
+            "authorizationUrl": "https://radustoian.com/oauth/authorize",
+            "tokenUrl": "https://radustoian.com/oauth/token",
+            "scopes": {
+              "read:profile": "Read public profile, credentials, and case studies",
+              "read:ai": "Execute BM25 queries and agent tools"
+            }
+          }
+        }
+      },
+      "openIdConnect": {
+        "type": "openIdConnect",
+        "description": "OpenID Connect Discovery per OIDC Discovery 1.0",
+        "openIdConnectUrl": "https://radustoian.com/.well-known/openid-configuration"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Optional Bearer token for authenticated agent sessions"
+      }
+    }
   }
 }
+

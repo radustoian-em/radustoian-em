@@ -42,6 +42,21 @@
           "type": "application/json"
         }
       ]
+    },
+    {
+      "anchor": "https://radustoian.com/oauth",
+      "service-desc": [
+        {
+          "href": "https://radustoian.com/.well-known/oauth-authorization-server",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://radustoian.com/auth.md",
+          "type": "text/markdown"
+        }
+      ]
     }
   ]
 }

@@ -88,12 +88,17 @@ radustoian-em/
 │   ├── ai-catalog.json                   # Machine-readable ARD v0.91 catalog
 │   ├── api-catalog                       # RFC 9264 linkset catalog
 │   ├── ard.json                          # Agent Resource Discovery v0.91 manifest
-│   └── mcp/
-│       └── server-card.json              # MCP server card specification for WebMCP
+│   ├── jwks.json                         # RFC 7517 JSON Web Key Set specification
+│   ├── mcp/
+│   │   └── server-card.json              # MCP server card specification for WebMCP
+│   ├── oauth-authorization-server        # RFC 8414 OAuth 2.0 Authorization Server metadata
+│   ├── oauth-protected-resource          # RFC 9728 OAuth Protected Resource Metadata
+│   └── openid-configuration              # OpenID Connect Discovery 1.0 metadata
 ├── _headers                             # Cloudflare Pages HTTP security and caching directives
 ├── agentic-architecture-mcp-llms.html    # Interactive Agentic AI discovery & execution architecture map
 ├── agentic-architecture-mcp-llms.md      # Pure ASCII Markdown representation of the architecture map
 ├── agentic-architecture-mcp-llms.md.txt  # Edge-served Markdown representation for AI agents
+├── auth.md                               # Auth.md specification for agent authentication discovery
 ├── docs/
 │   └── SITE_KNOWLEDGE_BASE.md           # This technical architecture knowledge base
 ├── icons.svg                            # 24-symbol external SVG sprite sheet
