@@ -36,6 +36,13 @@
   "agent_auth": {
     "skill": "https://radustoian.com/auth.md",
     "register_uri": "https://radustoian.com/oauth/register",
+    "claim_uri": "https://radustoian.com/oauth/token",
+    "claim_endpoint": "https://radustoian.com/oauth/token",
+    "identity_endpoint": "https://radustoian.com/oauth/register",
+    "revocation_uri": "https://radustoian.com/oauth/revoke",
+    "events_supported": [
+      "revocation"
+    ],
     "methods_supported": [
       "anonymous",
       "client_credentials",
@@ -44,6 +51,9 @@
     "identity_types_supported": [
       "anonymous",
       "identity_assertion"
+    ],
+    "credential_types_supported": [
+      "bearer_token"
     ],
     "anonymous": {
       "credential_types_supported": [
@@ -56,6 +66,12 @@
         "urn:ietf:params:oauth:token-type:id-jag",
         "verified_email"
       ],
+      "credential_types_supported": [
+        "bearer_token"
+      ],
+      "claim_uri": "https://radustoian.com/oauth/token"
+    },
+    "verified_email": {
       "credential_types_supported": [
         "bearer_token"
       ],

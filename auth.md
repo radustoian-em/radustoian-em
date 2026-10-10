@@ -41,6 +41,7 @@ Agents and scrapers may query all profile information, BM25 endpoints, and MCP t
 Autonomous agents seeking identifiable sessions, higher throughput limits, or telemetric tracking can register dynamically and exchange credentials:
 - Registration URI: https://radustoian.com/oauth/register
 - Token URI: https://radustoian.com/oauth/token
+- Claim URI: https://radustoian.com/oauth/token
 - Grant Type: client_credentials
 - Methods Supported: ["client_credentials", "anonymous", "identity_assertion"]
 
@@ -51,6 +52,26 @@ Federated agent identities can assert verified credentials per RFC token exchang
   - assertion_types_supported: ["urn:ietf:params:oauth:token-type:id-jag", "verified_email"]
   - credential_types_supported: ["bearer_token"]
   - claim_uri: https://radustoian.com/oauth/token
+
+### Standalone Flow Definition
+```json
+{
+  "skill": "https://radustoian.com/auth.md",
+  "register_uri": "https://radustoian.com/oauth/register",
+  "claim_uri": "https://radustoian.com/oauth/token",
+  "identity_types_supported": ["anonymous", "identity_assertion"],
+  "credential_types_supported": ["bearer_token"],
+  "anonymous": {
+    "credential_types_supported": ["bearer_token"],
+    "claim_uri": "https://radustoian.com/oauth/token"
+  },
+  "identity_assertion": {
+    "assertion_types_supported": ["urn:ietf:params:oauth:token-type:id-jag", "verified_email"],
+    "credential_types_supported": ["bearer_token"],
+    "claim_uri": "https://radustoian.com/oauth/token"
+  }
+}
+```
 
 ---
 
@@ -70,5 +91,7 @@ Federated agent identities can assert verified credentials per RFC token exchang
 - Authorization Endpoint: https://radustoian.com/oauth/authorize
 - Token Endpoint: https://radustoian.com/oauth/token
 - Registration Endpoint: https://radustoian.com/oauth/register
+- Claim Endpoint: https://radustoian.com/oauth/token
+- Revocation Endpoint: https://radustoian.com/oauth/revoke
 - JWKS URI: https://radustoian.com/.well-known/jwks.json
 - Documentation: https://radustoian.com/auth.md
