@@ -37,13 +37,14 @@ Subject Matter Expertise: Agentic AI, Artificial Intelligence (AI), AI Optimisat
 - [Agentic Architecture Map](https://radustoian.com/agentic-architecture-mcp-llms.html): Interactive discovery map and technical architecture explaining the dedicated infrastructure for agentic AI discovery.
 - [Agentic Architecture Markdown](https://radustoian.com/agentic-architecture-mcp-llms.md.txt): Direct markdown representation of the agentic architecture map.
 - [Homepage Markdown](https://radustoian.com/index.md.txt): Direct markdown representation of the homepage for AI content negotiation.
+- [Public Knowledge REST API](https://radustoian.com/api): Standard RESTful JSON API directory exposing question answering, section retrieval, and verification links.
 
 ## Agentic AI Discovery & Infrastructure
 radustoian.com implements a dedicated multi-layer technical infrastructure designed specifically for autonomous AI agents:
 
 ### Layer 3: The Discovery & Signalling Layer
 - DNS Resolution (RFC 9460): HTTPS SVCB records (Type 65) signalling HTTP/3 and Encrypted Client Hello (ECH), plus SPF TXT domain defense records. Authoritative NS: bella.ns.cloudflare.com.
-- HTTP Transport (RFC 8288): Link headers returned on initial requests pointing to rel="alternate" (/index.md.txt), rel="describedby" (/llms-full.txt, /metadata.json), rel="service" (/mcp), rel="mcp-server-card" (/.well-known/mcp/server-card.json), and rel="ard" (/.well-known/ard.json), with Vary: Accept support for text/markdown.
+- HTTP Transport (RFC 8288): Link headers returned on initial requests pointing to rel="alternate" (/index.md.txt), rel="describedby" (/llms-full.txt, /metadata.json), rel="service" (/mcp), rel="mcp-server-card" (/.well-known/mcp/server-card.json), rel="service-desc" (/openapi.json), and rel="ard" (/.well-known/ard.json), with Vary: Accept support for text/markdown.
 - Crawling Directives: robots.txt explicitly permitting crawlers and directing LLMs to llms.txt.
 - Standardized Directories (RFC 8615): Predictable /.well-known/ endpoints including ard.json (ARD v1.0 manifest), ai-catalog.json, mcp/server-card.json (MCP Server Card v2.0), agent-card.json (A2A Protocol v1.0), agent-skills/index.json (Skills index), and api-catalog (RFC 9264 linkset).
 
@@ -58,6 +59,7 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 - Route B (Content Negotiation): Direct markdown streaming via Accept: text/markdown header resolving to /index.md.txt and /llms-full.txt without DOM rendering overhead.
 - Route C (Browser WebMCP): W3C WebMCP in-browser tools registered on document.modelContext via /js/webmcp.js and /.webmcp/bridge.js (e.g. listCaseStudies, listTestimonials, listPublications).
 - Route D (Semantic Graph): Linked Data Schema.org JSON-LD knowledge graph via /metadata.json and OpenAPI 3.1.0 specifications via /openapi.json.
+- Route E (Public REST API): Standard HTTP REST endpoints at https://radustoian.com/api and /api/v1/* (/api/v1/query?q=..., /api/v1/sections/:name, /api/v1/links, /api/v1/resources, /api/v1/info) exposing BM25 knowledge search, section extraction, and verification links over clean JSON without requiring JSON-RPC or an MCP client.
 
 ## Public Profiles
 - [LinkedIn](https://www.linkedin.com/in/radustoian/): Professional networking profile and career history.

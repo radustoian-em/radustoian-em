@@ -247,22 +247,36 @@ The site implements the emerging [WebMCP specification](https://webmachinelearni
 > [!NOTE]
 > **CSS Styling & WebMCP Synchronization Invariant:** Following any CSS styling or layout modifications (e.g. changes to class names, DOM selectors, card structures, or carousel transition timings), verify whether the WebMCP tools in `js/webmcp.js` require corresponding updates. WebMCP tools rely directly on DOM element queries, class selectors (such as `.talk-item`, `.cert-item`, `.skill-tag`), and carousel transition events (`transitionend` on `#expTrack` and `#testTrack`).
 
-### Model Context Protocol (MCP) Server (`https://radustoian.com/mcp`)
-The site deploys a live **Model Context Protocol (MCP)** server on Cloudflare Workers, providing remote autonomous AI agents with structured JSON-RPC 2.0 access over Streamable HTTP (`POST https://radustoian.com/mcp`). Unlike client-side WebMCP, this server operates independently of web browsers and can be invoked directly by agentic frameworks, multi-agent systems, and IDE tools.
+### Dual-Protocol Cloudflare Worker: Model Context Protocol (MCP) & Public REST API
+
+The site deploys a live dual-protocol server on Cloudflare Workers (`radustoian-mcp`), providing remote autonomous AI agents with structured JSON-RPC 2.0 access over Streamable HTTP (`POST https://radustoian.com/mcp`) AND developers, frontend applications, and webhooks with a public REST API (`GET/POST https://radustoian.com/api` and `/api/v1/*`). Both interfaces share an in-memory BM25 retrieval engine, source document caching, and fail-safe fallback over live profile files.
 
 #### Key Architectural Characteristics
-- **Transport:** Streamable HTTP (JSON responses, protocol version `2025-06-18`).
+- **Transports:**
+  - **MCP:** Streamable HTTP (JSON responses, protocol version `2025-06-18`).
+  - **REST:** Standard HTTP/1.1 & HTTP/2 JSON endpoints with CORS (`Access-Control-Allow-Origin: *`) and OpenAPI discovery headers.
 - **Dynamic Information Retrieval (IR):** Employs BM25 term weighting, stopword filtering, lightweight stemming, and synonym expansion to score every block of site content dynamically against incoming questions without hardcoded Q&A trees.
 - **Hierarchical Knowledge Ingestion:** Evaluates content across `llms-full.txt` (primary), `index.md.txt` (secondary), `metadata.json` (Schema.org JSON-LD), and `index.html` (DOM fallback).
-- **Fail-Safe Default Mechanism:** If a question cannot be answered with high confidence from a specific block, the server automatically provides the **entire content of `llms-full.txt`** as a fail-safe default answer along with 29 verified external investigation links so the agent always receives full context.
+- **Fail-Safe Default Mechanism:** If a question cannot be answered with high confidence from a specific block, the server automatically provides the **entire content of `llms-full.txt`** as a fail-safe default answer along with 32 verified external investigation links so consumers always receive full context.
 
-#### Available MCP Tools
+#### Available MCP Tools (`POST /mcp`)
 | Tool Name | Parameters | Description |
 | :--- | :--- | :--- |
 | `ask-question` | `question` (string, required) | Dynamically retrieves the most relevant block and section for any question about Radu Stoian, with fail-safe fallback to complete `llms-full.txt`. |
 | `get-section` | `section` (string, required) | Returns the raw text, parsed block array, and links of any specific section in `llms-full.txt`. |
-| `get-investigation-links` | None (`{}`) | Returns 29 external public profile, publication, and certification links for off-site agent exploration. |
+| `get-investigation-links` | None (`{}`) | Returns 32 external public profile, publication, and certification links for off-site agent exploration. |
 | `server-info` | None (`{}`) | Returns server version, runtime environment, protocol version, and knowledge source URLs. |
+
+#### Available REST API Endpoints (`/api/*`)
+| Endpoint | Method | Parameters / Body | Description |
+| :--- | :--- | :--- | :--- |
+| `/api` or `/api/v1` | `GET` | None | API directory, endpoint catalog, version metadata, and OpenAPI link. |
+| `/api/v1/query` | `GET` | `q` (string, required) | BM25 question answering with relevance scoring and full profile fail-safe fallback. |
+| `/api/v1/query` | `POST` | `{"question": "string"}` | JSON question answering with identical relevance scoring. |
+| `/api/v1/sections/:name` | `GET` | `name` in path or `?name=...` | Direct retrieval of section text, blocks, and citation links from `llms-full.txt`. |
+| `/api/v1/links` | `GET` | None | Returns verified external citation, publication, and profile links. |
+| `/api/v1/resources` | `GET` | None | Returns catalog of underlying knowledge sources and raw profile documents. |
+| `/api/v1/info` | `GET` | None | Returns server version, runtime environment, MCP tools, and operating instructions. |
 
 ### Agent Skills Discovery Index (`/.well-known/agent-skills/index.json`)
 The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/cloudflare/agent-skills-discovery-rfc) sponsored by Cloudflare, Anthropic, and AgentSkills.io. It publishes a machine-readable discovery manifest at `/.well-known/agent-skills/index.json` pointing to single-file skill documents (`type: "skill-md"`), each accompanied by cryptographic SHA-256 integrity digests:
@@ -311,7 +325,7 @@ The site provides a dedicated, interactive architecture map visualizing the comp
 - **Interactive Infographic:** [`agentic-architecture-mcp-llms.html`](file:///home/radu/antigravity/radu/agentic-architecture-mcp-llms.html) visually details the multi-layer pipeline:
   - *Layer 3 (Discovery & Signalling):* DNS resolution (RFC 9460 HTTPS/SVCB Type 65 & SPF TXT), HTTP transport header pointers (RFC 8288 Link headers), and RFC 8615 well-known catalogs.
   - *Layer 2 (Documentation):* `llms.txt`, `llms-full.txt`, ARD manifest, and all 4 specialized `SKILL.md` domain skill manifests.
-  - *Layer 1 (Technical Infrastructure):* Remote Streamable HTTP MCP (JSON-RPC 2.0 with BM25 fallback), Content Negotiation (`Accept: text/markdown`), Browser WebMCP tools (`js/webmcp.js`), and Schema.org JSON-LD knowledge graph.
+  - *Layer 1 (Technical Infrastructure):* Dual-Protocol Cloudflare Worker (Remote Streamable HTTP MCP & Public REST API at `/api`), Content Negotiation (`Accept: text/markdown`), Browser WebMCP tools (`js/webmcp.js`), and Schema.org JSON-LD knowledge graph.
 - **Machine-Readable Markdown:** Mirrored in pure ASCII Markdown at [`agentic-architecture-mcp-llms.md`](file:///home/radu/antigravity/radu/agentic-architecture-mcp-llms.md) and served edge-side with custom AI caching and canonical Link headers at [`agentic-architecture-mcp-llms.md.txt`](file:///home/radu/antigravity/radu/agentic-architecture-mcp-llms.md.txt).
 
 ---

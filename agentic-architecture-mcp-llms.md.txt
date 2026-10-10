@@ -151,6 +151,17 @@ Formal Schema.org graph for entity disambiguation and authority checks:
 - **Core Entities:** `@type: Person` | `worksFor: Enhance Media` | `hasCredential: GenAI Leader`.
 - **Advantage:** Definitive ground-truth entity facts.
 
+### Route E: Public REST API (Standard HTTP Endpoints)
+Dual-protocol Cloudflare Worker providing standard JSON REST endpoints over shared BM25 knowledge engine:
+- **Directory Endpoint:** [`GET /api`](https://radustoian.com/api)
+- **Endpoints:**
+  - `GET /api/v1/query?q=...` & `POST /api/v1/query` - BM25 question answering with full profile fallback.
+  - `GET /api/v1/sections/:name` - Direct retrieval of knowledge sections (`projects`, `skills`, `testimonials`).
+  - `GET /api/v1/links` - 32 external verification, publication, and profile citations.
+  - `GET /api/v1/resources` - Authoritative raw documents catalog (`llms-full.txt`, `metadata.json`).
+  - `GET /api/v1/info` - System version, capabilities, and agent operating instructions.
+- **Advantage:** Enables webhooks, frontend integrations, and cURL clients to query the knowledge engine over clean HTTP JSON without requiring JSON-RPC or an MCP client.
+
 ---
 
 ## Synthesis Phase: Grounded Answer Formulated
@@ -174,7 +185,7 @@ Formal Schema.org graph for entity disambiguation and authority checks:
 
 ---
 
-## Master Resource Directory (20 Accessible Endpoints)
+## Master Resource Directory (21 Accessible Endpoints)
 
 | # | Endpoint / Resource | Description |
 |---|---------------------|-------------|
@@ -198,6 +209,7 @@ Formal Schema.org graph for entity disambiguation and authority checks:
 | 18 | [`/.../agent-skills/webmcp-browser-tools/SKILL.md`](https://radustoian.com/.well-known/agent-skills/webmcp-browser-tools/SKILL.md) | WebMCP browser tools skill |
 | 19 | [`/js/webmcp.js`](https://radustoian.com/js/webmcp.js) | In-browser WebMCP tool implementations |
 | 20 | [`/.webmcp/bridge.js`](https://radustoian.com/.webmcp/bridge.js) | WebMCP JavaScript bridge runner |
+| 21 | [`/api`](https://radustoian.com/api) | Public Knowledge REST API Directory |
 
 ---
 

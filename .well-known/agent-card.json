@@ -34,6 +34,12 @@
       "protocolBinding": "HTTP+JSON",
       "protocolVersion": "1.0",
       "transportProtocol": "HTTP+JSON"
+    },
+    {
+      "url": "https://radustoian.com/api",
+      "protocolBinding": "REST",
+      "protocolVersion": "1.0",
+      "transportProtocol": "HTTP+JSON"
     }
   ],
   "skills": [

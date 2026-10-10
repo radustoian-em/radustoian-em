@@ -361,7 +361,7 @@
         <span class="text-xs text-slate-400 hidden sm:inline">(Actionable Execution Routes & Tool Engines)</span>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
 
         <!-- Route A: Live MCP -->
         <div class="bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-emerald-500/40 rounded-xl p-5 shadow-xl flex flex-col justify-between space-y-4 relative group">
@@ -485,6 +485,34 @@
           </div>
         </div>
 
+        <!-- Route E: Public REST API -->
+        <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 hover:border-emerald-500/30 rounded-xl p-5 shadow-xl flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <span class="text-xs font-mono font-bold text-emerald-400">ROUTE E • REST API</span>
+            <h3 class="text-base font-bold text-white">Public Knowledge API</h3>
+            <p class="text-xs text-slate-300">
+              Standard JSON HTTP endpoints over shared BM25 knowledge engine.
+            </p>
+            <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
+              <div>
+                <a href="https://radustoian.com/api" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                  GET https://radustoian.com/api ↗
+                </a>
+              </div>
+              <div class="text-cyan-400">/api/v1/query?q=...</div>
+              <div class="text-cyan-400">/api/v1/sections/:name</div>
+              <div class="text-cyan-400">/api/v1/links</div>
+              <div class="text-cyan-400">/api/v1/info</div>
+            </div>
+            <p class="text-[10px] text-slate-400">
+              Standard HTTP GET/POST for webhooks, apps, and cURL with full CORS.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-800 text-[11px] text-emerald-300 font-semibold">
+            ✓ Universal HTTP client compatibility
+          </div>
+        </div>
+
       </div>
 
       <!-- Connecting Flow Pipe -->
@@ -537,7 +565,7 @@
           <span class="text-xs text-slate-400">(Quick index of all files hosted on radustoian.com)</span>
         </div>
         <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 px-2.5 py-1 rounded border border-cyan-800/60">
-          20 Accessible Endpoints
+          21 Accessible Endpoints
         </span>
       </div>
 
@@ -601,6 +629,9 @@
         </a>
         <a href="https://radustoian.com/.webmcp/bridge.js" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
           <span>/.webmcp/bridge.js</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/api" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/api (REST API)</span> <span>↗</span>
         </a>
       </div>
     </section>
