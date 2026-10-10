@@ -81,6 +81,17 @@
         "Fetch markdown representation of radustoian.com homepage",
         "Read Radu Stoian's profile in markdown"
       ]
+    },
+    {
+      "identifier": "urn:air:radustoian.com:api:rest-endpoints",
+      "displayName": "Public Knowledge REST API",
+      "type": "application/json",
+      "url": "https://radustoian.com/api",
+      "representativeQueries": [
+        "Query Radu Stoian's knowledge base via public REST API",
+        "Fetch case studies and credentials via HTTP GET/POST endpoints",
+        "Access /api/v1/query, /api/v1/sections, and /api/v1/links on radustoian.com"
+      ]
     }
   ]
 }

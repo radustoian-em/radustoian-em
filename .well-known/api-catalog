@@ -27,6 +27,21 @@
           "type": "application/mcp-server-card+json"
         }
       ]
+    },
+    {
+      "anchor": "https://radustoian.com/api",
+      "service-desc": [
+        {
+          "href": "https://radustoian.com/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://radustoian.com/api",
+          "type": "application/json"
+        }
+      ]
     }
   ]
 }

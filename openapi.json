@@ -239,6 +239,210 @@
           }
         }
       }
+    },
+    "/api": {
+      "get": {
+        "summary": "REST API Root & Directory",
+        "description": "Returns API metadata, version info, endpoint index, and links to OpenAPI documentation and MCP service",
+        "operationId": "getApiDirectory",
+        "responses": {
+          "200": {
+            "description": "API directory and discovery index",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "version": { "type": "string" },
+                    "mcpServerVersion": { "type": "string" },
+                    "documentation": { "type": "string" },
+                    "mcpEndpoint": { "type": "string" },
+                    "origin": { "type": "string" },
+                    "endpoints": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/query": {
+      "get": {
+        "summary": "Dynamic Question Answering (GET)",
+        "description": "Performs BM25 relevance scoring across llms-full.txt, index.md.txt, metadata.json, and index.html to answer questions, with fail-safe fallback to complete llms-full.txt",
+        "operationId": "queryKnowledgeGet",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Question to ask about Radu Stoian (e.g. 'What did Radu do for Virgin Atlantic?')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dynamic answer with relevant block, citations, and investigation links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing query parameter"
+          }
+        }
+      },
+      "post": {
+        "summary": "Dynamic Question Answering (POST)",
+        "description": "Performs BM25 relevance scoring using a JSON request payload",
+        "operationId": "queryKnowledgePost",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["question"],
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "description": "The question to ask about Radu Stoian"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dynamic answer with relevant block, citations, and investigation links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid JSON body or missing question"
+          }
+        }
+      }
+    },
+    "/api/v1/sections/{name}": {
+      "get": {
+        "summary": "Knowledge Section Retrieval",
+        "description": "Returns full text, parsed blocks, and links of any specific section in llms-full.txt",
+        "operationId": "getKnowledgeSection",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "description": "Name or keyword of the section (e.g. 'projects', 'skills', 'testimonials')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Section content, blocks, and links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Section not found with available section list"
+          }
+        }
+      }
+    },
+    "/api/v1/links": {
+      "get": {
+        "summary": "Investigation & Citation Links",
+        "description": "Returns verified external public profile, publication, and certification links",
+        "operationId": "getInvestigationLinks",
+        "responses": {
+          "200": {
+            "description": "List of investigation links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "origin": { "type": "string" },
+                    "totalLinks": { "type": "integer" },
+                    "links": {
+                      "type": "array",
+                      "items": { "type": "object" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/resources": {
+      "get": {
+        "summary": "Knowledge Resources Catalog",
+        "description": "Returns list of authoritative underlying knowledge sources and raw profile documents",
+        "operationId": "getResourcesCatalog",
+        "responses": {
+          "200": {
+            "description": "List of knowledge resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "origin": { "type": "string" },
+                    "totalResources": { "type": "integer" },
+                    "resources": {
+                      "type": "array",
+                      "items": { "type": "object" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/info": {
+      "get": {
+        "summary": "System Info & Agent Instructions",
+        "description": "Returns server version, protocol version, runtime environment, MCP tools, and operating instructions",
+        "operationId": "getSystemInfo",
+        "responses": {
+          "200": {
+            "description": "System information and instructions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
