@@ -81,6 +81,7 @@ radustoian-em/
 │   ├── agent-card.json                   # A2A Protocol Agent Card manifest (agent-to-agent discovery)
 │   ├── agent-skills/                     # Agent Skills Discovery RFC v0.2.0 directory
 │   │   ├── index.json                    # Canonical skills discovery manifest ($schema + sha256 digests)
+│   │   ├── mcp-server-tools/SKILL.md     # Remote Streamable HTTP MCP tools skill
 │   │   ├── radu-stoian-profile/SKILL.md  # Profile and executive advisory skill
 │   │   ├── talent-attraction-ai/SKILL.md # Talent attraction and AI brand health audit skill
 │   │   └── webmcp-browser-tools/SKILL.md # In-browser WebMCP tool execution skill
@@ -90,6 +91,9 @@ radustoian-em/
 │   └── mcp/
 │       └── server-card.json              # MCP server card specification for WebMCP
 ├── _headers                             # Cloudflare Pages HTTP security and caching directives
+├── agentic-architecture-mcp-llms.html    # Interactive Agentic AI discovery & execution architecture map
+├── agentic-architecture-mcp-llms.md      # Pure ASCII Markdown representation of the architecture map
+├── agentic-architecture-mcp-llms.md.txt  # Edge-served Markdown representation for AI agents
 ├── docs/
 │   └── SITE_KNOWLEDGE_BASE.md           # This technical architecture knowledge base
 ├── icons.svg                            # 24-symbol external SVG sprite sheet
@@ -101,7 +105,9 @@ radustoian-em/
 ├── llms.txt                             # Standardized summary file for LLMs & AI crawlers
 ├── llms-full.txt                        # Exhaustive context and biographical markdown for deep ingestion
 ├── metadata.json                        # Standalone JSON-LD Schema.org profile document
+├── openapi.json                         # OpenAPI 3.1.0 specification for agent endpoints
 ├── README.md                            # GitHub profile page for @radustoian-em (DO NOT UPDATE)
+├── robots.txt                           # Crawling directives and mandatory LLM notice pointing to llms.txt
 ├── script.js                            # Legacy root copy for backward compatibility (delete after 1 Dec 2026)
 ├── site.webmanifest                     # Progressive Web App (PWA) manifest
 ├── sitemap.xml                          # XML Sitemap with priority and change frequencies
@@ -299,6 +305,14 @@ The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/c
 
 - **Progressive Loading**: Enables AI agents to read skill descriptions with minimal token overhead (~100 tokens), fetching the full `SKILL.md` instructions only upon activation.
 - **Scanner Verification**: Guarantees a `pass` status on `isitagentready.com`'s `checks.discovery.agentSkills.status`.
+
+### Agentic AI Discovery Architecture Map (`agentic-architecture-mcp-llms.html`)
+The site provides a dedicated, interactive architecture map visualizing the complete discovery and execution lifecycle for autonomous AI agents on `radustoian.com`:
+- **Interactive Infographic:** [`agentic-architecture-mcp-llms.html`](file:///home/radu/antigravity/radu/agentic-architecture-mcp-llms.html) visually details the multi-layer pipeline:
+  - *Layer 3 (Discovery & Signalling):* DNS resolution (RFC 9460 HTTPS/SVCB Type 65 & SPF TXT), HTTP transport header pointers (RFC 8288 Link headers), and RFC 8615 well-known catalogs.
+  - *Layer 2 (Documentation):* `llms.txt`, `llms-full.txt`, ARD manifest, and all 4 specialized `SKILL.md` domain skill manifests.
+  - *Layer 1 (Technical Infrastructure):* Remote Streamable HTTP MCP (JSON-RPC 2.0 with BM25 fallback), Content Negotiation (`Accept: text/markdown`), Browser WebMCP tools (`js/webmcp.js`), and Schema.org JSON-LD knowledge graph.
+- **Machine-Readable Markdown:** Mirrored in pure ASCII Markdown at [`agentic-architecture-mcp-llms.md`](file:///home/radu/antigravity/radu/agentic-architecture-mcp-llms.md) and served edge-side with custom AI caching and canonical Link headers at [`agentic-architecture-mcp-llms.md.txt`](file:///home/radu/antigravity/radu/agentic-architecture-mcp-llms.md.txt).
 
 ---
 

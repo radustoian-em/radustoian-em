@@ -163,6 +163,11 @@ Looking to transform your employer brand's visibility or share ideas with your a
 
 ---
 
+About: This is the personal profile site of [Radu Stoian](https://www.linkedin.com/in/radustoian/), Technical Director at [Enhance Media](https://www.enhancemedia.co.uk/).  
+It acts as a central hub for Radu’s digital presence, supported by a [dedicated infrastructure for agentic AI discovery](/agentic-architecture-mcp-llms.html).
+
+---
+
 ```json
 {
   "@context": "https://schema.org",

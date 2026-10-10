@@ -89,6 +89,20 @@
   x-markdown-tokens: 4773
   x-original-tokens: 10588
 
+/agentic-architecture-mcp-llms.md.txt
+  Content-Type: text/markdown; charset=utf-8
+  Vary: Accept
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Content-Signal: ai-train=yes, search=yes, ai-input=yes
+  Link: <https://radustoian.com/agentic-architecture-mcp-llms.html>; rel="canonical"
+
+/agentic-architecture-mcp-llms.md
+  Content-Type: text/markdown; charset=utf-8
+  Vary: Accept
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Content-Signal: ai-train=yes, search=yes, ai-input=yes
+  Link: <https://radustoian.com/agentic-architecture-mcp-llms.html>; rel="canonical"
+
 # CSS and JavaScript (cached with stale-while-revalidate)
 /styles.css
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
