@@ -1,5 +1,5 @@
 ## Radu Stoian Profile Information
-This is the official profile website for Radu Stoian, Technical Director at Enhance Media. He helps employers move from being found by search engines to being recommended by AI.
+This is the personal profile site of Radu Stoian, Technical Director at Enhance Media. It acts as a central hub for Radu's digital presence, supported by a dedicated infrastructure for agentic AI discovery. He helps employers move from being found by search engines to being recommended by AI.
 
 As the Technical Director at Enhance Media, Radu Stoian provides the strategic leadership and digital infrastructure that help employers capitalise on the shift to Agentic AI. From building a proprietary AI Brand Health Audit product to deploying smart careers sites, he delivers results that help employers attract the talent they need to drive their businesses into the future. 
 
@@ -34,6 +34,30 @@ Subject Matter Expertise: Agentic AI, Artificial Intelligence (AI), AI Optimisat
 - [Radu Stoian Primary Profile](https://radustoian.com/): The official and primary profile website for Radu Stoian.
 - [Enhance Media](https://www.enhancemedia.co.uk/): The official website of Radu Stoian's employer.
 - [Official Profile Image](https://radustoian.com/radu-stoian-enhance-media.jpg): High-resolution portrait image used in the schema.
+- [Agentic Architecture Map](https://radustoian.com/agentic-architecture-mcp-llms.html): Interactive discovery map and technical architecture explaining the dedicated infrastructure for agentic AI discovery.
+- [Agentic Architecture Markdown](https://radustoian.com/agentic-architecture-mcp-llms.md.txt): Direct markdown representation of the agentic architecture map.
+- [Homepage Markdown](https://radustoian.com/index.md.txt): Direct markdown representation of the homepage for AI content negotiation.
+
+## Agentic AI Discovery & Infrastructure
+radustoian.com implements a dedicated multi-layer technical infrastructure designed specifically for autonomous AI agents:
+
+### Layer 3: The Discovery & Signalling Layer
+- DNS Resolution (RFC 9460): HTTPS SVCB records (Type 65) signalling HTTP/3 and Encrypted Client Hello (ECH), plus SPF TXT domain defense records. Authoritative NS: bella.ns.cloudflare.com.
+- HTTP Transport (RFC 8288): Link headers returned on initial requests pointing to rel="alternate" (/index.md.txt), rel="describedby" (/llms-full.txt, /metadata.json), rel="service" (/mcp), rel="mcp-server-card" (/.well-known/mcp/server-card.json), and rel="ard" (/.well-known/ard.json), with Vary: Accept support for text/markdown.
+- Crawling Directives: robots.txt explicitly permitting crawlers and directing LLMs to llms.txt.
+- Standardized Directories (RFC 8615): Predictable /.well-known/ endpoints including ard.json (ARD v1.0 manifest), ai-catalog.json, mcp/server-card.json (MCP Server Card v2.0), agent-card.json (A2A Protocol v1.0), agent-skills/index.json (Skills index), and api-catalog (RFC 9264 linkset).
+
+### Layer 2: The Documentation Layer
+- Curated AI Index: llms.txt provides a high-level site summary, and llms-full.txt provides exhaustive profile context for deep ingestion.
+- Machine-Readable Catalogs: ARD v1.0 manifest indexing AIR URNs and natural language query embeddings, alongside RFC 9264 API linksets.
+- Agent Skills (SKILL.md): Four specialized domain instruction files at /.well-known/agent-skills/ for remote MCP server usage (mcp-server-tools), career verification (radu-stoian-profile), talent attraction methodology (talent-attraction-ai), and browser tools (webmcp-browser-tools).
+- Standard Cards: Standardized MCP Server Card and Agent Card declaring schemas and tool capabilities.
+
+### Layer 1: The Technical Infrastructure & Execution Routes
+- Route A (Remote MCP - Recommended): Streamable HTTP JSON-RPC 2.0 endpoint at POST https://radustoian.com/mcp providing live tools: ask-question (BM25 keyword search), get-section, get-investigation-links, and server-info, with automatic full-text fallback.
+- Route B (Content Negotiation): Direct markdown streaming via Accept: text/markdown header resolving to /index.md.txt and /llms-full.txt without DOM rendering overhead.
+- Route C (Browser WebMCP): W3C WebMCP in-browser tools registered on document.modelContext via /js/webmcp.js and /.webmcp/bridge.js (e.g. listCaseStudies, listTestimonials, listPublications).
+- Route D (Semantic Graph): Linked Data Schema.org JSON-LD knowledge graph via /metadata.json and OpenAPI 3.1.0 specifications via /openapi.json.
 
 ## Public Profiles
 - [LinkedIn](https://www.linkedin.com/in/radustoian/): Professional networking profile and career history.
