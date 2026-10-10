@@ -34,7 +34,7 @@
   ],
   "service_documentation": "https://radustoian.com/auth.md",
   "agent_auth": {
-    "skill": "https://isitagentready.com/.well-known/agent-skills/auth-md/SKILL.md",
+    "skill": "https://radustoian.com/auth.md",
     "register_uri": "https://radustoian.com/oauth/register",
     "methods_supported": [
       "anonymous",
