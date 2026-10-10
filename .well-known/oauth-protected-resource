@@ -1,0 +1,14 @@
+{
+  "resource": "https://radustoian.com",
+  "authorization_servers": [
+    "https://radustoian.com"
+  ],
+  "scopes_supported": [
+    "read:profile",
+    "read:ai"
+  ],
+  "bearer_methods_supported": [
+    "header"
+  ],
+  "resource_documentation": "https://radustoian.com/auth.md"
+}
