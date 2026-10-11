@@ -137,7 +137,7 @@
     "/mcp": {
       "post": {
         "summary": "Model Context Protocol (MCP) Streamable HTTP Server",
-        "description": "JSON-RPC 2.0 Streamable HTTP endpoint for autonomous AI agents. Provides agentic tools: ask-question (dynamic QA over site files with fail-safe fallback to llms-full.txt), get-section, get-investigation-links, and server-info.",
+        "description": "JSON-RPC 2.0 Streamable HTTP endpoint for autonomous AI agents. Provides agentic tools: ask (dynamic QA over site files with fail-safe fallback to llms-full.txt; alias: ask-question), get-section, get-investigation-links, and server-info.",
         "operationId": "callMcpServer",
         "requestBody": {
           "required": true,

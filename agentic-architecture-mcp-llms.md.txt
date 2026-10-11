@@ -120,7 +120,7 @@ Standardized metadata declarations for interoperability across agent frameworks:
 Direct JSON-RPC 2.0 communication with a Cloudflare Workers backend:
 - **Endpoint:** `POST https://radustoian.com/mcp`
 - **Tools:**
-  - `ask-question` - BM25 keyword search and relevance matching over site knowledge.
+  - `ask` - BM25 keyword search and relevance matching over site knowledge (alias: `ask-question`).
   - `get-section` - Fetches a specific section of the knowledge base.
   - `get-investigation-links` - Retrieves deep-dive verification URLs for fact checking.
   - `server-info` - Inspects MCP capabilities and tool schemas.

@@ -26,18 +26,22 @@
   },
   "tools": [
     {
-      "name": "ask-question",
+      "name": "ask",
       "description": "Answers generic or specific questions about Radu Stoian by dynamically retrieving the most relevant content block from profile documents (llms-full.txt, index.md.txt, metadata.json, index.html). If no specific block is matched, automatically provides the entire content of llms-full.txt as a fail-safe default answer along with external investigation links.",
       "inputSchema": {
         "type": "object",
         "properties": {
+          "query": {
+            "type": "string",
+            "description": "The natural language question to ask about Radu Stoian"
+          },
           "question": {
             "type": "string",
-            "description": "The question to ask about Radu Stoian"
+            "description": "Backward-compatible alias for query"
           }
         },
         "required": [
-          "question"
+          "query"
         ]
       }
     },

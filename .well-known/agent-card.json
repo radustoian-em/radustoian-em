@@ -44,8 +44,8 @@
   ],
   "skills": [
     {
-      "id": "ask-question",
-      "name": "Ask Question",
+      "id": "ask",
+      "name": "Ask",
       "description": "Answers questions about Radu Stoian by dynamically retrieving relevant profile context, case studies, and career history with fail-safe retrieval.",
       "tags": [
         "qa",
