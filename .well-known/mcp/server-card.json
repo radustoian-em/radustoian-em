@@ -54,7 +54,7 @@
     },
     {
       "name": "get-section",
-      "description": "Returns the full text and content blocks of a specific section from the site's knowledge base (e.g. 'Skills and Certifications', 'Projects and Clients', 'Client Testimonials', 'Publications and Insights').",
+      "description": "Returns the complete text of a specific section from the site's knowledge base (e.g. 'Skills and Certifications', 'Projects and Clients', 'Client Testimonials', 'Publications and Insights').",
       "readOnly": true,
       "annotations": {
         "readOnlyHint": true,

@@ -286,7 +286,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Dynamic answer with relevant block, citations, and investigation links",
+            "description": "Dynamic answer with grounded content, citations, and investigation links",
             "content": {
               "application/json": {
                 "schema": {
@@ -323,7 +323,7 @@
         },
         "responses": {
           "200": {
-            "description": "Dynamic answer with relevant block, citations, and investigation links",
+            "description": "Dynamic answer with grounded content, citations, and investigation links",
             "content": {
               "application/json": {
                 "schema": {
@@ -341,7 +341,7 @@
     "/api/v1/sections/{name}": {
       "get": {
         "summary": "Knowledge Section Retrieval",
-        "description": "Returns full text, parsed blocks, and links of any specific section in the site's knowledge base",
+        "description": "Returns complete text and links of any specific section in the site's knowledge base",
         "operationId": "getKnowledgeSection",
         "parameters": [
           {
@@ -356,7 +356,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Section content, blocks, and links",
+            "description": "Section content and links",
             "content": {
               "application/json": {
                 "schema": {

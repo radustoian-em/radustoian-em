@@ -285,17 +285,17 @@ The site deploys a live multi-protocol server on Cloudflare Workers (`radustoian
 | Tool Name | Parameters | Description |
 | :--- | :--- | :--- |
 | `ask` (alias: `ask-question`) | `query` (string, required; `question` accepted as alias) | Dynamically answers generic and specific questions about Radu Stoian using a dynamic retrieval engine that grounds its answers by pulling from the site's knowledge base. |
-| `get-section` | `section` (string, required) | Returns the raw text, parsed block array, and links of any specific section from the site's knowledge base. |
+| `get-section` | `section` (string, required) | Returns the complete text and links of any specific section from the site's knowledge base. |
 | `get-investigation-links` | None (`{}`) | Returns 32 external public profile, publication, and certification links for off-site agent exploration. |
-| `server-info` | None (`{}`) | Returns server version, runtime environment, protocol version, and knowledge source URLs. |
+| `server-info` | None (`{}`) | Returns server version, runtime environment, protocol version, and knowledge base reference. |
 
 #### Available REST API Endpoints (`/api/*`)
 | Endpoint | Method | Parameters / Body | Description |
 | :--- | :--- | :--- | :--- |
 | `/api` or `/api/v1` | `GET` | None | API directory, endpoint catalog, version metadata, and OpenAPI link. |
 | `/api/v1/query` | `GET` | `q` (string, required) | Dynamic question answering grounded in the site's knowledge base. |
-| `/api/v1/query` | `POST` | `{"question": "string"}` | JSON question answering with identical relevance scoring. |
-| `/api/v1/sections/:name` | `GET` | `name` in path or `?name=...` | Direct retrieval of section text, blocks, and citation links from the site's knowledge base. |
+| `/api/v1/query` | `POST` | `{"question": "string"}` | JSON question answering grounded in the site's knowledge base. |
+| `/api/v1/sections/:name` | `GET` | `name` in path or `?name=...` | Direct retrieval of section text and citation links from the site's knowledge base. |
 | `/api/v1/links` | `GET` | None | Returns verified external citation, publication, and profile links. |
 | `/api/v1/resources` | `GET` | None | Returns catalog of underlying knowledge sources and raw profile documents. |
 | `/api/v1/info` | `GET` | None | Returns server version, runtime environment, MCP tools, and operating instructions. |
@@ -312,7 +312,7 @@ The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/c
       "type": "skill-md",
       "description": "Instructions for autonomous AI agents to connect to the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering and section retrieval grounded in the site's knowledge base.",
       "url": "/.well-known/agent-skills/mcp-server-tools/SKILL.md",
-      "digest": "sha256:37104b6300097a8ca2b2123afd65d4851a4f70723b2cf6971c560b82e09ac085"
+      "digest": "sha256:15458e19b93a6b6417d1cc7151ecf0532afe427ab8168d25d2fbbc416274dbbb"
     },
     {
       "name": "radu-stoian-profile",

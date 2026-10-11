@@ -32,17 +32,17 @@ Use this skill when operating as a remote autonomous AI agent or MCP client comm
   }
   ```
   *(Note: `question` is also accepted as a backward-compatible alias for `query`)*.
-- **Returns:** JSON object containing `found`, `relevanceScore`, `section`, `sourceFile`, `relevantBlock`, `sectionContent`, `relevantLinks`, and `investigationLinks`.
+- **Returns:** JSON object containing `found`, `section`, `answer`, `relevantLinks`, and `investigationLinks`.
 
 ### 2. `get-section`
-- **Description:** Retrieves the full content, individual parsed blocks, and links of any specific section from the site's knowledge base.
+- **Description:** Retrieves the complete content and links of any specific section from the site's knowledge base.
 - **Input Parameters:**
   ```json
   {
     "section": "Skills and Certifications"
   }
   ```
-- **Returns:** Section title, source file, raw content string, array of block strings, and parsed markdown links.
+- **Returns:** Section title, complete content string, and parsed markdown links.
 
 ### 3. `get-investigation-links`
 - **Description:** Returns the complete directory of external public profiles, slide decks, code repositories, and certification links for off-site investigation.
@@ -50,7 +50,7 @@ Use this skill when operating as a remote autonomous AI agent or MCP client comm
 - **Returns:** Array of link objects with `title`, `url`, and `description` (LinkedIn, Substack, GitHub, SpeakerDeck, Google Skills, Credly, Google Knowledge Graph).
 
 ### 4. `server-info`
-- **Description:** Returns server metadata, protocol version, available tools, runtime environment, and knowledge source URLs.
+- **Description:** Returns server metadata, protocol version, available tools, runtime environment, and knowledge base reference.
 - **Input Parameters:** `{}`
 
 ---
@@ -83,7 +83,7 @@ curl -X POST https://radustoian.com/mcp \
     "content": [
       {
         "type": "text",
-        "text": "{\n  \"question\": \"What are Radu's speaking engagements?\",\n  \"found\": true,\n  \"relevanceScore\": 15.01,\n  \"section\": \"Speaking and Industry Engagement\",\n  \"sourceFile\": \"llms-full.txt\",\n  \"relevantBlock\": \"- [Massive Changes to Google Job Search Results]...\",\n  \"sectionContent\": \"...\",\n  \"investigationLinks\": [...]\n}"
+        "text": "{\n  \"question\": \"What are Radu's speaking engagements?\",\n  \"found\": true,\n  \"section\": \"Speaking and Industry Engagement\",\n  \"answer\": \"- [Implementation of Schemas via GTM](https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm): BrightonSEO masterclass presentation...\",\n  \"relevantLinks\": [...],\n  \"investigationLinks\": [...]\n}"
       }
     ]
   }
