@@ -20,7 +20,7 @@
    - [Document Linking via `rel="describedby"`](#document-linking-via-reldescribedby)
    - [Open Job Context Protocol (OJCP) Context](#open-job-context-protocol-ojcp-context)
    - [WebMCP In-Browser Tool Suite (`js/webmcp.js`)](#webmcp-in-browser-tool-suite-jswebmcpjs)
-   - [Model Context Protocol (MCP) Server (`https://radustoian.com/mcp`)](#model-context-protocol-mcp-server-httpsradustoiancommcp)
+   - [Multi-Protocol Cloudflare Worker: MCP, NLWeb & REST API (`radustoian-mcp`)](#multi-protocol-cloudflare-worker-model-context-protocol-mcp-nlweb-protocol--public-rest-api)
    - [Agent Skills Discovery Index (`/.well-known/agent-skills/index.json`)](#agent-skills-discovery-index-well-knownagent-skillsindexjson)
 5. [Structured Data & Schema.org Specification](#5-structured-data--schemaorg-specification)
    - [JSON-LD Entity Graph Architecture](#json-ld-entity-graph-architecture)
@@ -252,17 +252,27 @@ The site implements the emerging [WebMCP specification](https://webmachinelearni
 > [!NOTE]
 > **CSS Styling & WebMCP Synchronization Invariant:** Following any CSS styling or layout modifications (e.g. changes to class names, DOM selectors, card structures, or carousel transition timings), verify whether the WebMCP tools in `js/webmcp.js` require corresponding updates. WebMCP tools rely directly on DOM element queries, class selectors (such as `.talk-item`, `.cert-item`, `.skill-tag`), and carousel transition events (`transitionend` on `#expTrack` and `#testTrack`).
 
-### Dual-Protocol Cloudflare Worker: Model Context Protocol (MCP) & Public REST API
+### Multi-Protocol Cloudflare Worker: Model Context Protocol (MCP), NLWeb Protocol & Public REST API
 
-The site deploys a live dual-protocol server on Cloudflare Workers (`radustoian-mcp`), providing remote autonomous AI agents with structured JSON-RPC 2.0 access over Streamable HTTP (`POST https://radustoian.com/mcp`) AND developers, frontend applications, and webhooks with a public REST API (`GET/POST https://radustoian.com/api` and `/api/v1/*`). Both interfaces share an in-memory BM25 retrieval engine, source document caching, and fail-safe fallback over live profile files.
+The site deploys a live multi-protocol server on Cloudflare Workers (`radustoian-mcp`), providing remote autonomous AI agents with structured JSON-RPC 2.0 access over Streamable HTTP (`POST https://radustoian.com/mcp`), conversational streaming access via the NLWeb Protocol (`GET/POST https://radustoian.com/ask`, `/who`, `/sites`), AND developers, frontend applications, and webhooks with a public REST API (`GET/POST https://radustoian.com/api` and `/api/v1/*`). All three interfaces share an in-memory BM25 retrieval engine, source document caching, dynamic Schema.org entity structuring, and fail-safe fallback over live profile files.
 
 #### Key Architectural Characteristics
 - **Transports:**
   - **MCP:** Streamable HTTP (JSON responses, protocol version `2025-06-18`).
+  - **NLWeb:** Server-Sent Events (SSE) streaming (`text/event-stream`) and standard JSON (`application/json`, protocol version `0.1`).
   - **REST:** Standard HTTP/1.1 & HTTP/2 JSON endpoints with CORS (`Access-Control-Allow-Origin: *`) and OpenAPI discovery headers.
 - **Dynamic Information Retrieval (IR):** Employs BM25 term weighting, stopword filtering, lightweight stemming, and synonym expansion to score every block of site content dynamically against incoming questions without hardcoded Q&A trees.
+- **Dynamic Schema.org Entity Extraction:** Translates retrieved blocks and profile metadata on the fly into rich Schema.org typed items (`Person`, `CreativeWork`, `Event`, `Article`, `EducationalOccupationalCredential`, `Review`, `Occupation`).
 - **Hierarchical Knowledge Ingestion:** Evaluates content across `llms-full.txt` (primary), `index.md.txt` (secondary), `metadata.json` (Schema.org JSON-LD), and `index.html` (DOM fallback).
 - **Fail-Safe Default Mechanism:** If a question cannot be answered with high confidence from a specific block, the server automatically provides the **entire content of `llms-full.txt`** as a fail-safe default answer along with 32 verified external investigation links so consumers always receive full context.
+
+#### Available NLWeb Protocol Endpoints (`/ask`, `/who`, `/sites`)
+| Endpoint | Method | Parameters / Body | Description |
+| :--- | :--- | :--- | :--- |
+| `/ask` | `GET` | `query` / `q` (string, required), `prev` (string), `streaming` (boolean), `mode` (`list`\|`summarize`\|`generate`) | Conversational streaming query answering via Server-Sent Events (SSE, default) with dynamic BM25 ranking, multi-turn context decontextualization, and Schema.org items. |
+| `/ask` | `POST` | `{"query": "string", "prev": "string", "streaming": false, "mode": "generate"}` | JSON or streaming conversational question answering. Set `Accept: application/json` or `streaming: false` for pure JSON response. |
+| `/who` or `/who.json` | `GET` | None | Returns authoritative Schema.org `Person` JSON-LD publisher identity extracted dynamically from `/metadata.json`. |
+| `/sites` | `GET` | None | Returns supported backend knowledge sites array (`["https://radustoian.com"]`). |
 
 #### Available MCP Tools (`POST /mcp`)
 | Tool Name | Parameters | Description |
