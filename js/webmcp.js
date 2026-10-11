@@ -419,12 +419,12 @@
       properties: {
         format: {
           type: 'string',
-          description: 'Optional filter by format or keyword (e.g. "Masterclass", "Podcast", "Panel", "Technical Contribution").'
+          description: 'Optional filter by format or keyword (e.g. "all", "Masterclass", "Podcast", "Panel", "Technical Contribution", "speaking"). Default is "all".'
         }
       }
     },
     annotations: { readOnlyHint: true },
-    execute: async ({ format } = {}) => {
+    execute: async ({ format, query, keyword, filter, topic, type } = {}) => {
       const container = document.getElementById('speaking');
       if (!container) return fail('Speaking section ("speaking") not found on page.');
 
@@ -454,12 +454,40 @@
         };
       });
 
-      const filtered = format
-        ? engagements.filter((e) =>
-            e.format.toLowerCase().includes(format.toLowerCase()) ||
-            e.title.toLowerCase().includes(format.toLowerCase())
-          )
-        : engagements;
+      const rawTerm = (format || query || keyword || filter || topic || type || '').trim().toLowerCase();
+
+      // Broad or generic terms that mean "return all speaking engagements"
+      const GENERIC_TERMS = new Set([
+        '', 'all', 'any', '*', 'speaking', 'speaking engagement', 'speaking engagements',
+        'engagements', 'engagement', 'talk', 'talks', 'event', 'events',
+        'presentation', 'presentations', 'appearance', 'appearances'
+      ]);
+
+      let filtered = engagements;
+      if (rawTerm && !GENERIC_TERMS.has(rawTerm)) {
+        filtered = engagements.filter((e) => {
+          const inFormat = e.format.toLowerCase().includes(rawTerm);
+          const inTitle = e.title.toLowerCase().includes(rawTerm);
+          const inDesc = e.description.toLowerCase().includes(rawTerm);
+          const inResource = e.resource?.label?.toLowerCase().includes(rawTerm);
+          // Semantic alias matching
+          const isConference = (rawTerm.includes('conf') || rawTerm.includes('brighton')) && e.format.toLowerCase().includes('masterclass');
+          const isPodcast = rawTerm.includes('pod') && e.format.toLowerCase().includes('podcast');
+          const isPanel = rawTerm.includes('panel') && e.format.toLowerCase().includes('panel');
+          const isStandard = (rawTerm.includes('rfc') || rawTerm.includes('ojcp') || rawTerm.includes('standard')) && e.format.toLowerCase().includes('contribution');
+
+          return inFormat || inTitle || inDesc || inResource || isConference || isPodcast || isPanel || isStandard;
+        });
+
+        // Fail-safe: if keyword returned 0 results, fall back to returning all engagements with an informative note
+        if (filtered.length === 0) {
+          return ok({
+            totalEngagements: engagements.length,
+            engagements,
+            note: `No specific engagements matched filter "${rawTerm}". Returned all ${engagements.length} available speaking engagements as fallback.`
+          });
+        }
+      }
 
       return ok({
         totalEngagements: filtered.length,
