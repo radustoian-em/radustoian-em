@@ -267,7 +267,7 @@ The site deploys a live dual-protocol server on Cloudflare Workers (`radustoian-
 #### Available MCP Tools (`POST /mcp`)
 | Tool Name | Parameters | Description |
 | :--- | :--- | :--- |
-| `ask-question` | `question` (string, required) | Dynamically retrieves the most relevant block and section for any question about Radu Stoian, with fail-safe fallback to complete `llms-full.txt`. |
+| `ask` (alias: `ask-question`) | `query` (string, required; `question` accepted as alias) | Dynamically retrieves the most relevant block and section for any question about Radu Stoian, with fail-safe fallback to complete `llms-full.txt`. |
 | `get-section` | `section` (string, required) | Returns the raw text, parsed block array, and links of any specific section in `llms-full.txt`. |
 | `get-investigation-links` | None (`{}`) | Returns 32 external public profile, publication, and certification links for off-site agent exploration. |
 | `server-info` | None (`{}`) | Returns server version, runtime environment, protocol version, and knowledge source URLs. |

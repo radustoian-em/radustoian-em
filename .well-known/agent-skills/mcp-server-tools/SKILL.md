@@ -21,15 +21,16 @@ Use this skill when operating as a remote autonomous AI agent or MCP client comm
 
 ## Tool Inventory
 
-### 1. `ask-question`
-- **Description:** Dynamically answers generic and specific questions about Radu Stoian using BM25 information retrieval over knowledge base files (`llms-full.txt`, `index.md.txt`, `metadata.json`, and `index.html`).
+### 1. `ask`
+- **Description:** Dynamically answers generic and specific questions about Radu Stoian using BM25 information retrieval over knowledge base files (`llms-full.txt`, `index.md.txt`, `metadata.json`, and `index.html`). (The legacy name `ask-question` is retained as a backward-compatible alias).
 - **Fail-Safe Mechanism:** If no targeted block matches with high confidence, automatically provides the **entire content of `llms-full.txt`** as a fail-safe default answer along with external investigation links so the agent always receives full context.
 - **Input Parameters:**
   ```json
   {
-    "question": "What did Radu do for Virgin Atlantic?"
+    "query": "What did Radu do for Virgin Atlantic?"
   }
   ```
+  *(Note: `question` is also accepted as a backward-compatible alias for `query`)*.
 - **Returns:** JSON object containing `found`, `relevanceScore`, `section`, `sourceFile`, `relevantBlock`, `sectionContent`, `relevantLinks`, and `investigationLinks`.
 
 ### 2. `get-section`
@@ -64,9 +65,9 @@ curl -X POST https://radustoian.com/mcp \
     "id": 1,
     "method": "tools/call",
     "params": {
-      "name": "ask-question",
+      "name": "ask",
       "arguments": {
-        "question": "What are Radu'\''s speaking engagements?"
+        "query": "What are Radu'\''s speaking engagements?"
       }
     }
   }'
