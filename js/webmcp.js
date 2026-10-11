@@ -60,13 +60,44 @@
     }
   };
 
-  const register = (tool) => {
+  // Complete read-only annotations to ensure tools are recognized as safe read operations across all MCP & WebMCP implementations
+  const READ_ONLY_ANNOTATIONS = {
+    readOnlyHint: true,
+    readOnly: true,
+    idempotentHint: true,
+    destructiveHint: false
+  };
+
+  const register = (tool, aliases = []) => {
+    const toolDef = {
+      ...tool,
+      readOnly: true,
+      readOnlyHint: true,
+      annotations: {
+        ...READ_ONLY_ANNOTATIONS,
+        ...(tool.annotations || {})
+      }
+    };
     try {
-      Promise.resolve(modelContext.registerTool(tool, { signal: controller.signal }))
-        .catch((err) => console.warn(`[WebMCP] Could not register "${tool.name}":`, err));
+      Promise.resolve(modelContext.registerTool(toolDef, { signal: controller.signal }))
+        .catch((err) => console.warn(`[WebMCP] Could not register "${toolDef.name}":`, err));
     } catch (err) {
       // One failing tool must not prevent the others from registering.
-      console.warn(`[WebMCP] Could not register "${tool.name}":`, err);
+      console.warn(`[WebMCP] Could not register "${toolDef.name}":`, err);
+    }
+
+    for (const alias of aliases) {
+      try {
+        const aliasDef = {
+          ...toolDef,
+          name: alias,
+          title: `${toolDef.title} (${alias} alias)`
+        };
+        Promise.resolve(modelContext.registerTool(aliasDef, { signal: controller.signal }))
+          .catch((err) => console.warn(`[WebMCP] Could not register alias "${alias}":`, err));
+      } catch (err) {
+        console.warn(`[WebMCP] Could not register alias "${alias}":`, err);
+      }
     }
   };
 
@@ -74,13 +105,17 @@
   const SECTION_IDS = ['top', 'about', 'expertise', 'insights', 'projects', 'testimonials', 'speaking', 'skills', 'connect']
     .filter((id) => id === 'top' || document.getElementById(id));
 
-  const serializeCaseStudy = (card, i, total) => ({
-    position: `${i + 1} of ${total}`,
-    client: card.querySelector('img')?.alt || '',
-    title: clean(card.querySelector('h3')),
-    highlights: Array.from(card.querySelectorAll('li')).map(clean),
-    url: card.querySelector('a.case-link')?.href || null
-  });
+  const serializeCaseStudy = (card, i, total) => {
+    const caseUrl = card.querySelector('a.case-link')?.href || null;
+    return {
+      position: `${i + 1} of ${total}`,
+      client: card.querySelector('img')?.alt || '',
+      title: clean(card.querySelector('h3')),
+      highlights: Array.from(card.querySelectorAll('li')).map(clean),
+      url: caseUrl,
+      link: caseUrl
+    };
+  };
 
   const serializeTestimonial = (card, i, total) => ({
     position: `${i + 1} of ${total}`,
@@ -148,7 +183,7 @@
       const container = section === 'top' ? document.querySelector('header.hero') : el;
       return ok({
         section,
-        heading: clean(container.querySelector('h1, h2')),
+        heading: clean(container.querySelector('h1, h2')) || container.getAttribute('aria-label') || clean(container.querySelector('h3')) || '',
         text: clean(container).slice(0, 1500)
       });
     }
@@ -244,7 +279,7 @@
       const slides = getSlides(CAROUSELS.caseStudies);
       return ok(slides.map((card, i) => serializeCaseStudy(card, i, slides.length)));
     }
-  });
+  }, ['getCaseStudies']);
 
   // ---------- Tool 4: Testimonial data ----------
   register({
@@ -259,7 +294,7 @@
       const slides = getSlides(CAROUSELS.testimonials);
       return ok(slides.map((card, i) => serializeTestimonial(card, i, slides.length)));
     }
-  });
+  }, ['getTestimonials']);
 
   // ---------- Tool 5: Contact links ----------
   register({
@@ -273,7 +308,7 @@
     execute: async () => {
       const seen = new Set();
       const links = Array.from(document.querySelectorAll('.hero-links a, #connect a'))
-        .map((a) => ({ label: clean(a), url: a.href }))
+        .map((a) => ({ label: clean(a), url: a.href, link: a.href }))
         .filter((l) => l.url && !seen.has(l.url) && seen.add(l.url));
       return ok(links);
     }
@@ -316,6 +351,7 @@
           topic,
           summary,
           url: link,
+          link,
           platform: isSubstack ? 'Substack' : (isLinkedIn ? 'LinkedIn' : 'Other'),
           isSubstack
         };
@@ -331,6 +367,7 @@
           substackArticles.push({
             title: pub.title,
             url: pub.url,
+            link: pub.url,
             topic: pub.topic,
             summary: pub.summary
           });
@@ -344,6 +381,7 @@
           substackArticles.push({
             title: clean(a),
             url: a.href,
+            link: a.href,
             topic: 'Article / Recommendation',
             summary: clean(a.closest('p, .talk-item, .testimonial-card'))
           });
@@ -367,7 +405,7 @@
         substackProfileUrl
       });
     }
-  });
+  }, ['getPublications']);
 
   // ---------- Tool 7: Speaking & industry engagements ----------
   register({
@@ -375,7 +413,7 @@
     title: 'List speaking & industry engagements',
     description:
       'Extracts Radu Stoian\'s main speaking appearances, podcast guest spots, conference masterclasses, ' +
-      'and industry technical contributions with event URLs and media/resource links.',
+      'and industry technical contributions with event URLs, resource links, and direct URLs.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -402,12 +440,16 @@
           label: clean(resourceLink),
           url: resourceLink.href
         } : null;
+        const primaryUrl = eventUrl || resource?.url || null;
 
         return {
           title,
           format: formatLabel,
           description,
+          url: primaryUrl,
+          link: primaryUrl,
           eventUrl,
+          resourceUrl: resource?.url || null,
           resource
         };
       });
@@ -424,7 +466,7 @@
         engagements: filtered
       });
     }
-  });
+  }, ['getSpeakingEngagements', 'getSpeakingEngagement']);
 
   // ---------- Tool 8: Certificates & skills ----------
   register({
@@ -444,11 +486,13 @@
         const link = card.querySelector('a');
         const meta = clean(card.querySelector('.cert-meta'));
         const [issuer = '', date = ''] = meta.split('·').map((s) => s.trim());
+        const certUrl = link?.href || null;
         return {
           title: clean(link),
           issuer,
           date,
-          url: link?.href || null
+          url: certUrl,
+          link: certUrl
         };
       });
 
@@ -482,5 +526,5 @@
         }
       });
     }
-  });
+  }, ['getCertificatesAndSkills']);
 })();

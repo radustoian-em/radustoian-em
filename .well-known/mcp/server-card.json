@@ -28,6 +28,13 @@
     {
       "name": "ask",
       "description": "Answers generic or specific questions about Radu Stoian by dynamically retrieving the most relevant content block from profile documents (llms-full.txt, index.md.txt, metadata.json, index.html). If no specific block is matched, automatically provides the entire content of llms-full.txt as a fail-safe default answer along with external investigation links.",
+      "readOnly": true,
+      "annotations": {
+        "readOnlyHint": true,
+        "readOnly": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -48,6 +55,13 @@
     {
       "name": "get-section",
       "description": "Returns the full text and content blocks of a specific section from llms-full.txt (e.g. 'Skills and Certifications', 'Projects and Clients', 'Client Testimonials', 'Publications and Insights').",
+      "readOnly": true,
+      "annotations": {
+        "readOnlyHint": true,
+        "readOnly": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -64,6 +78,13 @@
     {
       "name": "get-investigation-links",
       "description": "Returns external links and public profiles for AI agents to investigate Radu Stoian (LinkedIn, GitHub, Substack, SpeakerDeck, Credly, Google Skills, etc.).",
+      "readOnly": true,
+      "annotations": {
+        "readOnlyHint": true,
+        "readOnly": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
       "inputSchema": {
         "type": "object",
         "properties": {}
@@ -72,6 +93,13 @@
     {
       "name": "server-info",
       "description": "Returns information about this MCP server, runtime environment, and available data sources.",
+      "readOnly": true,
+      "annotations": {
+        "readOnlyHint": true,
+        "readOnly": true,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
       "inputSchema": {
         "type": "object",
         "properties": {}
