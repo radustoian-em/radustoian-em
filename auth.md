@@ -31,7 +31,7 @@ Autonomous agents can programmatically discover security configuration and endpo
 ## 3. Agent Authentication Flows & Registration
 
 ### Flow A: Anonymous Access (Default)
-Agents and scrapers may query all profile information, BM25 endpoints, and MCP tools anonymously. No token or registration is mandated.
+Agents and scrapers may query all profile information, query endpoints, and MCP tools anonymously. No token or registration is mandated.
 - identity_types_supported: ["anonymous"]
 - anonymous:
   - credential_types_supported: ["bearer_token"]
@@ -78,7 +78,7 @@ Federated agent identities can assert verified credentials per RFC token exchang
 ## 4. Scopes & Permissions
 
 - `read:profile`: Read public profile information, biography, credentials, and case studies.
-- `read:ai`: Execute dynamic BM25 queries, retrieve citations, query the NLWeb `/ask` conversational stream, and interact with WebMCP / MCP tools.
+- `read:ai`: Execute dynamic queries, retrieve citations, query the NLWeb `/ask` conversational stream, and interact with WebMCP / MCP tools.
 - `openid`: OpenID Connect user and machine identity verification.
 - `profile`: Basic profile claims (name, preferred_username).
 - `email`: Identity verification email claim.

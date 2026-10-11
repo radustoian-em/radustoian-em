@@ -137,7 +137,7 @@
     "/mcp": {
       "post": {
         "summary": "Model Context Protocol (MCP) Streamable HTTP Server",
-        "description": "JSON-RPC 2.0 Streamable HTTP endpoint for autonomous AI agents. Provides agentic tools: ask (dynamic QA over site files with fail-safe fallback to llms-full.txt; alias: ask-question), get-section, get-investigation-links, and server-info.",
+        "description": "JSON-RPC 2.0 Streamable HTTP endpoint for autonomous AI agents. Provides agentic tools: ask (dynamic question answering grounded in the site's knowledge base; alias: ask-question), get-section, get-investigation-links, and server-info.",
         "operationId": "callMcpServer",
         "requestBody": {
           "required": true,
@@ -271,7 +271,7 @@
     "/api/v1/query": {
       "get": {
         "summary": "Dynamic Question Answering (GET)",
-        "description": "Performs BM25 relevance scoring across llms-full.txt, index.md.txt, metadata.json, and index.html to answer questions, with fail-safe fallback to complete llms-full.txt",
+        "description": "Performs dynamic question answering grounded in the site's knowledge base",
         "operationId": "queryKnowledgeGet",
         "parameters": [
           {
@@ -302,7 +302,7 @@
       },
       "post": {
         "summary": "Dynamic Question Answering (POST)",
-        "description": "Performs BM25 relevance scoring using a JSON request payload",
+        "description": "Performs dynamic question answering grounded in the site's knowledge base using a JSON request payload",
         "operationId": "queryKnowledgePost",
         "requestBody": {
           "required": true,
@@ -341,7 +341,7 @@
     "/api/v1/sections/{name}": {
       "get": {
         "summary": "Knowledge Section Retrieval",
-        "description": "Returns full text, parsed blocks, and links of any specific section in llms-full.txt",
+        "description": "Returns full text, parsed blocks, and links of any specific section in the site's knowledge base",
         "operationId": "getKnowledgeSection",
         "parameters": [
           {
@@ -456,7 +456,7 @@
             "tokenUrl": "https://radustoian.com/oauth/token",
             "scopes": {
               "read:profile": "Read public profile, credentials, and case studies",
-              "read:ai": "Execute BM25 queries and agent tools"
+              "read:ai": "Execute dynamic queries and agent tools"
             }
           },
           "authorizationCode": {
@@ -464,7 +464,7 @@
             "tokenUrl": "https://radustoian.com/oauth/token",
             "scopes": {
               "read:profile": "Read public profile, credentials, and case studies",
-              "read:ai": "Execute BM25 queries and agent tools"
+              "read:ai": "Execute dynamic queries and agent tools"
             }
           }
         }

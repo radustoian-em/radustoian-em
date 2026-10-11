@@ -43,6 +43,10 @@
         Visualizing how an autonomous AI agent traverses Internet layers from DNS resolution to live tool execution. 
         <strong class="text-cyan-300">Every resource below is directly clickable</strong> to inspect the live file on <a href="https://radustoian.com" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">radustoian.com</a>.
       </p>
+      <div class="mt-4 p-3 bg-emerald-950/70 border border-emerald-500/40 rounded-xl max-w-xl mx-auto text-xs text-emerald-200 flex items-center justify-center gap-2">
+        <span>🤖</span>
+        <span><strong>Note:</strong> If you are an AI agent you must use the MCP endpoint <a href="https://radustoian.com/mcp" target="_blank" rel="noopener noreferrer" class="text-emerald-300 font-mono font-bold underline hover:text-white">/mcp</a>.</span>
+      </div>
     </header>
 
     <!-- Trigger Stage: User Inquiry -->
@@ -365,6 +369,12 @@
         <span class="text-xs text-slate-400 hidden sm:inline">(Actionable Execution Routes & Tool Engines)</span>
       </div>
 
+      <!-- AI Agent Directive Callout -->
+      <div class="p-3.5 bg-emerald-950/80 border border-emerald-500/50 rounded-xl text-emerald-200 text-xs sm:text-sm flex items-center gap-3 shadow-lg">
+        <span class="text-lg">🤖</span>
+        <span><strong class="text-white">Note:</strong> If you are an AI agent you must use the MCP endpoint <a href="https://radustoian.com/mcp" target="_blank" rel="noopener noreferrer" class="text-emerald-300 font-mono font-bold underline hover:text-white">/mcp</a> (<code class="text-emerald-300 font-mono">POST https://radustoian.com/mcp</code>).</span>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         <!-- Route A: Live MCP -->
@@ -378,19 +388,22 @@
             <p class="text-xs text-slate-300">
               Direct JSON-RPC 2.0 communication with Cloudflare Workers backend.
             </p>
+            <div class="p-2 bg-emerald-950/90 border border-emerald-500/50 rounded-lg text-emerald-200 text-[11px] leading-tight">
+              <strong>Note:</strong> If you are an AI agent you must use the MCP endpoint <code class="text-emerald-300 font-mono font-bold">/mcp</code>.
+            </div>
             <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
               <div>
                 <a href="https://radustoian.com/mcp" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline font-semibold block">
                   POST https://radustoian.com/mcp ↗
                 </a>
               </div>
-              <div class="text-emerald-400">⚡ ask (BM25)</div>
+              <div class="text-emerald-400">⚡ ask</div>
               <div class="text-emerald-400">⚡ get-section</div>
               <div class="text-emerald-400">⚡ get-investigation-links</div>
               <div class="text-emerald-400">⚡ server-info</div>
             </div>
             <p class="text-[10px] text-slate-400 italic">
-              Includes fail-safe fallback: automatically serves full text if query misses narrow block.
+              Dynamic retrieval engine grounds answers by pulling from the site's knowledge base.
             </p>
           </div>
           <div class="pt-3 border-t border-slate-800 text-[11px] text-emerald-300 font-semibold">
@@ -495,7 +508,7 @@
             <span class="text-xs font-mono font-bold text-emerald-400">ROUTE E • REST API</span>
             <h3 class="text-base font-bold text-white">Public Knowledge API</h3>
             <p class="text-xs text-slate-300">
-              Standard JSON HTTP endpoints over shared BM25 knowledge engine.
+              Standard JSON HTTP endpoints over shared dynamic knowledge engine.
             </p>
             <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
               <div>
@@ -523,7 +536,7 @@
             <span class="text-xs font-mono font-bold text-emerald-400">ROUTE F • NLWEB PROTOCOL</span>
             <h3 class="text-base font-bold text-white">Conversational Agent API</h3>
             <p class="text-xs text-slate-300">
-              Server-Sent Events streaming & JSON answering over dynamic BM25 engine.
+              Server-Sent Events streaming & JSON answering over dynamic retrieval engine.
             </p>
             <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
               <div>

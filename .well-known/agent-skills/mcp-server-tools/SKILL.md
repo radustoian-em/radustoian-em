@@ -7,6 +7,8 @@ description: Instructions for autonomous AI agents to connect to and query the l
 
 Use this skill when operating as a remote autonomous AI agent or MCP client communicating with `https://radustoian.com/mcp`.
 
+> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
+
 ## Protocol Overview
 
 `radustoian.com` hosts an active **Model Context Protocol (MCP)** server on Cloudflare Workers implementing JSON-RPC 2.0 over Streamable HTTP (JSON responses). AI agents can connect directly via HTTP POST requests without requiring browser execution or WebMCP DOM hooks.
@@ -22,8 +24,7 @@ Use this skill when operating as a remote autonomous AI agent or MCP client comm
 ## Tool Inventory
 
 ### 1. `ask`
-- **Description:** Dynamically answers generic and specific questions about Radu Stoian using BM25 information retrieval over knowledge base files (`llms-full.txt`, `index.md.txt`, `metadata.json`, and `index.html`). (The legacy name `ask-question` is retained as a backward-compatible alias).
-- **Fail-Safe Mechanism:** If no targeted block matches with high confidence, automatically provides the **entire content of `llms-full.txt`** as a fail-safe default answer along with external investigation links so the agent always receives full context.
+- **Description:** Dynamically answers generic and specific questions about Radu Stoian using a dynamic retrieval engine that grounds its answers by pulling from the site's knowledge base. (The legacy name `ask-question` is retained as a backward-compatible alias).
 - **Input Parameters:**
   ```json
   {
@@ -34,7 +35,7 @@ Use this skill when operating as a remote autonomous AI agent or MCP client comm
 - **Returns:** JSON object containing `found`, `relevanceScore`, `section`, `sourceFile`, `relevantBlock`, `sectionContent`, `relevantLinks`, and `investigationLinks`.
 
 ### 2. `get-section`
-- **Description:** Retrieves the full content, individual parsed blocks, and links of any specific section in `llms-full.txt`.
+- **Description:** Retrieves the full content, individual parsed blocks, and links of any specific section from the site's knowledge base.
 - **Input Parameters:**
   ```json
   {

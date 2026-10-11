@@ -12,7 +12,7 @@
       "representativeQueries": [
         "Ask questions about Radu Stoian using MCP",
         "Query Radu Stoian's credentials, speaking engagements, and case studies via MCP server",
-        "Dynamic question answering about Radu Stoian with fail-safe knowledge retrieval",
+        "Dynamic question answering about Radu Stoian grounded in the site's knowledge base",
         "Connect to the live MCP endpoint at radustoian.com/mcp"
       ]
     },

@@ -197,8 +197,11 @@ The site is built to bridge conventional search engine visibility with modern LL
 
 1. **[`llms.txt`](file:///home/radu/antigravity/radu/llms.txt)**:
    - Adheres to the emerging `/llms.txt` standard.
-   - Contains high-level entity statements and points to canonical endpoints.
+   - Functions like an XML sitemap for AI agents, pointing exclusively to live human-facing pages or documentation pages.
    - Designed for fast retrieval by agents operating under small token budgets.
+
+> [!NOTE]
+> **`llms.txt` Sitemap Invariant:** The `llms.txt` file should be like an XML sitemap for AI agents pointing to live or documentation pages only. The `llms.txt` file should never point to endpoints (e.g., `/mcp`, `/api`, `/ask`).
 
 2. **[`llms-full.txt`](file:///home/radu/antigravity/radu/llms-full.txt)**:
    - Exhaustive 9.2 KB plain text document formatted in Markdown.
@@ -254,31 +257,35 @@ The site implements the emerging [WebMCP specification](https://webmachinelearni
 
 ### Multi-Protocol Cloudflare Worker: Model Context Protocol (MCP), NLWeb Protocol & Public REST API
 
-The site deploys a live multi-protocol server on Cloudflare Workers (`radustoian-mcp`), providing remote autonomous AI agents with structured JSON-RPC 2.0 access over Streamable HTTP (`POST https://radustoian.com/mcp`), conversational streaming access via the NLWeb Protocol (`GET/POST https://radustoian.com/ask`, `/who`, `/sites`), AND developers, frontend applications, and webhooks with a public REST API (`GET/POST https://radustoian.com/api` and `/api/v1/*`). All three interfaces share an in-memory BM25 retrieval engine, source document caching, dynamic Schema.org entity structuring, and fail-safe fallback over live profile files.
+> [!IMPORTANT]
+> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
+
+The site deploys a live multi-protocol server on Cloudflare Workers (`radustoian-mcp`), providing remote autonomous AI agents with structured JSON-RPC 2.0 access over Streamable HTTP (`POST https://radustoian.com/mcp`), conversational streaming access via the NLWeb Protocol (`GET/POST https://radustoian.com/ask`, `/who`, `/sites`), AND developers, frontend applications, and webhooks with a public REST API (`GET/POST https://radustoian.com/api` and `/api/v1/*`). All three interfaces share an in-memory dynamic retrieval engine that grounds answers by pulling from the site's knowledge base, source document caching, and dynamic Schema.org entity structuring.
 
 #### Key Architectural Characteristics
 - **Transports:**
   - **MCP:** Streamable HTTP (JSON responses, protocol version `2025-06-18`).
   - **NLWeb:** Server-Sent Events (SSE) streaming (`text/event-stream`) and standard JSON (`application/json`, protocol version `0.1`).
   - **REST:** Standard HTTP/1.1 & HTTP/2 JSON endpoints with CORS (`Access-Control-Allow-Origin: *`) and OpenAPI discovery headers.
-- **Dynamic Information Retrieval (IR):** Employs BM25 term weighting, stopword filtering, lightweight stemming, and synonym expansion to score every block of site content dynamically against incoming questions without hardcoded Q&A trees.
+- **Knowledge Grounding:** The dynamic retrieval engine grounds its answers by pulling from the site's knowledge base.
 - **Dynamic Schema.org Entity Extraction:** Translates retrieved blocks and profile metadata on the fly into rich Schema.org typed items (`Person`, `CreativeWork`, `Event`, `Article`, `EducationalOccupationalCredential`, `Review`, `Occupation`).
-- **Hierarchical Knowledge Ingestion:** Evaluates content across `llms-full.txt` (primary), `index.md.txt` (secondary), `metadata.json` (Schema.org JSON-LD), and `index.html` (DOM fallback).
-- **Fail-Safe Default Mechanism:** If a question cannot be answered with high confidence from a specific block, the server automatically provides the **entire content of `llms-full.txt`** as a fail-safe default answer along with 32 verified external investigation links so consumers always receive full context.
 
 #### Available NLWeb Protocol Endpoints (`/ask`, `/who`, `/sites`)
 | Endpoint | Method | Parameters / Body | Description |
 | :--- | :--- | :--- | :--- |
-| `/ask` | `GET` | `query` / `q` (string, required), `prev` (string), `streaming` (boolean), `mode` (`list`\|`summarize`\|`generate`) | Conversational streaming query answering via Server-Sent Events (SSE, default) with dynamic BM25 ranking, multi-turn context decontextualization, and Schema.org items. |
+| `/ask` | `GET` | `query` / `q` (string, required), `prev` (string), `streaming` (boolean), `mode` (`list`\|`summarize`\|`generate`) | Conversational streaming query answering via Server-Sent Events (SSE, default) with dynamic relevance ranking, multi-turn context decontextualization, and Schema.org items. |
 | `/ask` | `POST` | `{"query": "string", "prev": "string", "streaming": false, "mode": "generate"}` | JSON or streaming conversational question answering. Set `Accept: application/json` or `streaming: false` for pure JSON response. |
 | `/who` or `/who.json` | `GET` | None | Returns authoritative Schema.org `Person` JSON-LD publisher identity extracted dynamically from `/metadata.json`. |
 | `/sites` | `GET` | None | Returns supported backend knowledge sites array (`["https://radustoian.com"]`). |
 
 #### Available MCP Tools (`POST /mcp`)
+
+> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`.**
+
 | Tool Name | Parameters | Description |
 | :--- | :--- | :--- |
-| `ask` (alias: `ask-question`) | `query` (string, required; `question` accepted as alias) | Dynamically retrieves the most relevant block and section for any question about Radu Stoian, with fail-safe fallback to complete `llms-full.txt`. |
-| `get-section` | `section` (string, required) | Returns the raw text, parsed block array, and links of any specific section in `llms-full.txt`. |
+| `ask` (alias: `ask-question`) | `query` (string, required; `question` accepted as alias) | Dynamically answers generic and specific questions about Radu Stoian using a dynamic retrieval engine that grounds its answers by pulling from the site's knowledge base. |
+| `get-section` | `section` (string, required) | Returns the raw text, parsed block array, and links of any specific section from the site's knowledge base. |
 | `get-investigation-links` | None (`{}`) | Returns 32 external public profile, publication, and certification links for off-site agent exploration. |
 | `server-info` | None (`{}`) | Returns server version, runtime environment, protocol version, and knowledge source URLs. |
 
@@ -286,9 +293,9 @@ The site deploys a live multi-protocol server on Cloudflare Workers (`radustoian
 | Endpoint | Method | Parameters / Body | Description |
 | :--- | :--- | :--- | :--- |
 | `/api` or `/api/v1` | `GET` | None | API directory, endpoint catalog, version metadata, and OpenAPI link. |
-| `/api/v1/query` | `GET` | `q` (string, required) | BM25 question answering with relevance scoring and full profile fail-safe fallback. |
+| `/api/v1/query` | `GET` | `q` (string, required) | Dynamic question answering grounded in the site's knowledge base. |
 | `/api/v1/query` | `POST` | `{"question": "string"}` | JSON question answering with identical relevance scoring. |
-| `/api/v1/sections/:name` | `GET` | `name` in path or `?name=...` | Direct retrieval of section text, blocks, and citation links from `llms-full.txt`. |
+| `/api/v1/sections/:name` | `GET` | `name` in path or `?name=...` | Direct retrieval of section text, blocks, and citation links from the site's knowledge base. |
 | `/api/v1/links` | `GET` | None | Returns verified external citation, publication, and profile links. |
 | `/api/v1/resources` | `GET` | None | Returns catalog of underlying knowledge sources and raw profile documents. |
 | `/api/v1/info` | `GET` | None | Returns server version, runtime environment, MCP tools, and operating instructions. |
@@ -303,7 +310,7 @@ The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/c
     {
       "name": "mcp-server-tools",
       "type": "skill-md",
-      "description": "Instructions for autonomous AI agents to connect to the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering, section retrieval, and fail-safe retrieval.",
+      "description": "Instructions for autonomous AI agents to connect to the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering and section retrieval grounded in the site's knowledge base.",
       "url": "/.well-known/agent-skills/mcp-server-tools/SKILL.md",
       "digest": "sha256:37104b6300097a8ca2b2123afd65d4851a4f70723b2cf6971c560b82e09ac085"
     },
@@ -817,6 +824,8 @@ The LCP candidate on both mobile and desktop is the hero portrait image. The fol
 >    The Schema.org JSON-LD structured data graph is canonical and fixed. Do not modify, reformat, or alter the schema architecture or entity definitions in `index.html` or `metadata.json`.
 > 2. **If the page copy is updated, also update the `.md.txt` file and the contents of the `llms-full.txt` files.**  
 >    Any editorial or textual modifications made to `index.html` must be immediately mirrored across `index.md.txt` (and `.md.txt`) and `llms-full.txt` to keep the human HTML view and AI ingestion endpoints completely synchronized.
+> 3. **The `llms.txt` file must act strictly as an XML sitemap for AI agents.**  
+>    The `llms.txt` file should point to live or documentation pages only and must never point to operational endpoints (such as `/mcp`, `/api`, or `/ask`).
 
 ### Local Development & Preview
 To run and preview the site locally using Cloudflare's runtime emulator:
