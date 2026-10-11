@@ -185,7 +185,7 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 **Radu Stoian** is the [Technical Director at Enhance Media](https://www.enhancemedia.co.uk/), specializing in the shift from search engine discovery to **Agentic AI recommendations** in talent acquisition.
 
 ### Key Outcomes
-- [Virgin Atlantic (+142% conversions)](https://www.enhancemedia.co.uk/case-study/making-cabin-crew-applications-soar-for-virgin-atlantic/)
+- [Virgin Atlantic (+83% conversions)](https://www.enhancemedia.co.uk/case-study/making-cabin-crew-applications-soar-for-virgin-atlantic/)
 - [John Lewis Partnership (GFJ & 3M reach)](https://www.enhancemedia.co.uk/case-study/expanding-the-reach-of-multiple-employer-brands-using-google-for-jobs/)
 - [University of Surrey Case Study](https://www.enhancemedia.co.uk/case-study/securing-diverse-top-tier-talent-for-the-university-of-surrey/)
 
