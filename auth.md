@@ -6,7 +6,7 @@ Authentication and authorization discovery metadata for autonomous AI agents, cr
 
 ## 1. Overview & Agent Audience
 
-The APIs and agentic interfaces hosted on radustoian.com—including the Model Context Protocol endpoint (/mcp), the Public REST API (/api), and associated discovery catalogs—are open and public by default.
+The APIs and agentic interfaces hosted on radustoian.com—including the Model Context Protocol endpoint (/mcp), the NLWeb conversational endpoint (/ask), the Public REST API (/api), and associated discovery catalogs—are open and public by default.
 
 This document describes authentication discovery per the Auth.md Specification, RFC 8414, OpenID Connect Discovery 1.0, and RFC 9728 (OAuth Protected Resource Metadata).
 
@@ -78,7 +78,7 @@ Federated agent identities can assert verified credentials per RFC token exchang
 ## 4. Scopes & Permissions
 
 - `read:profile`: Read public profile information, biography, credentials, and case studies.
-- `read:ai`: Execute dynamic BM25 queries, retrieve citations, and interact with WebMCP / MCP tools.
+- `read:ai`: Execute dynamic BM25 queries, retrieve citations, query the NLWeb `/ask` conversational stream, and interact with WebMCP / MCP tools.
 - `openid`: OpenID Connect user and machine identity verification.
 - `profile`: Basic profile claims (name, preferred_username).
 - `email`: Identity verification email claim.

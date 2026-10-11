@@ -157,6 +157,10 @@
                 <a href="https://radustoian.com/mcp" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline font-semibold">/mcp ↗</a>
               </div>
               <div class="flex items-center justify-between">
+                <span class="text-cyan-400">rel="service":</span>
+                <a href="https://radustoian.com/ask" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline font-semibold">/ask (NLWeb SSE) ↗</a>
+              </div>
+              <div class="flex items-center justify-between">
                 <span class="text-cyan-400">rel="mcp-server-card":</span>
                 <a href="https://radustoian.com/.well-known/mcp/server-card.json" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline font-semibold">server-card.json ↗</a>
               </div>
@@ -361,7 +365,7 @@
         <span class="text-xs text-slate-400 hidden sm:inline">(Actionable Execution Routes & Tool Engines)</span>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         <!-- Route A: Live MCP -->
         <div class="bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-emerald-500/40 rounded-xl p-5 shadow-xl flex flex-col justify-between space-y-4 relative group">
@@ -513,6 +517,41 @@
           </div>
         </div>
 
+        <!-- Route F: NLWeb Conversational Protocol -->
+        <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 hover:border-emerald-500/30 rounded-xl p-5 shadow-xl flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <span class="text-xs font-mono font-bold text-emerald-400">ROUTE F • NLWEB PROTOCOL</span>
+            <h3 class="text-base font-bold text-white">Conversational Agent API</h3>
+            <p class="text-xs text-slate-300">
+              Server-Sent Events streaming & JSON answering over dynamic BM25 engine.
+            </p>
+            <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
+              <div>
+                <a href="https://radustoian.com/ask?q=who" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                  GET /ask?q=... (SSE) ↗
+                </a>
+              </div>
+              <div class="text-cyan-400">POST /ask (JSON / SSE)</div>
+              <div>
+                <a href="https://radustoian.com/who" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline block font-semibold">
+                  GET /who (Schema.org Person) ↗
+                </a>
+              </div>
+              <div>
+                <a href="https://radustoian.com/sites" target="_blank" rel="noopener noreferrer" class="text-slate-200 hover:text-cyan-300 underline block font-semibold">
+                  GET /sites (Knowledge Scope) ↗
+                </a>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400">
+              Multi-turn decontextualization, streaming answers, and Schema.org entity results.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-800 text-[11px] text-emerald-300 font-semibold">
+            ✓ Real-time streaming conversational AI
+          </div>
+        </div>
+
       </div>
 
       <!-- Connecting Flow Pipe -->
@@ -565,7 +604,7 @@
           <span class="text-xs text-slate-400">(Quick index of all files hosted on radustoian.com)</span>
         </div>
         <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 px-2.5 py-1 rounded border border-cyan-800/60">
-          21 Accessible Endpoints
+          24 Accessible Endpoints
         </span>
       </div>
 
@@ -632,6 +671,15 @@
         </a>
         <a href="https://radustoian.com/api" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
           <span>/api (REST API)</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/ask?q=who" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/ask (NLWeb Agent)</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/who" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/who (Schema.org Person)</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/sites" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/sites (NLWeb Directory)</span> <span>↗</span>
         </a>
       </div>
     </section>

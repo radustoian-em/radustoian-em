@@ -68,6 +68,7 @@ Initial HTTP handshake returns headers pointing to agent entry points and declar
 - `rel="describedby"`: [`/llms-full.txt`](https://radustoian.com/llms-full.txt) (Full documentation)
 - `rel="describedby"`: [`/metadata.json`](https://radustoian.com/metadata.json) (Schema.org JSON-LD)
 - `rel="service"`: [`/mcp`](https://radustoian.com/mcp) (Streamable HTTP MCP endpoint)
+- `rel="service"`: [`/ask`](https://radustoian.com/ask) (NLWeb Conversational Stream)
 - `rel="mcp-server-card"`: [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) (MCP Server Card)
 - `rel="ard"`: [`/.well-known/ard.json`](https://radustoian.com/.well-known/ard.json) (Agent Resource Discovery)
 - **Content Negotiation:** `Vary: Accept` (`Accept: text/markdown`)
@@ -162,6 +163,16 @@ Dual-protocol Cloudflare Worker providing standard JSON REST endpoints over shar
   - `GET /api/v1/info` - System version, capabilities, and agent operating instructions.
 - **Advantage:** Enables webhooks, frontend integrations, and cURL clients to query the knowledge engine over clean HTTP JSON without requiring JSON-RPC or an MCP client.
 
+### Route F: NLWeb Conversational Protocol (Server-Sent Events & JSON)
+NLWeb protocol endpoint providing conversational multi-turn AI over dynamic BM25 engine:
+- **Endpoint:** `GET /ask?q=...` & `POST /ask`
+- **Formats:** Server-Sent Events (`text/event-stream`, default) & JSON (`Accept: application/json` or `streaming=false`)
+- **Related Endpoints:**
+  - [`GET /who`](https://radustoian.com/who) - Authoritative Schema.org Person JSON-LD entity
+  - [`GET /sites`](https://radustoian.com/sites) - Supported backend domains catalog
+- **Features:** Multi-turn context decontextualization (`prev`), dynamic Schema.org entity extraction, and streaming token delivery.
+- **Advantage:** Plug-and-play integration for NLWeb-enabled conversational clients and streaming web agents.
+
 ---
 
 ## Synthesis Phase: Grounded Answer Formulated
@@ -185,7 +196,7 @@ Dual-protocol Cloudflare Worker providing standard JSON REST endpoints over shar
 
 ---
 
-## Master Resource Directory (21 Accessible Endpoints)
+## Master Resource Directory (24 Accessible Endpoints)
 
 | # | Endpoint / Resource | Description |
 |---|---------------------|-------------|
@@ -210,6 +221,9 @@ Dual-protocol Cloudflare Worker providing standard JSON REST endpoints over shar
 | 19 | [`/js/webmcp.js`](https://radustoian.com/js/webmcp.js) | In-browser WebMCP tool implementations |
 | 20 | [`/.webmcp/bridge.js`](https://radustoian.com/.webmcp/bridge.js) | WebMCP JavaScript bridge runner |
 | 21 | [`/api`](https://radustoian.com/api) | Public Knowledge REST API Directory |
+| 22 | [`/ask`](https://radustoian.com/ask) | NLWeb Conversational Stream (SSE / JSON) |
+| 23 | [`/who`](https://radustoian.com/who) | NLWeb Publisher Identity (Schema.org JSON-LD) |
+| 24 | [`/sites`](https://radustoian.com/sites) | NLWeb Sites Registry |
 
 ---
 
