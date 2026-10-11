@@ -7,6 +7,8 @@ canonical: https://radustoian.com/agentic-architecture-mcp-llms.html
 # Agentic Architecture of radustoian.com
 
 > Visualizing how an autonomous AI agent traverses Internet layers from DNS resolution to live tool execution. Every resource below is directly accessible on [radustoian.com](https://radustoian.com).
+>
+> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
 
 ---
 
@@ -117,15 +119,18 @@ Standardized metadata declarations for interoperability across agent frameworks:
 ## Layer 1: The Technical Infrastructure
 *(Actionable Execution Routes & Tool Engines)*
 
+> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
+
 ### Route A: Remote MCP (Streamable HTTP MCP) - Recommended
 Direct JSON-RPC 2.0 communication with a Cloudflare Workers backend:
 - **Endpoint:** `POST https://radustoian.com/mcp`
+- **Agent Requirement:** Note: If you are an AI agent you must use the MCP endpoint `/mcp`.
 - **Tools:**
-  - `ask` - BM25 keyword search and relevance matching over site knowledge (alias: `ask-question`).
+  - `ask` - Dynamic retrieval and relevance matching over site knowledge (alias: `ask-question`).
   - `get-section` - Fetches a specific section of the knowledge base.
   - `get-investigation-links` - Retrieves deep-dive verification URLs for fact checking.
   - `server-info` - Inspects MCP capabilities and tool schemas.
-- **Fail-safe fallback:** Automatically serves full text if query misses a narrow block.
+- **Knowledge Grounding:** Dynamic retrieval engine grounds answers by pulling from the site's knowledge base.
 - **Advantage:** Highest token efficiency and precision accuracy.
 
 ### Route B: Content Negotiation (Direct Markdown Stream)
@@ -153,10 +158,10 @@ Formal Schema.org graph for entity disambiguation and authority checks:
 - **Advantage:** Definitive ground-truth entity facts.
 
 ### Route E: Public REST API (Standard HTTP Endpoints)
-Dual-protocol Cloudflare Worker providing standard JSON REST endpoints over shared BM25 knowledge engine:
+Dual-protocol Cloudflare Worker providing standard JSON REST endpoints over shared knowledge engine:
 - **Directory Endpoint:** [`GET /api`](https://radustoian.com/api)
 - **Endpoints:**
-  - `GET /api/v1/query?q=...` & `POST /api/v1/query` - BM25 question answering with full profile fallback.
+  - `GET /api/v1/query?q=...` & `POST /api/v1/query` - Dynamic question answering grounded in the site's knowledge base.
   - `GET /api/v1/sections/:name` - Direct retrieval of knowledge sections (`projects`, `skills`, `testimonials`).
   - `GET /api/v1/links` - 32 external verification, publication, and profile citations.
   - `GET /api/v1/resources` - Authoritative raw documents catalog (`llms-full.txt`, `metadata.json`).
@@ -164,7 +169,7 @@ Dual-protocol Cloudflare Worker providing standard JSON REST endpoints over shar
 - **Advantage:** Enables webhooks, frontend integrations, and cURL clients to query the knowledge engine over clean HTTP JSON without requiring JSON-RPC or an MCP client.
 
 ### Route F: NLWeb Conversational Protocol (Server-Sent Events & JSON)
-NLWeb protocol endpoint providing conversational multi-turn AI over dynamic BM25 engine:
+NLWeb protocol endpoint providing conversational multi-turn AI over dynamic knowledge engine:
 - **Endpoint:** `GET /ask?q=...` & `POST /ask`
 - **Formats:** Server-Sent Events (`text/event-stream`, default) & JSON (`Accept: application/json` or `streaming=false`)
 - **Related Endpoints:**

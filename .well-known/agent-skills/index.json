@@ -4,7 +4,7 @@
     {
       "name": "mcp-server-tools",
       "type": "skill-md",
-      "description": "Instructions for autonomous AI agents to connect to the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering, section retrieval, and fail-safe retrieval.",
+      "description": "Instructions for autonomous AI agents to connect to the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering and section retrieval grounded in the site's knowledge base.",
       "url": "/.well-known/agent-skills/mcp-server-tools/SKILL.md",
       "digest": "sha256:55ef02a784b9eeb86cc3ebb0a63a65513ddc38e056d32446840ae6a884931eb2"
     },

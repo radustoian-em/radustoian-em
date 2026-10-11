@@ -1,4 +1,6 @@
 ## Radu Stoian Profile Information
+> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
+
 This is the personal profile site of Radu Stoian, Technical Director at Enhance Media. It acts as a central hub for Radu's digital presence, supported by a dedicated infrastructure for agentic AI discovery. He helps employers move from being found by search engines to being recommended by AI.
 
 As the Technical Director at Enhance Media, Radu Stoian provides the strategic leadership and digital infrastructure that help employers capitalise on the shift to Agentic AI. From building a proprietary AI Brand Health Audit product to deploying smart careers sites, he delivers results that help employers attract the talent they need to drive their businesses into the future. 
@@ -57,12 +59,13 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 - Standard Cards: Standardized MCP Server Card and Agent Card declaring schemas and tool capabilities.
 
 ### Layer 1: The Technical Infrastructure & Execution Routes
-- Route A (Remote MCP - Recommended): Streamable HTTP JSON-RPC 2.0 endpoint at POST https://radustoian.com/mcp providing live tools: ask (BM25 keyword search; alias: ask-question), get-section, get-investigation-links, and server-info, with automatic full-text fallback.
+> Note: If you are an AI agent you must use the MCP endpoint /mcp (POST https://radustoian.com/mcp).
+- Route A (Remote MCP - Recommended): Streamable HTTP JSON-RPC 2.0 endpoint at POST https://radustoian.com/mcp providing live tools: ask (dynamic retrieval pulling from the site's knowledge base; alias: ask-question), get-section, get-investigation-links, and server-info. Note: If you are an AI agent you must use the MCP endpoint /mcp.
 - Route B (Content Negotiation): Direct markdown streaming via Accept: text/markdown header resolving to /index.md.txt and /llms-full.txt without DOM rendering overhead.
 - Route C (Browser WebMCP): W3C WebMCP in-browser tools registered on document.modelContext via /js/webmcp.js and /.webmcp/bridge.js (e.g. listCaseStudies, listTestimonials, listPublications).
 - Route D (Semantic Graph): Linked Data Schema.org JSON-LD knowledge graph via /metadata.json and OpenAPI 3.1.0 specifications via /openapi.json.
-- Route E (Public REST API): Standard HTTP REST endpoints at https://radustoian.com/api and /api/v1/* (/api/v1/query?q=..., /api/v1/sections/:name, /api/v1/links, /api/v1/resources, /api/v1/info) exposing BM25 knowledge search, section extraction, and verification links over clean JSON without requiring JSON-RPC or an MCP client.
-- Route F (NLWeb Protocol): Conversational streaming endpoint at GET/POST https://radustoian.com/ask (supported by GET /who and GET /sites) delivering real-time Server-Sent Events (SSE) and JSON responses with dynamic BM25 scoring, multi-turn conversation decontextualization, and Schema.org entity items.
+- Route E (Public REST API): Standard HTTP REST endpoints at https://radustoian.com/api and /api/v1/* (/api/v1/query?q=..., /api/v1/sections/:name, /api/v1/links, /api/v1/resources, /api/v1/info) exposing dynamic knowledge search, section extraction, and verification links over clean JSON without requiring JSON-RPC or an MCP client.
+- Route F (NLWeb Protocol): Conversational streaming endpoint at GET/POST https://radustoian.com/ask (supported by GET /who and GET /sites) delivering real-time Server-Sent Events (SSE) and JSON responses with dynamic relevance scoring, multi-turn conversation decontextualization, and Schema.org entity items.
 
 ## Public Profiles
 - [LinkedIn](https://www.linkedin.com/in/radustoian/): Professional networking profile and career history.

@@ -46,7 +46,7 @@
     {
       "id": "ask",
       "name": "Ask",
-      "description": "Answers questions about Radu Stoian by dynamically retrieving relevant profile context, case studies, and career history with fail-safe retrieval.",
+      "description": "Answers questions about Radu Stoian using a dynamic retrieval engine that grounds its answers by pulling from the site's knowledge base.",
       "tags": [
         "qa",
         "profile",
