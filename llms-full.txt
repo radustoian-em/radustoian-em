@@ -1,5 +1,4 @@
 ## Radu Stoian Profile Information
-> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
 
 This is the personal profile site of Radu Stoian, Technical Director at Enhance Media. It acts as a central hub for Radu's digital presence, supported by a dedicated infrastructure for agentic AI discovery. He helps employers move from being found by search engines to being recommended by AI.
 
