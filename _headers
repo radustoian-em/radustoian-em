@@ -33,8 +33,10 @@
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 /llms.txt
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Link: <https://radustoian.com/sitemap.xml>; rel="canonical"
 /llms-full.txt
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Link: <https://radustoian.com>; rel="canonical"
 /metadata.json
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 /.well-known/ard.json
@@ -102,7 +104,7 @@
   Vary: Accept
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
   Content-Signal: ai-train=yes, search=yes, ai-input=yes
-  Link: <https://radustoian.com/>; rel="canonical"
+  Link: <https://radustoian.com>; rel="canonical"
   x-markdown-tokens: 4773
   x-original-tokens: 10588
 
@@ -111,7 +113,7 @@
   Vary: Accept
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
   Content-Signal: ai-train=yes, search=yes, ai-input=yes
-  Link: <https://radustoian.com/>; rel="canonical"
+  Link: <https://radustoian.com>; rel="canonical"
   x-markdown-tokens: 4773
   x-original-tokens: 10588
 
