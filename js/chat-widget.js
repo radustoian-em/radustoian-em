@@ -68,11 +68,14 @@
     reset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>`,
     copy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`,
     check: `<svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
-    citation: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`
+    citation: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`,
+    maximize: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>`,
+    restore: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="10" y1="14" x2="3" y2="21"></line></svg>`
   };
 
   // State
   let isOpen = false;
+  let isMaximized = false;
   let isGenerating = false;
   let isStreaming = false;
   let streamingTimer = null;
@@ -337,6 +340,9 @@
           <button class="nlweb-icon-btn" id="nlwebResetBtn" title="Reset conversation" aria-label="Reset conversation">
             <span style="width: 16px; height: 16px; display: inline-flex;">${ICONS.reset}</span>
           </button>
+          <button class="nlweb-icon-btn" id="nlwebMaximizeBtn" title="Maximise chat" aria-label="Maximise chat">
+            <span style="width: 16px; height: 16px; display: inline-flex;">${ICONS.maximize}</span>
+          </button>
           <button class="nlweb-icon-btn" id="nlwebCloseBtn" title="Close chat" aria-label="Close chat assistant">
             <span style="width: 18px; height: 18px; display: inline-flex;">${ICONS.close}</span>
           </button>
@@ -561,7 +567,49 @@
       launcher.setAttribute('aria-expanded', 'false');
       dialog.style.bottom = '';
       dialog.style.maxHeight = '';
+      dialog.style.height = '';
       launcher.focus();
+    }
+  }
+
+  // Maximise / Restore Toggle
+  function toggleMaximize(forceState) {
+    const dialog = document.getElementById('nlwebChatDialog');
+    const maxBtn = document.getElementById('nlwebMaximizeBtn');
+    if (!dialog) return;
+
+    isMaximized = (typeof forceState === 'boolean') ? forceState : !isMaximized;
+
+    if (isMaximized) {
+      dialog.classList.add('is-maximized');
+      if (maxBtn) {
+        maxBtn.title = 'Restore chat';
+        maxBtn.setAttribute('aria-label', 'Restore chat');
+        maxBtn.innerHTML = `<span style="width: 16px; height: 16px; display: inline-flex;">${ICONS.restore}</span>`;
+      }
+    } else {
+      dialog.classList.remove('is-maximized');
+      dialog.style.height = '';
+      if (maxBtn) {
+        maxBtn.title = 'Maximise chat';
+        maxBtn.setAttribute('aria-label', 'Maximise chat');
+        maxBtn.innerHTML = `<span style="width: 16px; height: 16px; display: inline-flex;">${ICONS.maximize}</span>`;
+      }
+    }
+
+    const container = document.getElementById('nlwebMessages');
+    if (container) {
+      const lastAgentRow = container.querySelector('.nlweb-msg-row.is-agent:last-of-type');
+      if (lastAgentRow && messages.length > 1) {
+        const userRow = lastAgentRow.previousElementSibling;
+        let targetTop = lastAgentRow.offsetTop - 12;
+        if (userRow && userRow.offsetHeight < 70 && container.clientHeight > 220) {
+          targetTop = userRow.offsetTop - 10;
+        }
+        container.scrollTop = Math.max(0, targetTop);
+      } else {
+        container.scrollTop = 0;
+      }
     }
   }
 
@@ -1142,6 +1190,7 @@
 
     const dialogEl = document.getElementById('nlwebChatDialog');
     if (dialogEl) dialogEl.classList.remove('has-answer');
+    if (isMaximized) toggleMaximize(false);
 
     // Smooth fade transition of messages
     if (container) {
@@ -1173,6 +1222,7 @@
     const { launcher, dialog } = dom;
     const closeBtn = document.getElementById('nlwebCloseBtn');
     const resetBtn = document.getElementById('nlwebResetBtn');
+    const maxBtn = document.getElementById('nlwebMaximizeBtn');
     const form = document.getElementById('nlwebInputForm');
     const input = document.getElementById('nlwebTextInput');
 
@@ -1184,6 +1234,9 @@
 
     // Reset button
     if (resetBtn) resetBtn.addEventListener('click', handleReset);
+
+    // Maximise / Restore button
+    if (maxBtn) maxBtn.addEventListener('click', () => toggleMaximize());
 
     // Form submit
     if (form) form.addEventListener('submit', handleSubmit);
@@ -1224,9 +1277,15 @@
           dialog.style.bottom = `${keyboardOffset}px`;
           const maxVpHeight = Math.min(vp.height, window.innerHeight * 0.9);
           dialog.style.maxHeight = `${maxVpHeight}px`;
+          if (isMaximized) {
+            dialog.style.height = `${vp.height}px`;
+          }
         } else {
           dialog.style.bottom = '';
           dialog.style.maxHeight = '';
+          if (isMaximized) {
+            dialog.style.height = '';
+          }
         }
       };
 
@@ -1295,7 +1354,9 @@
         }
       },
       close: () => toggleDialog(false),
-      toggle: () => toggleDialog()
+      toggle: () => toggleDialog(),
+      toggleMaximize: (forceState) => toggleMaximize(forceState),
+      isMaximized: () => isMaximized
     };
   }
 
