@@ -498,15 +498,28 @@
     if (isOpen) {
       dialog.classList.add('is-open');
       launcher.setAttribute('aria-expanded', 'true');
+
+      // Prevent background scrolling on mobile while chat sheet is open
+      if (window.innerWidth <= 640) {
+        document.body.style.overflow = 'hidden';
+      }
+
       if (!isStreaming) {
         renderMessages();
       }
+
+      // Auto-focus input only on non-touch desktop devices
+      // On mobile/touch devices, auto-focus summons the virtual keyboard and pushes the intro text off-screen
       setTimeout(() => {
-        if (input) input.focus();
+        const isMobileOrTouch = window.matchMedia('(max-width: 640px), (pointer: coarse)').matches;
+        if (!isMobileOrTouch && input) {
+          input.focus();
+        }
       }, 100);
     } else {
       dialog.classList.remove('is-open');
       launcher.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
       launcher.focus();
     }
   }
@@ -1042,6 +1055,26 @@
         toggleDialog(false);
       }
     });
+
+    // VisualViewport listener: keep chat within viewport when virtual keyboard opens on mobile
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        if (!isOpen || window.innerWidth > 640) return;
+        const dialog = document.getElementById('nlwebChatDialog');
+        if (!dialog) return;
+
+        const vpHeight = window.visualViewport.height;
+        if (vpHeight < window.innerHeight - 80) {
+          dialog.style.maxHeight = `${vpHeight}px`;
+          const messages = document.getElementById('nlwebMessages');
+          if (messages) {
+            messages.scrollTop = messages.scrollHeight;
+          }
+        } else {
+          dialog.style.maxHeight = '';
+        }
+      });
+    }
 
     // Global click listener for elements with data-nlweb-trigger
     document.addEventListener('click', (e) => {
