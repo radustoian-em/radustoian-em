@@ -724,13 +724,15 @@
     return leakagePatterns.some(pattern => pattern.test(text));
   }
 
-  // Guardrail check: Prevent abusive, profane, or dangerous requests
+  // Guardrail check: Prevent harassment, hate speech, sexually explicit, or dangerous requests
+  // Client-side pre-filter aligned with server-side Gemini safetySettings (BLOCK_MEDIUM_AND_ABOVE)
   function isAbusiveOrDangerous(text) {
     if (!text) return false;
     const dangerousPatterns = [
-      /\b(build|make|create)\s+(a\s+)?(bomb|explosive|weapon|poison)\b/i,
-      /\b(how\s+to\s+kill|commit\s+suicide|harm\s+myself)\b/i,
-      /\b(fuck|bitch|bastard|asshole|cunt)\b/i
+      /\b(build|make|create)\s+(a\s+)?(bomb|explosive|weapon|poison|malware|ransomware)\b/i,
+      /\b(how\s+to\s+kill|commit\s+suicide|harm\s+myself|self[\s-]harm)\b/i,
+      /\b(fuck|bitch|bastard|asshole|cunt)\b/i,
+      /\b(porn|pornography|sexually\s+explicit|nsfw|erotic)\b/i
     ];
     return dangerousPatterns.some(pattern => pattern.test(text));
   }
