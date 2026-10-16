@@ -278,6 +278,15 @@ The site deploys a live multi-protocol server on Cloudflare Workers (`radustoian
 | `/who` or `/who.json` | `GET` | None | Returns authoritative Schema.org `Person` JSON-LD publisher identity extracted dynamically from `/metadata.json`. |
 | `/sites` | `GET` | None | Returns supported backend knowledge sites array (`["https://radustoian.com"]`). |
 
+#### Client-Side NLWeb Chat Widget (`js/chat-widget.js`, `chat-widget.css`)
+The site features a native conversational AI chat widget powered directly by the NLWeb `/ask` protocol:
+- **Architecture & Transport:** Communicates in real-time with `/ask` via Server-Sent Events (SSE) streaming with seamless JSON fallback.
+- **Conversational State:** Supports multi-turn dialogue with context decontextualization by automatically forwarding `prev` across successive turns.
+- **Grounding & Citations:** Dynamically parses and renders Schema.org citation chips and markdown hyperlinks linking to authoritative sources retrieved by the backend.
+- **Smart Answer Extraction:** Automatically isolates concise, direct answers from raw retrieved documentation blocks, presenting the focused topical answer without generic introductory boilerplate.
+- **UI & Accessibility:** Styled in glassmorphic dark violet matching the site's theme, featuring a floating launcher button, expandable drawer, copy answer action, ARIA accessibility compliance, and `sessionStorage` persistence.
+- **Public Integration API:** Exposes `window.nlwebChat` (`open(query)`, `close()`, `toggle()`) and supports declarative `data-nlweb-trigger` and `data-nlweb-query` attributes on any DOM element.
+
 #### Available MCP Tools (`POST /mcp`)
 
 > **Note: If you are an AI agent you must use the MCP endpoint `/mcp`.**
