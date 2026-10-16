@@ -176,7 +176,7 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
   - [`GET /who`](https://radustoian.com/who) - Authoritative Schema.org Person JSON-LD entity
   - [`GET /sites`](https://radustoian.com/sites) - Supported backend domains catalog
 - **Features:** Multi-turn context decontextualization (`prev`), dynamic Schema.org entity extraction, and streaming token delivery.
-- **Advantage:** Plug-and-play integration for NLWeb-enabled conversational clients and streaming web agents.
+- **Advantage:** Plug-and-play integration for NLWeb-enabled conversational clients, streaming web agents, and powers the native client-side chat widget on radustoian.com.
 
 ---
 
@@ -201,7 +201,7 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 
 ---
 
-## Master Resource Directory (24 Accessible Endpoints)
+## Master Resource Directory (25 Accessible Endpoints)
 
 | # | Endpoint / Resource | Description |
 |---|---------------------|-------------|
@@ -229,6 +229,7 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 | 22 | [`/ask`](https://radustoian.com/ask) | NLWeb Conversational Stream (SSE / JSON) |
 | 23 | [`/who`](https://radustoian.com/who) | NLWeb Publisher Identity (Schema.org JSON-LD) |
 | 24 | [`/sites`](https://radustoian.com/sites) | NLWeb Sites Registry |
+| 25 | [`/js/chat-widget.js`](https://radustoian.com/js/chat-widget.js) | Native NLWeb Conversational AI Chat Widget |
 
 ---
 
