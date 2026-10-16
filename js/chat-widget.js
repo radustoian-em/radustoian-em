@@ -3,7 +3,7 @@
  * Protocol: NLWeb v0.1 (/ask endpoint handled by Cloudflare Worker mcp-server + Gemini)
  * 
  * Features:
- * - Server-side Gemini 3.1 Flash Lite synthesis via the Cloudflare Worker (/ask)
+ * - Server-side Gemini 3.5 Flash Lite synthesis via the Cloudflare Worker (/ask)
  * - Zero client-side API keys or credentials
  * - Direct grounding against live NLWeb dynamic retrieval engine
  * - Real-time Server-Sent Events (SSE) streaming with non-streaming JSON fallback
