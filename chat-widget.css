@@ -100,7 +100,14 @@
   transform: translateY(16px) scale(0.97);
   transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-              max-height 0.3s ease;
+              max-height 0.3s ease,
+              width 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              height 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              top 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              bottom 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              left 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              right 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              border-radius 0.25s ease;
   font-family: var(--nlweb-font-sans);
   color: var(--nlweb-text);
 }
@@ -109,6 +116,21 @@
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
+}
+
+/* Maximised Dialog State (Desktop: 80% height, 40% width) */
+.nlweb-dialog.is-maximized {
+  width: 40%;
+  min-width: min(400px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  height: 80%;
+  height: 80vh;
+  height: 80dvh;
+  max-height: 80vh;
+  max-height: 80dvh;
+  top: 10%;
+  bottom: 10%;
+  right: calc(24px + env(safe-area-inset-right, 0px));
 }
 
 /* Dialog Header */
@@ -275,7 +297,8 @@
 }
 
 .nlweb-msg-row.is-agent {
-  align-items: flex-start;
+  align-items: stretch;
+  width: 100%;
 }
 
 .nlweb-msg-bubble {
@@ -285,6 +308,7 @@
   line-height: 1.5;
   border-radius: 14px;
   word-break: break-word;
+  box-sizing: border-box;
 }
 
 .nlweb-msg-row.is-user .nlweb-msg-bubble {
@@ -295,11 +319,57 @@
 }
 
 .nlweb-msg-row.is-agent .nlweb-msg-bubble {
+  width: 100%;
+  max-width: 100%;
   background: rgba(26, 13, 44, 0.68);
   border: 1px solid var(--nlweb-border);
   color: var(--nlweb-text-subtle);
   border-bottom-left-radius: 4px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              min-height 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              padding 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              font-size 0.25s ease;
+}
+
+/* Maximised Chatbox: Inner boxes expand relatively in height and width */
+.nlweb-dialog.is-maximized .nlweb-messages {
+  padding: 20px 20px 14px;
+  gap: 16px;
+}
+
+.nlweb-dialog.is-maximized .nlweb-msg-row.is-agent .nlweb-msg-bubble {
+  padding: 16px 20px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Intro text box has natural height encompassing text at the top */
+.nlweb-msg-row:first-child {
+  flex: 0 0 auto;
+}
+
+.nlweb-msg-row:first-child .nlweb-msg-bubble {
+  height: auto;
+  min-height: 0;
+}
+
+/* When an answer is present in maximized mode, expand the answer box height relative to chat box */
+.nlweb-dialog.is-maximized .nlweb-msg-row.is-agent:not(:first-child):last-child {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.nlweb-dialog.is-maximized .nlweb-msg-row.is-agent:not(:first-child):last-child .nlweb-msg-bubble {
+  flex: 1 1 auto;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.nlweb-dialog.is-maximized .nlweb-msg-row.is-agent:not(:first-child):last-child .nlweb-lead-content {
+  flex: 1 1 auto;
 }
 
 /* Agent Message Formatting */
@@ -617,6 +687,7 @@
   }
 
   .nlweb-dialog {
+    top: auto;
     bottom: 0;
     right: 0;
     left: 0;
@@ -634,6 +705,32 @@
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
     z-index: 10000;
     overscroll-behavior: contain;
+  }
+
+  /* Maximised Dialog State (Mobile: 100% height, 100% width) */
+  .nlweb-dialog.is-maximized {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100%;
+    max-height: 100vh;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: none;
+  }
+
+  .nlweb-dialog.is-maximized .nlweb-header {
+    padding-top: max(14px, calc(10px + env(safe-area-inset-top, 0px)));
+  }
+
+  .nlweb-dialog.is-maximized .nlweb-footer {
+    padding-bottom: max(16px, calc(12px + env(safe-area-inset-bottom, 0px)));
   }
 
   .nlweb-messages {
