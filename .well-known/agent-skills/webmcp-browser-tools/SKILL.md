@@ -47,3 +47,8 @@ All WebMCP tools are marked with `readOnly: true`, `readOnlyHint: true`, `idempo
 8. **`listCertificatesAndSkills`** (alias: `getCertificatesAndSkills`)
    - **Parameters:** `{}`
    - **Returns:** Professional credentials (Google Cloud GenAI Leader, Intro to GenAI, BigQuery), skill tags, and external profile links to all skills and certifications on LinkedIn and Google Skills.
+
+### Conversational Chat
+9. **`askChatbot`** (aliases: `askAIAboutRadu`, `askAiAboutRadu`, `openChatbot`, `openChat`, `askAboutRadu`, `ask_chatbot`)
+   - **Parameters:** `{ "question": string }` (optional)
+   - **Behavior:** Opens the interactive conversational AI chat dialog on the page, ensures the chat window is visible, and focuses the chat input box ready for the user to type their question (with optional pre-filled question text).
