@@ -37,6 +37,10 @@
   const LIMIT_REACHED_MESSAGE = "You've reached the free limit of 5 questions about Radu. If you're interested to find out more reach out on LinkedIn https://www.linkedin.com/in/radustoian";
   let lastSubmitTime = 0;
 
+  // Typewriter Speed Configuration: 5 words per second (200ms per word)
+  const WORDS_PER_SECOND = 5;
+  const WORD_TICK_MS = 1000 / WORDS_PER_SECOND;
+
   // Session query counter helpers
   function getSessionQueryCount() {
     try {
@@ -141,6 +145,23 @@
     }).join('');
 
     return text;
+  }
+
+  // Helper: Tokenize text into words while preserving attached markdown formatting and spacing
+  function tokenizeIntoWords(text) {
+    if (!text) return [];
+    // Tokenize by atomic markdown links, headers, words, and attach whitespace to preceding token
+    const rawTokens = text.match(/\[[^\]]+\]\([^\)]+\)|#{1,4}\s+[^\n]+|\s+|\S+/g) || [text];
+    const wordChunks = [];
+    for (let i = 0; i < rawTokens.length; i++) {
+      const t = rawTokens[i];
+      if (/^\s+$/.test(t) && wordChunks.length > 0) {
+        wordChunks[wordChunks.length - 1] += t;
+      } else {
+        wordChunks.push(t);
+      }
+    }
+    return wordChunks;
   }
 
   // Helper: Fallback Lead Extractor for NLWeb Responses
@@ -468,7 +489,7 @@
       container.appendChild(row);
     });
 
-    // If generating and streaming
+    // If generating and waiting for response
     if (isGenerating) {
       const typingRow = document.createElement('div');
       typingRow.className = 'nlweb-msg-row is-agent';
@@ -482,10 +503,26 @@
         </div>
       `;
       container.appendChild(typingRow);
-    }
 
-    // Scroll to bottom
-    container.scrollTop = container.scrollHeight;
+      // Scroll to show the newly submitted user question and typing indicator
+      const userRow = container.querySelector('.nlweb-msg-row.is-user:last-of-type');
+      if (userRow) {
+        container.scrollTop = Math.max(0, userRow.offsetTop - 10);
+      } else {
+        container.scrollTop = container.scrollHeight;
+      }
+    } else {
+      // Stay at the top of the latest agent answer if one exists
+      const lastAgentRow = container.querySelector('.nlweb-msg-row.is-agent:last-of-type');
+      if (lastAgentRow && messages.length > 1) {
+        const userRow = lastAgentRow.previousElementSibling;
+        let targetTop = lastAgentRow.offsetTop - 12;
+        if (userRow && userRow.offsetHeight < 70 && container.clientHeight > 220) {
+          targetTop = userRow.offsetTop - 10;
+        }
+        container.scrollTop = Math.max(0, targetTop);
+      }
+    }
   }
 
   // Open / Close Toggle
@@ -500,9 +537,11 @@
       dialog.classList.add('is-open');
       launcher.setAttribute('aria-expanded', 'true');
 
-      // Prevent background scrolling on mobile while chat sheet is open
-      if (window.innerWidth <= 640) {
-        document.body.style.overflow = 'hidden';
+      // Close mobile navigation menu if it is currently open
+      const navbar = document.getElementById('navbar');
+      if (navbar && navbar.classList.contains('mobile-open')) {
+        const navToggle = document.getElementById('navToggle');
+        if (navToggle) navToggle.click();
       }
 
       if (!isStreaming) {
@@ -520,7 +559,8 @@
     } else {
       dialog.classList.remove('is-open');
       launcher.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
+      dialog.style.bottom = '';
+      dialog.style.maxHeight = '';
       launcher.focus();
     }
   }
@@ -557,13 +597,16 @@
     return rendered + '<span class="nlweb-typing-cursor" aria-hidden="true"></span>';
   }
 
-  // Helper: Create live agent message bubble when first SSE token chunk arrives
+  // Helper: Create live agent message bubble when first token chunk arrives
   function createLiveAgentBubble() {
     const typingIndicator = document.getElementById('nlwebTypingIndicator');
     if (typingIndicator) typingIndicator.remove();
     isGenerating = false;
     isStreaming = true;
     updateSendBtnState();
+
+    const dialog = document.getElementById('nlwebChatDialog');
+    if (dialog) dialog.classList.add('has-answer');
 
     const container = document.getElementById('nlwebMessages');
     if (!container) return null;
@@ -582,7 +625,15 @@
 
     const prevScrollBehavior = container.style.scrollBehavior;
     container.style.scrollBehavior = 'auto';
-    container.scrollTop = container.scrollHeight;
+
+    // Requirement 3: Don't automatically scroll to the end of the answer.
+    // Stay at the top of the answer and the user can scroll down to see the full answer.
+    const userRow = row.previousElementSibling;
+    let targetTop = row.offsetTop - 12;
+    if (userRow && userRow.offsetHeight < 70 && container.clientHeight > 220) {
+      targetTop = userRow.offsetTop - 10;
+    }
+    container.scrollTop = Math.max(0, targetTop);
 
     return { container, row, bubble, leadContent, prevScrollBehavior };
   }
@@ -658,11 +709,12 @@
     });
     saveHistory();
 
-    container.scrollTop = container.scrollHeight;
+    // Requirement 3: Do NOT automatically scroll to the end of the answer!
+    // Stay at the top of the answer and the user can scroll down to see the full answer.
     updateSendBtnState();
   }
 
-  // Stream agent response word-by-word with typewriter effect (used for local guardrails and non-chunk fallbacks)
+  // Stream agent response word-by-word with typewriter effect at 5 words per second (used for NLWeb answers, guardrails, and JSON fallback)
   function streamAgentResponse(targetText, sources, userQuestion) {
     return new Promise((resolve) => {
       const liveBubble = createLiveAgentBubble();
@@ -675,41 +727,24 @@
         return;
       }
 
-      const { container, leadContent } = liveBubble;
-
-      // Tokenize by atomic markdown links, headers, words, and whitespace
-      const rawTokens = targetText.match(/\[[^\]]+\]\([^\)]+\)|#{1,4}\s+[^\n]+|\s+|\S+/g) || [targetText];
-      const wordChunks = [];
-      for (let i = 0; i < rawTokens.length; i++) {
-        const t = rawTokens[i];
-        if (/^\s+$/.test(t) && wordChunks.length > 0) {
-          wordChunks[wordChunks.length - 1] += t;
-        } else {
-          wordChunks.push(t);
-        }
-      }
-
+      const { leadContent } = liveBubble;
+      const wordChunks = tokenizeIntoWords(targetText);
       let tokenIndex = 0;
-      let accumulated = '';
       const totalChunks = wordChunks.length;
-      const stepSize = 1;
-      const tickInterval = 35; // Fast, responsive typewriter fallback (~28 words/sec)
 
       if (streamingTimer) {
         clearInterval(streamingTimer);
         streamingTimer = null;
       }
 
+      // Requirement 1: 5 words per second = 1 word every 200ms
       streamingTimer = setInterval(() => {
-        let steps = 0;
-        while (steps < stepSize && tokenIndex < totalChunks) {
-          accumulated += wordChunks[tokenIndex];
+        if (tokenIndex < totalChunks) {
           tokenIndex++;
-          steps++;
+          const currentText = wordChunks.slice(0, tokenIndex).join('');
+          leadContent.innerHTML = renderMarkdownWithCursor(currentText);
+          // Requirement 3: Do NOT scroll to bottom! Stay at the top of the answer.
         }
-
-        leadContent.innerHTML = renderMarkdownWithCursor(accumulated);
-        container.scrollTop = container.scrollHeight;
 
         if (tokenIndex >= totalChunks) {
           clearInterval(streamingTimer);
@@ -717,7 +752,7 @@
           finalizeLiveAgentBubble(liveBubble, targetText, sources, userQuestion);
           resolve();
         }
-      }, tickInterval);
+      }, WORD_TICK_MS);
     });
   }
 
@@ -808,12 +843,45 @@
     let liveBubble = null;
     const gatheredSources = [];
     let streamedSuccessfully = false;
+    let sseFinished = false;
+    let streamWordChunks = [];
+    let streamWordIndex = 0;
 
     if (activeAbortController) {
       try { activeAbortController.abort(); } catch (e) {}
     }
     const abortController = new AbortController();
     activeAbortController = abortController;
+
+    if (streamingTimer) {
+      clearInterval(streamingTimer);
+      streamingTimer = null;
+    }
+
+    // Typewriter Promise: paces display at 5 words per second (200ms per word)
+    let finishTypewriterResolve = null;
+    const typewriterPromise = new Promise((resolve) => {
+      finishTypewriterResolve = resolve;
+    });
+
+    streamingTimer = setInterval(() => {
+      if (!liveBubble && streamWordChunks.length > 0) {
+        liveBubble = createLiveAgentBubble();
+      }
+
+      if (liveBubble && streamWordIndex < streamWordChunks.length) {
+        streamWordIndex++;
+        const currentDisplay = streamWordChunks.slice(0, streamWordIndex).join('');
+        liveBubble.leadContent.innerHTML = renderMarkdownWithCursor(currentDisplay);
+        // Requirement 3: Do NOT scroll to bottom! Stay at top of answer.
+      }
+
+      if (sseFinished && streamWordIndex >= streamWordChunks.length) {
+        clearInterval(streamingTimer);
+        streamingTimer = null;
+        if (finishTypewriterResolve) finishTypewriterResolve();
+      }
+    }, WORD_TICK_MS);
 
     try {
       // 1. Try Server-Sent Events (SSE) Stream via GET (/ask on mcp-server worker)
@@ -845,13 +913,7 @@
             if (delta) {
               streamedChunkText += delta;
               agentResponseText = streamedChunkText;
-              if (!liveBubble) {
-                liveBubble = createLiveAgentBubble();
-              }
-              if (liveBubble && liveBubble.leadContent) {
-                liveBubble.leadContent.innerHTML = renderMarkdownWithCursor(agentResponseText);
-                liveBubble.container.scrollTop = liveBubble.container.scrollHeight;
-              }
+              streamWordChunks = tokenizeIntoWords(streamedChunkText);
             }
           } catch (e) {
             // Ignore malformed chunk JSON
@@ -871,14 +933,12 @@
         } else if (evType === 'summary') {
           if (cleanBody) {
             agentResponseText = cleanBody;
-            if (liveBubble && liveBubble.leadContent) {
-              liveBubble.leadContent.innerHTML = renderMarkdownWithCursor(agentResponseText);
-              liveBubble.container.scrollTop = liveBubble.container.scrollHeight;
-            }
+            streamWordChunks = tokenizeIntoWords(cleanBody);
           }
         } else if (evType === 'nlws') {
           if (!agentResponseText && cleanBody) {
             agentResponseText = cleanBody;
+            streamWordChunks = tokenizeIntoWords(cleanBody);
           }
         }
       };
@@ -923,17 +983,27 @@
 
       // The answer is synthesized by Gemini and grounded by the Cloudflare Worker (/ask)
       const targetText = extractSmartAnswer(agentResponseText, userQuestion) || agentResponseText;
+      streamWordChunks = tokenizeIntoWords(targetText);
+      sseFinished = true;
+
+      // Wait until all words have finished displaying at 5 words per second
+      await typewriterPromise;
 
       if (liveBubble) {
-        // Live token chunks were already rendered directly as they arrived over SSE
         finalizeLiveAgentBubble(liveBubble, targetText, gatheredSources, userQuestion);
       } else {
-        // Fallback if server sent only a single summary event without token chunks
         await streamAgentResponse(targetText, gatheredSources, userQuestion);
       }
       streamedSuccessfully = true;
 
     } catch (streamError) {
+      if (streamingTimer) {
+        clearInterval(streamingTimer);
+        streamingTimer = null;
+      }
+      if (finishTypewriterResolve) {
+        finishTypewriterResolve();
+      }
       if (streamError && streamError.name === 'AbortError') {
         return;
       }
@@ -1070,6 +1140,9 @@
       setTimeout(() => resetBtn.classList.remove('is-spinning'), 500);
     }
 
+    const dialogEl = document.getElementById('nlwebChatDialog');
+    if (dialogEl) dialogEl.classList.remove('has-answer');
+
     // Smooth fade transition of messages
     if (container) {
       container.style.scrollBehavior = 'auto';
@@ -1138,24 +1211,27 @@
       }
     });
 
-    // VisualViewport listener: keep chat within viewport when virtual keyboard opens on mobile
+    // VisualViewport listener: keep chat within viewport when virtual keyboard opens or screen resizes on mobile
     if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
+      const handleVisualViewportChange = () => {
         if (!isOpen || window.innerWidth > 640) return;
         const dialog = document.getElementById('nlwebChatDialog');
         if (!dialog) return;
 
-        const vpHeight = window.visualViewport.height;
-        if (vpHeight < window.innerHeight - 80) {
-          dialog.style.maxHeight = `${vpHeight}px`;
-          const messages = document.getElementById('nlwebMessages');
-          if (messages) {
-            messages.scrollTop = messages.scrollHeight;
-          }
+        const vp = window.visualViewport;
+        const keyboardOffset = Math.max(0, window.innerHeight - (vp.offsetTop + vp.height));
+        if (keyboardOffset > 50) {
+          dialog.style.bottom = `${keyboardOffset}px`;
+          const maxVpHeight = Math.min(vp.height, window.innerHeight * 0.9);
+          dialog.style.maxHeight = `${maxVpHeight}px`;
         } else {
+          dialog.style.bottom = '';
           dialog.style.maxHeight = '';
         }
-      });
+      };
+
+      window.visualViewport.addEventListener('resize', handleVisualViewportChange);
+      window.visualViewport.addEventListener('scroll', handleVisualViewportChange);
     }
 
     // Global click listener for elements with data-nlweb-trigger

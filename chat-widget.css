@@ -22,9 +22,9 @@
 /* 1. Floating Launcher Button (Circular Sparkle FAB) */
 .nlweb-launcher {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 9990;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  right: calc(24px + env(safe-area-inset-right, 0px));
+  z-index: 9999;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -77,14 +77,15 @@
 /* 2. Chat Modal / Dialog Window */
 .nlweb-dialog {
   position: fixed;
-  bottom: 84px;
-  right: 24px;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  right: calc(24px + env(safe-area-inset-right, 0px));
   width: 400px;
   max-width: calc(100vw - 32px);
   height: auto;
   min-height: 320px;
-  max-height: min(580px, calc(100vh - 110px));
-  z-index: 9995;
+  max-height: min(70vh, calc(100vh - 104px));
+  max-height: min(70dvh, calc(100dvh - 104px));
+  z-index: 10000;
   background: var(--nlweb-bg);
   border: 1px solid var(--nlweb-border);
   border-radius: 20px;
@@ -98,7 +99,8 @@
   pointer-events: none;
   transform: translateY(16px) scale(0.97);
   transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+              transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+              max-height 0.3s ease;
   font-family: var(--nlweb-font-sans);
   color: var(--nlweb-text);
 }
@@ -238,7 +240,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 420px;
+  min-height: 120px;
   scroll-behavior: smooth;
   transition: opacity 0.15s ease-out;
 }
@@ -605,10 +607,13 @@
 /* Mobile Responsive Adaptations */
 @media (max-width: 640px) {
   .nlweb-launcher {
-    bottom: 20px;
-    right: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    bottom: max(20px, calc(14px + env(safe-area-inset-bottom, 0px)));
+    right: calc(16px + env(safe-area-inset-right, 0px));
+    right: max(16px, env(safe-area-inset-right, 0px));
     width: 48px;
     height: 48px;
+    z-index: 9999;
   }
 
   .nlweb-dialog {
@@ -618,26 +623,28 @@
     width: 100%;
     max-width: 100%;
     height: auto;
-    max-height: 85vh;
-    max-height: 85dvh;
+    min-height: 260px;
+    max-height: 90vh;
+    max-height: 90dvh;
+    max-height: min(90dvh, 90svh);
     border-radius: 20px 20px 0 0;
     border-bottom: none;
     border-left: none;
     border-right: none;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    overscroll-behavior: contain;
   }
 
   .nlweb-messages {
     flex: 1 1 auto;
-    max-height: calc(85dvh - 180px);
-    max-height: calc(85vh - 180px);
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
   .nlweb-footer {
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    padding-bottom: max(16px, calc(12px + env(safe-area-inset-bottom, 0px)));
   }
 }
 
