@@ -144,9 +144,9 @@ HTTP content negotiation that completely bypasses HTML DOM rendering:
 ### Route C: Browser WebMCP (In-Browser DOM Tools)
 W3C WebMCP specification registered on `document.modelContext`:
 - **Files:**
-  - [`/js/webmcp.js`](https://radustoian.com/js/webmcp.js) - 8 registered browser tools.
+  - [`/js/webmcp.js`](https://radustoian.com/js/webmcp.js) - 9 registered browser tools.
   - [`/.webmcp/bridge.js`](https://radustoian.com/.webmcp/bridge.js) - WebMCP bridge runner.
-- **Tools:** `listCaseStudies()`, `listTestimonials()`, `listPublications()`, `showCarouselSlide()`.
+- **Tools:** `listCaseStudies()`, `listTestimonials()`, `listPublications()`, `showCarouselSlide()`, `askChatbot()`.
 - **Advantage:** Ideal for browser-based agents navigating the DOM.
 
 ### Route D: Semantic Graph (Linked Data JSON-LD)

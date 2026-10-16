@@ -555,4 +555,69 @@
       });
     }
   }, ['getCertificatesAndSkills']);
+
+  // ---------- Tool 9: Ask Chatbot (Conversational Chatbot) ----------
+  register({
+    name: 'askChatbot',
+    title: 'Ask Chatbot',
+    description:
+      'Opens the conversational AI chatbot box on radustoian.com, making it visible and ready ' +
+      'for the user to type their question in the chat box about Radu Stoian.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        question: {
+          type: 'string',
+          description: 'Optional question or prompt to pre-fill in the chat input box for the user.'
+        }
+      }
+    },
+    annotations: { readOnlyHint: true },
+    execute: async ({ question, query, prompt } = {}) => {
+      closeMobileNav();
+
+      const textToPrefill = (question || query || prompt || '').trim();
+
+      // Open the chat dialog
+      if (window.nlwebChat && typeof window.nlwebChat.openReady === 'function') {
+        window.nlwebChat.openReady(textToPrefill);
+      } else if (window.nlwebChat && typeof window.nlwebChat.open === 'function') {
+        window.nlwebChat.open();
+      } else {
+        const launcher = document.getElementById('nlwebChatLauncher');
+        if (launcher && launcher.getAttribute('aria-expanded') !== 'true') {
+          launcher.click();
+        } else {
+          const dialog = document.getElementById('nlwebChatDialog');
+          if (dialog) dialog.classList.add('is-open');
+        }
+      }
+
+      // Ensure input element is focused and ready for the user to type
+      const input = document.getElementById('nlwebTextInput');
+      if (input) {
+        if (textToPrefill && (!window.nlwebChat || typeof window.nlwebChat.openReady !== 'function')) {
+          input.value = textToPrefill;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        input.focus();
+        if (typeof input.setSelectionRange === 'function') {
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
+        setTimeout(() => {
+          input.focus();
+          if (typeof input.setSelectionRange === 'function') {
+            input.setSelectionRange(input.value.length, input.value.length);
+          }
+        }, 120);
+      }
+
+      return ok({
+        status: 'open',
+        readyForInput: true,
+        message: 'The chatbot box is open and ready for the user to type their question.',
+        prefilledQuestion: textToPrefill || undefined
+      });
+    }
+  }, ['askAIAboutRadu', 'askAiAboutRadu', 'openChatbot', 'openChat', 'askAboutRadu', 'ask_chatbot']);
 })();

@@ -1272,6 +1272,28 @@
           queryNLWeb(cleanQuery);
         }
       },
+      openReady: (prefill) => {
+        toggleDialog(true);
+        const input = document.getElementById('nlwebTextInput');
+        if (input) {
+          if (prefill && typeof prefill === 'string') {
+            input.value = prefill.slice(0, MAX_INPUT_CHARS);
+            input.style.height = 'auto';
+            input.style.height = `${Math.min(Math.max(input.scrollHeight, 44), 120)}px`;
+            updateSendBtnState();
+          }
+          input.focus();
+          if (typeof input.setSelectionRange === 'function') {
+            input.setSelectionRange(input.value.length, input.value.length);
+          }
+          setTimeout(() => {
+            input.focus();
+            if (typeof input.setSelectionRange === 'function') {
+              input.setSelectionRange(input.value.length, input.value.length);
+            }
+          }, 120);
+        }
+      },
       close: () => toggleDialog(false),
       toggle: () => toggleDialog()
     };

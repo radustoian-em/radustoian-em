@@ -106,7 +106,7 @@ radustoian-em/
 ├── index.md.txt                         # High-fidelity Markdown representation of homepage (.md.txt)
 ├── js/
 │   ├── script.js                        # Modular, dependency-free JavaScript engine (412 lines)
-│   └── webmcp.js                        # WebMCP in-browser AI agent tools (8 tools: navigation, carousels, case studies, testimonials, contacts, publications, speaking, skills)
+│   └── webmcp.js                        # WebMCP in-browser AI agent tools (9 tools: navigation, carousels, case studies, testimonials, contacts, publications, speaking, skills, chat)
 ├── llms.txt                             # Standardized summary file for LLMs & AI crawlers
 ├── llms-full.txt                        # Exhaustive context and biographical markdown for deep ingestion
 ├── metadata.json                        # Standalone JSON-LD Schema.org profile document
@@ -251,6 +251,7 @@ The site implements the emerging [WebMCP specification](https://webmachinelearni
 | `listPublications` | List publications & Substack articles | `platform` (optional enum: `all`, `substack`, `linkedin`) | Extracts main publications (titles, topics, summaries, URLs) and specifically identifies all direct links to Radu's articles on Substack. |
 | `listSpeakingEngagements` | List speaking & industry engagements | `format` (optional string filter) | Returns conference masterclasses (BrightonSEO), podcast appearances, expert panels, and open standards contributions (OJCP) with event links and media resources (YouTube, Speaker Deck, GitHub). |
 | `listCertificatesAndSkills` | List certificates, skills & profile links | None (`{}`) | Returns professional certificates (Google Cloud GenAI Leader, Intro to GenAI, BigQuery), skill tags, and verified external profile links to all skills and certifications on LinkedIn and Google Skills. |
+| `askChatbot` | Ask Chatbot | `question` (optional string) | Opens the interactive AI chatbot box and focuses the chat input ready for the user to type their question about Radu Stoian. |
 
 > [!NOTE]
 > **CSS Styling & WebMCP Synchronization Invariant:** Following any CSS styling or layout modifications (e.g. changes to class names, DOM selectors, card structures, or carousel transition timings), verify whether the WebMCP tools in `js/webmcp.js` require corresponding updates. WebMCP tools rely directly on DOM element queries, class selectors (such as `.talk-item`, `.cert-item`, `.skill-tag`), and carousel transition events (`transitionend` on `#expTrack` and `#testTrack`).
