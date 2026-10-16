@@ -73,11 +73,16 @@
     border: 0;
   }
 
+  html, body {
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+
   body{
     font-family: var(--font-body); color: var(--ink);
     background: linear-gradient(170deg, #130722 0%, #0a0314 40%, #05010a 70%, #000000 100%);
     background-attachment: fixed; min-height: 100vh; line-height: 1.5;
-    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
     padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
   }
   body.menu-open { overflow: hidden; }
