@@ -28,6 +28,7 @@ Job Title: Technical Director
 Employer: Enhance Media
 Disambiguating Description: Technical Director at Enhance Media specialising in AI strategy, technical SEO, and digital talent attraction.
 Locations: Guildford, United Kingdom (Home), Woking, United Kingdom (Work).
+Education / Alma Mater: Henri Coanda Air Force Academy — Bachelor of Science (BS), Organizational Management.
 Known Languages: English, Romanian, French.
 Subject Matter Expertise: Agentic AI, Artificial Intelligence (AI), AI Optimisation, Generative AI, GEO, Google Tag Manager, Google for Jobs, International SEO, Natural Language Processing (NLP), Public Speaking, SEO, SEO Audits, Search Engine Marketing (SEM), Teaching Workshops, Team Leadership, Team Management, Technical SEO, Training, Web Development, WordPress, XML Sitemaps, schema.org.
 
@@ -98,7 +99,7 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 - [Generative AI Leader Certification](https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile): Certification obtained from Google Cloud.
 - [Introduction to Generative AI](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/4068456): Foundational Generative AI certification from Google.
 - [Insights from Data with BigQuery](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/832533): Data analytics certification from Google.
-- [Bachelor of Science (BS), Organizational Management](https://www.afahc.ro/index_en.html): Educational degree obtained from Henri Coanda Air Force Academy.
+- [Bachelor of Science (BS), Organizational Management](https://www.afahc.ro/index_en.html): Educational degree obtained from Henri Coanda Air Force Academy, where Radu Stoian studied and graduated.
 
 ## Additional skill details
 - [Substack Recommendations Backup](https://radustoian.substack.com/p/radu-stoian-technical-director-at-f99): Substack AI-readable backup and analysis of client recommendations.
