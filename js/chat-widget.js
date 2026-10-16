@@ -72,6 +72,7 @@
   let isGenerating = false;
   let isStreaming = false;
   let streamingTimer = null;
+  let activeAbortController = null;
   let prevQuery = '';
   let messages = [];
 
@@ -541,40 +542,140 @@
     return sources;
   }
 
-  // Stream agent response word-by-word with typewriter effect and row-by-row auto-scrolling
+  // Helper: Render markdown with trailing typing cursor inside the closing block tag
+  function renderMarkdownWithCursor(mdText) {
+    const rendered = renderMarkdown(mdText);
+    if (rendered.endsWith('</p>')) {
+      return rendered.replace(/<\/p>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></p>');
+    } else if (rendered.endsWith('</li></ul>')) {
+      return rendered.replace(/<\/li><\/ul>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></li></ul>');
+    } else if (rendered.endsWith('</h3>')) {
+      return rendered.replace(/<\/h3>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></h3>');
+    } else if (rendered.endsWith('</h4>')) {
+      return rendered.replace(/<\/h4>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></h4>');
+    }
+    return rendered + '<span class="nlweb-typing-cursor" aria-hidden="true"></span>';
+  }
+
+  // Helper: Create live agent message bubble when first SSE token chunk arrives
+  function createLiveAgentBubble() {
+    const typingIndicator = document.getElementById('nlwebTypingIndicator');
+    if (typingIndicator) typingIndicator.remove();
+    isGenerating = false;
+    isStreaming = true;
+    updateSendBtnState();
+
+    const container = document.getElementById('nlwebMessages');
+    if (!container) return null;
+
+    const row = document.createElement('div');
+    row.className = 'nlweb-msg-row is-agent';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'nlweb-msg-bubble';
+
+    const leadContent = document.createElement('div');
+    leadContent.className = 'nlweb-lead-content';
+    bubble.appendChild(leadContent);
+    row.appendChild(bubble);
+    container.appendChild(row);
+
+    const prevScrollBehavior = container.style.scrollBehavior;
+    container.style.scrollBehavior = 'auto';
+    container.scrollTop = container.scrollHeight;
+
+    return { container, row, bubble, leadContent, prevScrollBehavior };
+  }
+
+  // Helper: Finalize live agent message bubble with sources, copy action, and session persistence
+  function finalizeLiveAgentBubble(liveBubble, targetText, sources, userQuestion) {
+    isStreaming = false;
+
+    if (!liveBubble || !liveBubble.container) {
+      messages.push({ role: 'agent', content: targetText, query: userQuestion, sources: sources });
+      saveHistory();
+      updateSendBtnState();
+      return;
+    }
+
+    const { container, row, bubble, leadContent, prevScrollBehavior } = liveBubble;
+
+    // Restore normal smooth scroll behavior
+    container.style.scrollBehavior = prevScrollBehavior || '';
+
+    // Clean final render without cursor
+    leadContent.innerHTML = renderMarkdown(targetText);
+
+    // Render Grounded Sources Chips if present
+    if (sources && sources.length > 0) {
+      const sourcesWrap = document.createElement('div');
+      sourcesWrap.className = 'nlweb-sources-container';
+      const header = document.createElement('div');
+      header.className = 'nlweb-sources-header';
+      header.innerHTML = `<span style="width: 12px; height: 12px; display: inline-flex;">${ICONS.citation}</span> Grounded in ${sources.length} source${sources.length > 1 ? 's' : ''}`;
+      sourcesWrap.appendChild(header);
+
+      const list = document.createElement('div');
+      list.className = 'nlweb-sources-list';
+      sources.forEach(src => {
+        const chip = document.createElement('a');
+        chip.className = 'nlweb-source-chip';
+        chip.href = src.url;
+        chip.target = '_blank';
+        chip.rel = 'noopener noreferrer';
+        const name = src.name || src.url.replace(/^https?:\/\//, '');
+        chip.innerHTML = `<span>${escapeHtml(name)}</span> ↗`;
+        list.appendChild(chip);
+      });
+      sourcesWrap.appendChild(list);
+      bubble.appendChild(sourcesWrap);
+    }
+
+    // Copy Button
+    const actions = document.createElement('div');
+    actions.className = 'nlweb-msg-actions';
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'nlweb-msg-copy-btn';
+    copyBtn.innerHTML = `${ICONS.copy} <span>Copy</span>`;
+    copyBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(targetText);
+        copyBtn.innerHTML = `${ICONS.check} <span>Copied!</span>`;
+        setTimeout(() => {
+          copyBtn.innerHTML = `${ICONS.copy} <span>Copy</span>`;
+        }, 2000);
+      } catch (err) {}
+    };
+    actions.appendChild(copyBtn);
+    row.appendChild(actions);
+
+    // Add to messages and persist
+    messages.push({
+      role: 'agent',
+      content: targetText,
+      query: userQuestion,
+      sources: sources
+    });
+    saveHistory();
+
+    container.scrollTop = container.scrollHeight;
+    updateSendBtnState();
+  }
+
+  // Stream agent response word-by-word with typewriter effect (used for local guardrails and non-chunk fallbacks)
   function streamAgentResponse(targetText, sources, userQuestion) {
     return new Promise((resolve) => {
-      const typingIndicator = document.getElementById('nlwebTypingIndicator');
-      if (typingIndicator) typingIndicator.remove();
-      isGenerating = false;
-
-      const container = document.getElementById('nlwebMessages');
-      if (!container) {
+      const liveBubble = createLiveAgentBubble();
+      if (!liveBubble) {
         messages.push({ role: 'agent', content: targetText, query: userQuestion, sources: sources });
         saveHistory();
+        isStreaming = false;
+        updateSendBtnState();
         resolve();
         return;
       }
 
-      // Create message row
-      const row = document.createElement('div');
-      row.className = 'nlweb-msg-row is-agent';
-
-      const bubble = document.createElement('div');
-      bubble.className = 'nlweb-msg-bubble';
-
-      const leadContent = document.createElement('div');
-      leadContent.className = 'nlweb-lead-content';
-      bubble.appendChild(leadContent);
-      row.appendChild(bubble);
-      container.appendChild(row);
-
-      // Set scroll behavior to auto during typewriter streaming so line wraps scroll down synchronously
-      const prevScrollBehavior = container.style.scrollBehavior;
-      container.style.scrollBehavior = 'auto';
-
-      // Scroll so the newly appended agent bubble is in view
-      container.scrollTop = container.scrollHeight;
+      const { container, leadContent } = liveBubble;
 
       // Tokenize by atomic markdown links, headers, words, and whitespace
       const rawTokens = targetText.match(/\[[^\]]+\]\([^\)]+\)|#{1,4}\s+[^\n]+|\s+|\S+/g) || [targetText];
@@ -592,10 +693,7 @@
       let accumulated = '';
       const totalChunks = wordChunks.length;
       const stepSize = 1;
-      const tickInterval = 200; // Exactly 5 words per second (1000ms / 5 words)
-
-      isStreaming = true;
-      updateSendBtnState();
+      const tickInterval = 35; // Fast, responsive typewriter fallback (~28 words/sec)
 
       if (streamingTimer) {
         clearInterval(streamingTimer);
@@ -610,90 +708,13 @@
           steps++;
         }
 
-        const rendered = renderMarkdown(accumulated);
-        let withCursor;
-        if (rendered.endsWith('</p>')) {
-          withCursor = rendered.replace(/<\/p>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></p>');
-        } else if (rendered.endsWith('</li></ul>')) {
-          withCursor = rendered.replace(/<\/li><\/ul>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></li></ul>');
-        } else if (rendered.endsWith('</h3>')) {
-          withCursor = rendered.replace(/<\/h3>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></h3>');
-        } else if (rendered.endsWith('</h4>')) {
-          withCursor = rendered.replace(/<\/h4>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></h4>');
-        } else {
-          withCursor = rendered + '<span class="nlweb-typing-cursor" aria-hidden="true"></span>';
-        }
-
-        leadContent.innerHTML = withCursor;
-
-        // Auto-scroll down gradually keeping the latest row and cursor in view
+        leadContent.innerHTML = renderMarkdownWithCursor(accumulated);
         container.scrollTop = container.scrollHeight;
 
         if (tokenIndex >= totalChunks) {
           clearInterval(streamingTimer);
           streamingTimer = null;
-          isStreaming = false;
-
-          // Restore normal smooth scroll behavior
-          container.style.scrollBehavior = prevScrollBehavior || '';
-
-          // Clean final render without cursor
-          leadContent.innerHTML = renderMarkdown(targetText);
-
-          // Render Grounded Sources Chips if present
-          if (sources && sources.length > 0) {
-            const sourcesWrap = document.createElement('div');
-            sourcesWrap.className = 'nlweb-sources-container';
-            const header = document.createElement('div');
-            header.className = 'nlweb-sources-header';
-            header.innerHTML = `<span style="width: 12px; height: 12px; display: inline-flex;">${ICONS.citation}</span> Grounded in ${sources.length} source${sources.length > 1 ? 's' : ''}`;
-            sourcesWrap.appendChild(header);
-
-            const list = document.createElement('div');
-            list.className = 'nlweb-sources-list';
-            sources.forEach(src => {
-              const chip = document.createElement('a');
-              chip.className = 'nlweb-source-chip';
-              chip.href = src.url;
-              chip.target = '_blank';
-              chip.rel = 'noopener noreferrer';
-              const name = src.name || src.url.replace(/^https?:\/\//, '');
-              chip.innerHTML = `<span>${escapeHtml(name)}</span> ↗`;
-              list.appendChild(chip);
-            });
-            sourcesWrap.appendChild(list);
-            bubble.appendChild(sourcesWrap);
-          }
-
-          // Copy Button
-          const actions = document.createElement('div');
-          actions.className = 'nlweb-msg-actions';
-          const copyBtn = document.createElement('button');
-          copyBtn.className = 'nlweb-msg-copy-btn';
-          copyBtn.innerHTML = `${ICONS.copy} <span>Copy</span>`;
-          copyBtn.onclick = async () => {
-            try {
-              await navigator.clipboard.writeText(targetText);
-              copyBtn.innerHTML = `${ICONS.check} <span>Copied!</span>`;
-              setTimeout(() => {
-                copyBtn.innerHTML = `${ICONS.copy} <span>Copy</span>`;
-              }, 2000);
-            } catch (err) {}
-          };
-          actions.appendChild(copyBtn);
-          row.appendChild(actions);
-
-          // Add to messages and persist
-          messages.push({
-            role: 'agent',
-            content: targetText,
-            query: userQuestion,
-            sources: sources
-          });
-          saveHistory();
-
-          container.scrollTop = container.scrollHeight;
-          updateSendBtnState();
+          finalizeLiveAgentBubble(liveBubble, targetText, sources, userQuestion);
           resolve();
         }
       }, tickInterval);
@@ -746,7 +767,7 @@
 
 
 
-  // Query NLWeb using SSE Streaming or JSON fallback (Gemini synthesis handled server-side by mcp-server worker)
+  // Query NLWeb using real-time SSE Token Streaming or JSON fallback (Gemini synthesis handled server-side by mcp-server worker)
   async function queryNLWeb(userQuestion) {
     // 1. Guardrail Check: Never accept prompt injection / ignore instructions
     if (isPromptInjection(userQuestion)) {
@@ -783,15 +804,24 @@
     prevQuery = userQuestion;
 
     let agentResponseText = '';
+    let streamedChunkText = '';
+    let liveBubble = null;
     const gatheredSources = [];
     let streamedSuccessfully = false;
+
+    if (activeAbortController) {
+      try { activeAbortController.abort(); } catch (e) {}
+    }
+    const abortController = new AbortController();
+    activeAbortController = abortController;
 
     try {
       // 1. Try Server-Sent Events (SSE) Stream via GET (/ask on mcp-server worker)
       const streamUrl = `${ASK_ENDPOINT}?q=${encodeURIComponent(userQuestion)}${currentPrev ? '&prev=' + encodeURIComponent(currentPrev) : ''}&mode=generate`;
       const response = await fetch(streamUrl, {
         method: 'GET',
-        headers: { 'Accept': 'text/event-stream' }
+        headers: { 'Accept': 'text/event-stream' },
+        signal: abortController.signal
       });
 
       if (!response.ok) {
@@ -803,12 +833,30 @@
       let streamBuffer = '';
 
       const processEvent = (evType, evBody) => {
-        let cleanBody = evBody.trim();
-        if (cleanBody.startsWith('data:')) {
-          cleanBody = cleanBody.slice(5).trim();
-        }
+        const dataLines = evBody
+          .split('\n')
+          .map(line => line.startsWith('data:') ? line.slice(5).replace(/^ /, '') : line);
+        const cleanBody = dataLines.join('\n').trim();
 
-        if (evType === 'result') {
+        if (evType === 'chunk') {
+          try {
+            const chunkObj = JSON.parse(cleanBody);
+            const delta = chunkObj.delta || chunkObj.text || '';
+            if (delta) {
+              streamedChunkText += delta;
+              agentResponseText = streamedChunkText;
+              if (!liveBubble) {
+                liveBubble = createLiveAgentBubble();
+              }
+              if (liveBubble && liveBubble.leadContent) {
+                liveBubble.leadContent.innerHTML = renderMarkdownWithCursor(agentResponseText);
+                liveBubble.container.scrollTop = liveBubble.container.scrollHeight;
+              }
+            }
+          } catch (e) {
+            // Ignore malformed chunk JSON
+          }
+        } else if (evType === 'result') {
           try {
             const resObj = JSON.parse(cleanBody);
             if (resObj.url && !gatheredSources.some(s => s.url === resObj.url)) {
@@ -821,43 +869,50 @@
             // Ignore parse errors on single result
           }
         } else if (evType === 'summary') {
-          if (cleanBody) agentResponseText = cleanBody;
+          if (cleanBody) {
+            agentResponseText = cleanBody;
+            if (liveBubble && liveBubble.leadContent) {
+              liveBubble.leadContent.innerHTML = renderMarkdownWithCursor(agentResponseText);
+              liveBubble.container.scrollTop = liveBubble.container.scrollHeight;
+            }
+          }
         } else if (evType === 'nlws') {
-          if (!agentResponseText && cleanBody) agentResponseText = cleanBody;
+          if (!agentResponseText && cleanBody) {
+            agentResponseText = cleanBody;
+          }
         }
+      };
+
+      const parseEventBlock = (block) => {
+        const trimmed = block.trim();
+        if (!trimmed.startsWith('event:')) return;
+        const firstNl = trimmed.indexOf('\n');
+        if (firstNl === -1) return;
+        const evType = trimmed.slice(6, firstNl).trim();
+        const evBody = trimmed.slice(firstNl + 1);
+        processEvent(evType, evBody);
       };
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        streamBuffer += decoder.decode(value, { stream: true });
+        streamBuffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
 
-        // Extract completed event blocks delimited by '\nevent: '
-        let eventIdx;
-        while ((eventIdx = streamBuffer.indexOf('\nevent: ')) !== -1) {
-          const chunk = streamBuffer.slice(0, eventIdx).trim();
-          streamBuffer = streamBuffer.slice(eventIdx + 1); // keep 'event: ...'
-
-          if (chunk.startsWith('event: ')) {
-            const firstNl = chunk.indexOf('\n');
-            if (firstNl !== -1) {
-              const evType = chunk.slice(7, firstNl).trim();
-              const evBody = chunk.slice(firstNl + 1);
-              processEvent(evType, evBody);
-            }
-          }
+        // Extract completed SSE event blocks delimited by double newline '\n\n'
+        let boundaryIdx;
+        while ((boundaryIdx = streamBuffer.indexOf('\n\n')) !== -1) {
+          const eventBlock = streamBuffer.slice(0, boundaryIdx);
+          streamBuffer = streamBuffer.slice(boundaryIdx + 2);
+          parseEventBlock(eventBlock);
         }
       }
 
-      // Process the last event in the buffer
-      const finalChunk = streamBuffer.trim();
-      if (finalChunk.startsWith('event: ')) {
-        const firstNl = finalChunk.indexOf('\n');
-        if (firstNl !== -1) {
-          const evType = finalChunk.slice(7, firstNl).trim();
-          const evBody = finalChunk.slice(firstNl + 1);
-          processEvent(evType, evBody);
+      streamBuffer += decoder.decode().replace(/\r\n/g, '\n');
+      if (streamBuffer.trim()) {
+        const remainingBlocks = streamBuffer.split('\n\n');
+        for (const block of remainingBlocks) {
+          parseEventBlock(block);
         }
       }
 
@@ -869,12 +924,26 @@
       // The answer is synthesized by Gemini and grounded by the Cloudflare Worker (/ask)
       const targetText = extractSmartAnswer(agentResponseText, userQuestion) || agentResponseText;
 
-      // Stream the agent response word-by-word with typewriter animation
-      await streamAgentResponse(targetText, gatheredSources, userQuestion);
+      if (liveBubble) {
+        // Live token chunks were already rendered directly as they arrived over SSE
+        finalizeLiveAgentBubble(liveBubble, targetText, gatheredSources, userQuestion);
+      } else {
+        // Fallback if server sent only a single summary event without token chunks
+        await streamAgentResponse(targetText, gatheredSources, userQuestion);
+      }
       streamedSuccessfully = true;
 
     } catch (streamError) {
+      if (streamError && streamError.name === 'AbortError') {
+        return;
+      }
       console.warn('NLWeb SSE stream fallback triggered:', streamError);
+
+      // Remove partial live bubble if stream failed mid-flight before falling back to JSON
+      if (liveBubble && liveBubble.row) {
+        liveBubble.row.remove();
+        liveBubble = null;
+      }
 
       try {
         // Fallback to JSON POST /ask (handled by mcp-server worker)
@@ -889,7 +958,8 @@
             prev: currentPrev,
             streaming: false,
             mode: 'generate'
-          })
+          }),
+          signal: abortController.signal
         });
 
         if (!jsonRes.ok) {
@@ -905,6 +975,9 @@
         streamedSuccessfully = true;
 
       } catch (jsonError) {
+        if (jsonError && jsonError.name === 'AbortError') {
+          return;
+        }
         console.warn('NLWeb query failed:', jsonError);
         messages.push({
           role: 'agent',
@@ -913,10 +986,13 @@
         });
       }
     } finally {
+      if (activeAbortController === abortController) {
+        activeAbortController = null;
+      }
       isGenerating = false;
       isStreaming = false;
       updateSendBtnState();
-      if (!streamedSuccessfully) {
+      if (!streamedSuccessfully && !abortController.signal.aborted) {
         saveHistory();
         renderMessages();
       }
@@ -975,6 +1051,10 @@
     const container = document.getElementById('nlwebMessages');
     const input = document.getElementById('nlwebTextInput');
 
+    if (activeAbortController) {
+      try { activeAbortController.abort(); } catch (e) {}
+      activeAbortController = null;
+    }
     if (streamingTimer) {
       clearInterval(streamingTimer);
       streamingTimer = null;
