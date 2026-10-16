@@ -827,7 +827,7 @@
 
     // 4. Guardrail Check: Politely refuse any question that is not about Radu
     if (!isQueryAboutRadu(userQuestion)) {
-      const refusalText = "I am only meant to answer questions about Radu Stoian. Please feel free to ask anything about him, his background, skills, or projects.";
+      const refusalText = "I am only meant to answer questions about Radu Stoian. Please feel free to ask anything about him, his background, skills, case studies, or projects.";
       await streamAgentResponse(refusalText, [], userQuestion);
       return;
     }

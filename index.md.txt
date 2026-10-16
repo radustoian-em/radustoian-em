@@ -74,9 +74,9 @@ Training and upskilling the next generation of digital leaders, and elevating in
 
 ---
 
-## Projects & Clients
+## Projects & Clients (Case Studies)
 
-I’ve had the privilege of working with major brands developing digital strategies, running AI & SEO campaigns, and implementing complex Google for Jobs and Source-to-Hire analytics solutions.
+Section `#projects` showcases client case studies from working with major brands developing digital strategies, running AI & SEO campaigns, and implementing complex Google for Jobs and Source-to-Hire analytics solutions:
 
 - **[Expanding the Reach of Multiple Employer Brands Using Google for Jobs](https://www.enhancemedia.co.uk/case-study/expanding-the-reach-of-multiple-employer-brands-using-google-for-jobs/)** (John Lewis Partnership)
   - Over 3 million potential candidates reached in 2023.

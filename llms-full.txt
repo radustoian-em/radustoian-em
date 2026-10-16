@@ -83,7 +83,8 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 - [AI is the new Gateway to your Employer Brand](https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/): Examining how AI interactions form candidates' first impressions of employers.
 - [How to optimise AIs chain of thought](https://www.linkedin.com/pulse/how-optimise-ais-chain-thought-radu-stoian-d873e/): Analysis of optimizing interactions for AI models.
 
-## Projects and Clients
+## Projects, Clients and Case Studies (#projects)
+This section (#projects) showcases client case studies and project success stories:
 - [Expanding the Reach of Multiple Employer Brands Using Google for Jobs](https://www.enhancemedia.co.uk/case-study/expanding-the-reach-of-multiple-employer-brands-using-google-for-jobs/): Case study featuring over 3 million candidates reached in 2023.
 - [Securing Diverse Top-Tier Talent for the University of Surrey](https://www.enhancemedia.co.uk/case-study/securing-diverse-top-tier-talent-for-the-university-of-surrey/): Case study detailing technical optimization for academic roles.
 - [Making Cabin Crew Applications Soar for Virgin Atlantic](https://www.enhancemedia.co.uk/case-study/making-cabin-crew-applications-soar-for-virgin-atlantic/): Case study on establishing robust technical SEO to drive job applications.
@@ -104,3 +105,11 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 ## Additional skill details
 - [Substack Recommendations Backup](https://radustoian.substack.com/p/radu-stoian-technical-director-at-f99): Substack AI-readable backup and analysis of client recommendations.
 - [LinkedIn Recommendations](https://www.linkedin.com/in/radustoian/details/recommendations/): Raw collection of recommendations received on LinkedIn.
+
+## Contact and Connect (#connect)
+This section (#connect) provides direct links to contact and connect with Radu Stoian:
+- [Connect on LinkedIn](https://www.linkedin.com/in/radustoian/): Primary channel to get in touch, discuss AI optimisation, employer brand strategy, speaking engagements, and podcast appearances.
+- [Radu Stoian Website](https://radustoian.com/): Official portfolio and digital hub.
+- [Substack Newsletter](https://radustoian.substack.com/): Contact and subscribe for articles on talent attraction and AI.
+- [GitHub](https://github.com/radustoian-em): Code repositories and agentic AI discovery infrastructure.
+
