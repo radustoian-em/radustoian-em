@@ -910,21 +910,22 @@
     return taskPatterns.some(pattern => pattern.test(text));
   }
 
-  // Guardrail check: Only answer questions about Radu or his portfolio work
+  // Guardrail check: Only answer questions about Radu or his portfolio work (supports any language)
   function isQueryAboutRadu(question, prev = '') {
     if (!question) return false;
     const q = question.trim();
-    const directRef = /\b(radu('s)?|stoian|he|him|his)\b|radustoian/i;
-    const portfolioDomainRef = /\b(enhance\s*media|virgin\s*atlantic|john\s*lewis|jlp|surrey|ojcp|open\s*job\s*context|brighton\s*seo|woorank|credly|henri\s*coanda|substack|speaker\s*deck|talent\s*attraction|employer\s*brand(ing)?|brand\s*health|webmcp|nlweb|case\s*stud(y|ies)|testimonial|certification|credential|alma\s*mater|masterclass|google\s*cloud|genai\s*leader)\b/i;
+    const directRef = /\b(radu('s)?|stoian|he|him|his|el|lui|il|son|sa|ses|su|sus|er|ihm|sein|seine|ele|dele|suo|sua|suoi)\b|radustoian/i;
+    const portfolioDomainRef = /\b(enhance\s*media|virgin\s*atlantic|john\s*lewis|jlp|surrey|mott\s*macdonald|actionhr|eteach|ojcp|open\s*job\s*context|brighton\s*seo|woorank|credly|henri\s*coanda|substack|speaker\s*deck|talent\s*attraction|employer\s*brand(ing)?|brand\s*health|webmcp|nlweb|case\s*stud(y|ies)|testimonial|certification|credential|alma\s*mater|masterclass|google\s*cloud|genai\s*leader|bigquery|proiect|projet|proyecto|projekt|client|cliente|kunden|studi|étud|educa|certifica|competen|limbi|langue|idioma|sprache|cariera|carrière|carrera|experien|architec|podcast|articol|article|artículo|director|directeur|direktor)\b/i;
+    const nonLatinScriptRef = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p{Script=Hangul}|\p{Script=Cyrillic}|\p{Script=Arabic}|\p{Script=Greek}|\p{Script=Devanagari}/u;
 
-    if (directRef.test(q) || portfolioDomainRef.test(q)) {
+    if (directRef.test(q) || portfolioDomainRef.test(q) || nonLatinScriptRef.test(q)) {
       return true;
     }
 
-    if (prev && (directRef.test(prev) || portfolioDomainRef.test(prev))) {
+    if (prev && (directRef.test(prev) || portfolioDomainRef.test(prev) || nonLatinScriptRef.test(prev))) {
       const wordCount = q.split(/\s+/).length;
       const followUpRef = /\b(project|client|skill|degree|education|university|school|language|location|live|based|speak|talk|podcast|article|publication|contact|connect|linkedin|github|work|role|experience|result|outcome|metric|more|else|about\s+that|about\s+it|they|them|their)\b/i;
-      if (wordCount <= 8 || followUpRef.test(q)) {
+      if (wordCount <= 15 || followUpRef.test(q)) {
         return true;
       }
     }
