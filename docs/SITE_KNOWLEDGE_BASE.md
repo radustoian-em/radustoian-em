@@ -217,7 +217,7 @@ The site is built to bridge conventional search engine visibility with modern LL
 > **Page Copy & AI Synchronization Invariant:** Whenever the homepage copy in `index.html` is updated, the `.md.txt` file (`index.md.txt` / `.md.txt`) and the contents of `llms-full.txt` must always be updated in parallel to maintain parity across AI ingestion layers.
 
 ### Markdown Content Negotiation (`Accept: text/markdown`)
-The site supports HTTP content negotiation for autonomous agents via a dedicated Cloudflare Worker deployed in the Cloudflare dashboard and bound to `radustoian.com/*`:
+The site supports HTTP content negotiation for autonomous agents via a dedicated Cloudflare Worker (`markdown-for-agents`), version-controlled in Git and automatically deployed on push to `main` via Cloudflare Workers Builds, bound to `radustoian.com/*`:
 - **Agents:** When a request includes the `Accept: text/markdown` header, the Cloudflare Worker intercepts the request and returns `index.md.txt` with `Content-Type: text/markdown; charset=utf-8`, `Vary: Accept`, `Cache-Control: private, no-cache, no-store, must-revalidate` (preventing edge cache collisions between HTML and Markdown representations), and token estimation headers (`x-markdown-tokens: 4774`, `x-original-tokens: 10588`).
 - **Browsers:** Standard browser requests pass through to Cloudflare Pages static origin to receive semantic HTML with `Vary: Accept` and discovery Link header (`Link: </index.md.txt>; rel="alternate"; type="text/markdown"`).
 - **Direct Route:** Accessible directly via `/index.md.txt` or `/.md.txt`.
@@ -261,7 +261,13 @@ The site implements the emerging [WebMCP specification](https://webmachinelearni
 > [!IMPORTANT]
 > **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
 
-The site deploys a live multi-protocol server on Cloudflare Workers (`radustoian-mcp`), providing remote autonomous AI agents with structured JSON-RPC 2.0 access over Streamable HTTP (`POST https://radustoian.com/mcp`), conversational streaming access via the NLWeb Protocol (`GET/POST https://radustoian.com/ask`, `/who`, `/sites`), AND developers, frontend applications, and webhooks with a public REST API (`GET/POST https://radustoian.com/api` and `/api/v1/*`). All three interfaces share an in-memory dynamic retrieval engine that grounds answers by pulling from the site's knowledge base, source document caching, and dynamic Schema.org entity structuring.
+The site deploys a live multi-protocol server on Cloudflare Workers (`radustoian-mcp` / `mcp-server`), providing remote autonomous AI agents with structured JSON-RPC 2.0 access over Streamable HTTP (`POST https://radustoian.com/mcp`), conversational streaming access via the NLWeb Protocol (`GET/POST https://radustoian.com/ask`, `/who`, `/sites`), AND developers, frontend applications, and webhooks with a public REST API (`GET/POST https://radustoian.com/api` and `/api/v1/*`). All three interfaces share an in-memory dynamic retrieval engine that grounds answers by pulling from the site's knowledge base, source document caching, and dynamic Schema.org entity structuring.
+
+#### CI/CD & Automated Edge Deployment (Cloudflare Workers Builds)
+Both edge workers are version-controlled in dedicated Git repositories and automatically built and deployed via Cloudflare Workers Builds:
+- **`mcp-server`**: Automatic deployment on push to `main` (`npm install` -> `npx wrangler deploy`). Runtime secrets (such as `GEMINI_API_KEY`) are managed strictly via Cloudflare's encrypted environment variables/secret store and are never committed to version control.
+- **`markdown-for-agents`**: Automatic deployment on push to `main` (`npm install` -> `npx wrangler deploy`). Pure edge routing and content negotiation with zero required secret bindings.
+
 
 #### Key Architectural Characteristics
 - **Transports:**
