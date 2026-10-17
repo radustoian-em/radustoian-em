@@ -54,14 +54,24 @@ canonical: https://radustoian.com/agentic-architecture-mcp-llms.html
 ## Layer 3: The Discovery & Signalling Layer
 *(Network, Transport & Predictable Endpoints)*
 
-### 01. DNS Resolution (RFC 9460) - Service Binding & Security
-Before opening an HTTP connection, the resolver queries DNS for capabilities, transport parameters, and policy records:
+### 01. DNS Resolution (RFC 9460) - Service Binding & AI Discovery (DNS-AID)
+DNS records (SVCB and TXT) are published on deeper agentic subdomains rather than the main domain, following the emerging **DNS for AI Discovery (DNS-AID)** standard to signal agent capabilities and protocols before establishing an HTTP connection:
 
-- **HTTPS (SVCB Type 65):** `alpn="h3,h2" ech="..."` - Signals HTTP/3 + Encrypted Client Hello.  
-  Inspect via [Live Google DoH](https://dns.google/resolve?name=radustoian.com&type=HTTPS).
-- **TXT Records:** `v=spf1 -all` (Domain Defense & Authenticity).  
-  Inspect via [Live Google DoH](https://dns.google/resolve?name=radustoian.com&type=TXT).
-- **Authoritative Nameservers:** `bella.ns.cloudflare.com`
+1. **`_index._agents.radustoian.com`** (DNS for AI Discovery / DNS-AID Record)
+   - **SVCB (Type 65):** `1 radustoian.com. mandatory=alpn,port alpn=h2,h3 port=443`  
+     Proof: [Google Dig SVCB](https://toolbox.googleapps.com/apps/dig/#SVCB/_index._agents.radustoian.com)
+   - **TXT Record:** `v=dnsaid1; uri=https://radustoian.com/.well-known/agent-card.json; ard=https://radustoian.com/.well-known/ard.json`  
+     Proof: [Google Dig TXT](https://toolbox.googleapps.com/apps/dig/#TXT/_index._agents.radustoian.com)
+
+2. **`_a2a._agents.radustoian.com`** (Agent-to-Agent Protocol Binding)
+   - **SVCB (Type 65):** `1 radustoian.com. mandatory=alpn,port alpn=a2a port=443`  
+     Proof: [Google Dig SVCB](https://toolbox.googleapps.com/apps/dig/#SVCB/_a2a._agents.radustoian.com)
+
+3. **`_mcp._agents.radustoian.com`** (Model Context Protocol Binding)
+   - **SVCB (Type 65):** `1 radustoian.com. mandatory=alpn,port alpn=mcp port=443`  
+     Proof: [Google Dig SVCB](https://toolbox.googleapps.com/apps/dig/#SVCB/_mcp._agents.radustoian.com)
+
+- **Details:** [https://isitagentready.com/radustoian.com](https://isitagentready.com/radustoian.com)
 
 ### 02. HTTP Transport (RFC 8288) - Header Pointer Signals
 Initial HTTP handshake returns headers pointing to agent entry points and declaring content negotiation availability:
