@@ -27,7 +27,9 @@ canonical: https://radustoian.com
 
 ---
 
-## About Radu Stoian
+## About Radu Stoian (#about)
+
+- [About Radu Stoian](https://radustoian.com/#about): Official profile, executive background, and organic-first talent attraction strategy on radustoian.com.
 
 As the Technical Director at Enhance Media, I provide the strategic leadership and digital infrastructure that help employers capitalise on the shift to Agentic AI. From building a proprietary **AI Brand Health Audit** product to deploying smart careers sites, I deliver results that help employers attract the talent they need to drive their businesses into the future.
 
@@ -41,7 +43,9 @@ Clients and colleagues know me as someone who won’t take “it can’t be done
 
 ---
 
-## Areas of Expertise
+## Areas of Expertise (#expertise)
+
+- [Areas of Expertise](https://radustoian.com/#expertise): Strategic leadership in Agentic AI, AI Brand Health Audits, SEO, and talent acquisition on radustoian.com.
 
 ### Pioneering the Agentic AI Era
 I don’t just explore AI, I build the tools to manage it. I conceptualised and launched the AI Brand Health Audit, a solution to the ‘black box’ problem of Generative AI, letting organisations measure, benchmark, and control their brand narrative in LLMs.
@@ -59,7 +63,9 @@ Training and upskilling the next generation of digital leaders, and elevating in
 
 ---
 
-## Publications & Insights
+## Publications & Insights (#insights)
+
+- [Publications & Insights](https://radustoian.com/#insights): Thought leadership articles on AI optimization, employer branding, and talent attraction on radustoian.com.
 
 - **[The Organic First Approach to Talent Attraction](https://radustoian.substack.com/p/the-organic-first-approach-to-talent)** (TA Strategy)  
   SEO, Google for Jobs, AI visibility, and organic social media lead the way, with paid marketing efficiently filling any remaining gaps in your strategy.
@@ -74,7 +80,9 @@ Training and upskilling the next generation of digital leaders, and elevating in
 
 ---
 
-## Projects & Clients (Case Studies)
+## Projects & Clients (Case Studies) (#projects)
+
+- [Projects & Clients Case Studies](https://radustoian.com/#projects): Client case studies and project success stories featured in the #projects section on radustoian.com.
 
 Section `#projects` showcases client case studies from working with major brands developing digital strategies, running AI & SEO campaigns, and implementing complex Google for Jobs and Source-to-Hire analytics solutions:
 
@@ -99,7 +107,9 @@ Section `#projects` showcases client case studies from working with major brands
 
 ---
 
-## Client Testimonials
+## Client Testimonials (#testimonials)
+
+- [Client Testimonials & Recommendations](https://radustoian.com/#testimonials): Verifiable client endorsements and recommendations from John Lewis Partnership, Virgin Atlantic, Mott MacDonald, ActionHR, and Eteach on radustoian.com.
 
 - **Becky Vieites** (Talent Marketing and Employer Brand at John Lewis Partnership):  
   > “Radu’s technical expertise and passion for all things AI, SEO, Google for Jobs is excellent and is what sets him apart. He does a great job of breaking down complex subjects and engaging his customers. We have achieved some impressive SEO and Google For Jobs results working alongside Radu and team.”
@@ -120,7 +130,9 @@ Section `#projects` showcases client case studies from working with major brands
 
 ---
 
-## Speaking & Industry Engagement
+## Speaking & Industry Engagement (#speaking)
+
+- [Speaking & Industry Engagement](https://radustoian.com/#speaking): Masterclasses, podcast appearances, and technical standards contributions on radustoian.com.
 
 - **Masterclass: [Implementation of Schemas via GTM](https://brightonseo.com/events/october-2024/talks/masterclass-implementation-of-schemas-via-gtm)**  
   A BrightonSEO masterclass on technical SEO and digital marketing, focused on deploying structured data through container setups.  
@@ -140,7 +152,9 @@ Section `#projects` showcases client case studies from working with major brands
 
 ---
 
-## Skills & Certifications
+## Skills & Certifications (#skills)
+
+- [Skills & Certifications](https://radustoian.com/#skills): Technical competencies, verified cloud credentials, and degrees featured on radustoian.com.
 
 - **[Generative AI Leader Certification](https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile)** — Google (Sep 2025)
 - **[Introduction to Generative AI](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/4068456)** — Google (Jun 2023)
@@ -151,7 +165,9 @@ More details on [LinkedIn Skills](https://www.linkedin.com/in/radustoian/details
 
 ---
 
-## Let's Connect
+## Let's Connect (#connect)
+
+- [Let's Connect](https://radustoian.com/#connect): Direct channels and links to get in touch with Radu Stoian on radustoian.com.
 
 Looking to transform your employer brand's visibility or share ideas with your audience? Let’s talk.
 
