@@ -34,6 +34,8 @@
   const MAX_SESSION_QUESTIONS = 5;
   const COOLDOWN_MS = 2500;
   const SESSION_QUERY_COUNT_KEY = 'nlweb_query_count_v1';
+  const PERSISTENT_QUOTA_KEY = 'nlweb_query_quota_v2';
+  const QUOTA_WINDOW_MS = 24 * 60 * 60 * 1000; // 24-hour rolling window across tabs
   const LIMIT_REACHED_MESSAGE = "You've reached the free limit of 5 questions about Radu. If you're interested to find out more reach out on LinkedIn https://www.linkedin.com/in/radustoian";
   let lastSubmitTime = 0;
 
@@ -41,23 +43,52 @@
   const WORDS_PER_SECOND = 5;
   const WORD_TICK_MS = 1000 / WORDS_PER_SECOND;
 
-  // Session query counter helpers
+  // Persistent + session query counter helpers
   function getSessionQueryCount() {
+    let sessionCount = 0;
+    let persistentCount = 0;
+    const now = Date.now();
+
     try {
-      return parseInt(sessionStorage.getItem(SESSION_QUERY_COUNT_KEY) || '0', 10);
-    } catch (e) {
-      return 0;
-    }
+      sessionCount = parseInt(sessionStorage.getItem(SESSION_QUERY_COUNT_KEY) || '0', 10) || 0;
+    } catch (e) {}
+
+    try {
+      const raw = localStorage.getItem(PERSISTENT_QUOTA_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed.windowStart === 'number' && (now - parsed.windowStart < QUOTA_WINDOW_MS)) {
+          persistentCount = parseInt(parsed.count || '0', 10) || 0;
+        } else {
+          localStorage.removeItem(PERSISTENT_QUOTA_KEY);
+        }
+      }
+    } catch (e) {}
+
+    return Math.max(sessionCount, persistentCount);
   }
 
   function incrementSessionQueryCount() {
+    const now = Date.now();
+    const count = getSessionQueryCount() + 1;
+
     try {
-      const count = getSessionQueryCount() + 1;
       sessionStorage.setItem(SESSION_QUERY_COUNT_KEY, count.toString());
-      return count;
-    } catch (e) {
-      return 1;
-    }
+    } catch (e) {}
+
+    try {
+      let windowStart = now;
+      const raw = localStorage.getItem(PERSISTENT_QUOTA_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed.windowStart === 'number' && (now - parsed.windowStart < QUOTA_WINDOW_MS)) {
+          windowStart = parsed.windowStart;
+        }
+      }
+      localStorage.setItem(PERSISTENT_QUOTA_KEY, JSON.stringify({ count, windowStart }));
+    } catch (e) {}
+
+    return count;
   }
 
   // Icons SVG definitions
@@ -835,10 +866,11 @@
   function isPromptInjection(text) {
     if (!text) return false;
     const injectionPatterns = [
-      /ignore\s+(all\s+|any\s+)?(previous|prior|above|system|prompt)\s+(instructions|prompts|rules|commands|settings)/i,
-      /\b(bypass|override)\s+(the\s+|all\s+)?(rules|filters|instructions|guardrails|settings)\b/i,
-      /\b(act\s+as\s+dan|dan\s+mode|jailbreak)\b/i,
-      /\bdisregard\s+(all\s+)?(instructions|rules|prompts|settings)\b/i
+      /ignore\s+(all\s+|any\s+)?(previous|prior|above|system|prompt|developer)\s+(instructions?|prompts?|rules?|commands?|settings?|guidelines?)/i,
+      /\b(bypass|override|disable|forget)\s+(the\s+|all\s+|your\s+)?(rules?|filters?|instructions?|guardrails?|settings?|constraints?)\b/i,
+      /\b(act\s+as\s+dan|dan\s+mode|developer\s+mode|jailbreak|sudo\s+mode)\b/i,
+      /\bdisregard\s+(all\s+|any\s+|your\s+)?(previous\s+|prior\s+)?(instructions?|rules?|prompts?|settings?)\b/i,
+      /\b(new\s+instructions?:|system\s+prompt:|you\s+are\s+now\s+a\s+different)\b/i
     ];
     return injectionPatterns.some(pattern => pattern.test(text));
   }
@@ -847,9 +879,9 @@
   function isPromptLeakageAttempt(text) {
     if (!text) return false;
     const leakagePatterns = [
-      /\b(repeat|show|display|reveal|print|output|recite|state)\s+(your\s+|the\s+)?(initial\s+|system\s+|secret\s+)?(instructions|prompts?|prompt|system\s+message|guidelines|rules)\b/i,
-      /\b(what\s+are|what're)\s+your\s+(instructions|system\s+instructions|system\s+prompt|rules|hidden\s+rules)\b/i,
-      /\bprint\s+(the\s+)?text\s+above\b/i,
+      /\b(repeat|show|display|reveal|print|output|recite|state|dump|translate|summarize|summarise)\s+(your\s+|the\s+|all\s+)?(initial\s+|system\s+|secret\s+|developer\s+|hidden\s+|internal\s+)?(instructions?|prompts?|system\s+message|guidelines?|rules?)\b/i,
+      /\b(what\s+are|what're|tell\s+me)\s+your\s+(instructions?|system\s+instructions?|system\s+prompt|rules?|hidden\s+rules?|operating\s+guidelines?)\b/i,
+      /\bprint\s+(the\s+|everything\s+)?(text\s+)?above\b/i,
       /\b(tell\s+me|show\s+me)\s+what\s+(was\s+written|you\s+were\s+told)\s+above\b/i
     ];
     return leakagePatterns.some(pattern => pattern.test(text));
@@ -860,22 +892,58 @@
   function isAbusiveOrDangerous(text) {
     if (!text) return false;
     const dangerousPatterns = [
-      /\b(build|make|create)\s+(a\s+)?(bomb|explosive|weapon|poison|malware|ransomware)\b/i,
+      /\b(build|make|create|write|generate)\s+(a\s+|an\s+)?(bomb|explosive|weapon|poison|malware|ransomware|keylogger|exploit)\b/i,
       /\b(how\s+to\s+kill|commit\s+suicide|harm\s+myself|self[\s-]harm)\b/i,
-      /\b(fuck|bitch|bastard|asshole|cunt)\b/i,
+      /\b(fuck|fucking|bitch|bastard|asshole|cunt|dickhead|motherfucker)\b/i,
       /\b(porn|pornography|sexually\s+explicit|nsfw|erotic)\b/i
     ];
     return dangerousPatterns.some(pattern => pattern.test(text));
   }
 
-  // Guardrail check: Only answer questions about Radu
-  // The question doesn't need to contain "Radu", but it needs to contain "his", "he", "him", or "Radu"
-  function isQueryAboutRadu(question) {
-    if (!question) return false;
-    return /\b(radu('s)?|he|him|his)\b|radustoian/i.test(question.trim());
+  // Guardrail check: Prevent off-topic coding, math, or creative writing task abuse
+  function isOffTopicTaskAttempt(text) {
+    if (!text) return false;
+    const taskPatterns = [
+      /\b(write|generate|create|debug|fix)\s+(a\s+|an\s+|me\s+|some\s+)?(python|javascript|typescript|java|c\+\+|rust|go|html|css|sql|bash|shell|code|script|program|function|regex|poem|haiku|sonnet|essay|story|song|recipe)\b/i,
+      /\b(solve\s+this|calculate\s+the|translate\s+this\s+into)\b/i
+    ];
+    return taskPatterns.some(pattern => pattern.test(text));
   }
 
+  // Guardrail check: Only answer questions about Radu or his portfolio work
+  function isQueryAboutRadu(question, prev = '') {
+    if (!question) return false;
+    const q = question.trim();
+    const directRef = /\b(radu('s)?|stoian|he|him|his)\b|radustoian/i;
+    const portfolioDomainRef = /\b(enhance\s*media|virgin\s*atlantic|john\s*lewis|jlp|surrey|ojcp|open\s*job\s*context|brighton\s*seo|woorank|credly|henri\s*coanda|substack|speaker\s*deck|talent\s*attraction|employer\s*brand(ing)?|brand\s*health|webmcp|nlweb|case\s*stud(y|ies)|testimonial|certification|credential|alma\s*mater|masterclass|google\s*cloud|genai\s*leader)\b/i;
 
+    if (directRef.test(q) || portfolioDomainRef.test(q)) {
+      return true;
+    }
+
+    if (prev && (directRef.test(prev) || portfolioDomainRef.test(prev))) {
+      const wordCount = q.split(/\s+/).length;
+      const followUpRef = /\b(project|client|skill|degree|education|university|school|language|location|live|based|speak|talk|podcast|article|publication|contact|connect|linkedin|github|work|role|experience|result|outcome|metric|more|else|about\s+that|about\s+it|they|them|their)\b/i;
+      if (wordCount <= 8 || followUpRef.test(q)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function isRefusalResponse(text) {
+    if (!text) return false;
+    return (
+      text.includes('only meant to answer') ||
+      text.includes('only here to answer') ||
+      text.includes('proprietary and confidential') ||
+      text.includes('cannot accept prompts asking to ignore') ||
+      text.includes('cannot engage with abusive') ||
+      text.includes('reached the free limit of 5 questions') ||
+      text.includes('Please wait a moment before sending')
+    );
+  }
 
   // Query NLWeb using real-time SSE Token Streaming or JSON fallback (Gemini synthesis handled server-side by mcp-server worker)
   async function queryNLWeb(userQuestion) {
@@ -900,18 +968,20 @@
       return;
     }
 
-    // 4. Guardrail Check: Politely refuse any question that is not about Radu
-    if (!isQueryAboutRadu(userQuestion)) {
+    // 4. Guardrail Check: Politely refuse any question that is not about Radu or is an off-topic task
+    if (isOffTopicTaskAttempt(userQuestion) || !isQueryAboutRadu(userQuestion, prevQuery)) {
       const refusalText = "I am only meant to answer questions about Radu Stoian. Please feel free to ask anything about him, his background, skills, case studies, or projects.";
       await streamAgentResponse(refusalText, [], userQuestion);
       return;
     }
 
+    // Only consume a question from the user's 5-question quota once pre-filters pass
+    incrementSessionQueryCount();
+
     isGenerating = true;
     renderMessages();
 
     const currentPrev = prevQuery;
-    prevQuery = userQuestion;
 
     let agentResponseText = '';
     let streamedChunkText = '';
@@ -968,7 +1038,11 @@
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        const err = new Error(`HTTP ${response.status}`);
+        if (response.status === 400 || response.status === 403 || response.status === 429) {
+          err.noRetry = true;
+        }
+        throw err;
       }
 
       const reader = response.body.getReader();
@@ -981,7 +1055,13 @@
           .map(line => line.startsWith('data:') ? line.slice(5).replace(/^ /, '') : line);
         const cleanBody = dataLines.join('\n').trim();
 
-        if (evType === 'chunk') {
+        if (evType === 'reset') {
+          streamedChunkText = '';
+          agentResponseText = '';
+          streamWordChunks = [];
+          streamWordIndex = 0;
+          gatheredSources.length = 0;
+        } else if (evType === 'chunk') {
           try {
             const chunkObj = JSON.parse(cleanBody);
             const delta = chunkObj.delta || chunkObj.text || '';
@@ -1007,6 +1087,10 @@
           }
         } else if (evType === 'summary') {
           if (cleanBody) {
+            if (isRefusalResponse(cleanBody) && cleanBody !== streamedChunkText) {
+              streamWordIndex = 0;
+              gatheredSources.length = 0;
+            }
             agentResponseText = cleanBody;
             streamWordChunks = tokenizeIntoWords(cleanBody);
           }
@@ -1061,6 +1145,11 @@
       streamWordChunks = tokenizeIntoWords(targetText);
       sseFinished = true;
 
+      // Only update conversational context if the response was not a refusal
+      if (!isRefusalResponse(targetText)) {
+        prevQuery = userQuestion;
+      }
+
       // Wait until all words have finished displaying at 5 words per second
       await typewriterPromise;
 
@@ -1090,6 +1179,15 @@
         liveBubble = null;
       }
 
+      if (streamError && streamError.noRetry) {
+        messages.push({
+          role: 'agent',
+          content: LIMIT_REACHED_MESSAGE,
+          sources: []
+        });
+        return;
+      }
+
       try {
         // Fallback to JSON POST /ask (handled by mcp-server worker)
         const jsonRes = await fetch(ASK_ENDPOINT, {
@@ -1116,6 +1214,9 @@
         const sources = extractSources(data.results);
 
         const targetText = extractSmartAnswer(summary, userQuestion) || summary;
+        if (!isRefusalResponse(targetText)) {
+          prevQuery = userQuestion;
+        }
         await streamAgentResponse(targetText, sources, userQuestion);
         streamedSuccessfully = true;
 
@@ -1176,17 +1277,16 @@
     saveHistory();
     renderMessages();
 
-    // Check Session Question Cap (Maximum 5 questions per session)
+    // Check Question Cap (Maximum 5 questions per session / 24h window)
     const sessionCount = getSessionQueryCount();
     if (sessionCount >= MAX_SESSION_QUESTIONS) {
       await streamAgentResponse(LIMIT_REACHED_MESSAGE, [], text);
       return;
     }
 
-    lastSubmitTime = Date.now();
-    incrementSessionQueryCount();
+    lastSubmitTime = now;
 
-    // Query NLWeb
+    // Query NLWeb (increments session count after client-side guardrails pass)
     await queryNLWeb(text);
   }
 
@@ -1360,8 +1460,13 @@
     window.nlwebChat = {
       open: (initialQuery) => {
         toggleDialog(true);
-        if (initialQuery && !isGenerating && !isStreaming) {
+        if (initialQuery && typeof initialQuery === 'string' && !isGenerating && !isStreaming) {
+          const now = Date.now();
+          if (now - lastSubmitTime < COOLDOWN_MS) return;
+
           const cleanQuery = initialQuery.slice(0, MAX_INPUT_CHARS).trim();
+          if (!cleanQuery) return;
+
           messages.push({ role: 'user', content: cleanQuery });
           saveHistory();
           renderMessages();
@@ -1372,8 +1477,7 @@
             return;
           }
 
-          lastSubmitTime = Date.now();
-          incrementSessionQueryCount();
+          lastSubmitTime = now;
           queryNLWeb(cleanQuery);
         }
       },
