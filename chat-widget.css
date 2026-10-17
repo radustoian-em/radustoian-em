@@ -440,6 +440,129 @@
   margin-bottom: 0;
 }
 
+/* Query Fan-Out ("Searching ...") Collapsible Dropdown */
+.nlweb-fanout-slot:empty {
+  display: none;
+}
+
+.nlweb-fanout {
+  background: rgba(15, 7, 28, 0.55);
+  border: 1px solid rgba(168, 85, 247, 0.22);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.nlweb-fanout[open] {
+  border-color: rgba(168, 85, 247, 0.4);
+  background: rgba(15, 7, 28, 0.78);
+}
+
+.nlweb-fanout-summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #d8b4fe;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.nlweb-fanout-summary::-webkit-details-marker {
+  display: none;
+}
+
+.nlweb-fanout-summary:hover {
+  background: rgba(168, 85, 247, 0.12);
+  color: #f3e8ff;
+}
+
+.nlweb-fanout-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.nlweb-fanout-icon {
+  width: 13px;
+  height: 13px;
+  display: inline-flex;
+  color: #c084fc;
+  flex-shrink: 0;
+}
+
+.nlweb-fanout-count,
+.nlweb-fanout-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(168, 85, 247, 0.16);
+  border: 1px solid rgba(168, 85, 247, 0.28);
+  color: #e9d5ff;
+  line-height: 1.4;
+}
+
+.nlweb-fanout-chevron {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  color: var(--nlweb-text-muted);
+  transition: transform 0.2s ease, color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.nlweb-fanout[open] .nlweb-fanout-chevron {
+  transform: rotate(180deg);
+  color: #d8b4fe;
+}
+
+.nlweb-fanout-body {
+  padding: 6px 10px 8px 10px;
+  border-top: 1px solid rgba(168, 85, 247, 0.15);
+  background: rgba(10, 4, 20, 0.45);
+}
+
+.nlweb-msg-bubble ul.nlweb-fanout-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nlweb-msg-bubble li.nlweb-fanout-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  padding: 4px 7px;
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #e2e8f0;
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.16);
+  border-radius: 5px;
+  line-height: 1.35;
+}
+
+.nlweb-fanout-item-icon {
+  width: 11px;
+  height: 11px;
+  display: inline-flex;
+  color: #a855f7;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
 /* Grounded Sources Pill Container */
 .nlweb-sources-container {
   margin-top: 10px;
