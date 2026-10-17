@@ -100,6 +100,8 @@
     copy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`,
     check: `<svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
     citation: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`,
+    search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
+    chevron: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>`,
     maximize: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>`,
     restore: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="10" y1="14" x2="3" y2="21"></line></svg>`
   };
@@ -167,6 +169,46 @@
     const name = src.name || src.url.replace(/^https?:\/\//, '');
     chip.innerHTML = `<span>${escapeHtml(name)}</span>${isInternal ? '' : ' ↗'}`;
     return chip;
+  }
+
+  // Helper: Create "Searching ..." collapsible dropdown showing Gemini query fan-outs
+  function createFanOutDropdown(queries, language) {
+    if (!Array.isArray(queries) || queries.length === 0) return null;
+
+    const details = document.createElement('details');
+    details.className = 'nlweb-fanout';
+
+    const summary = document.createElement('summary');
+    summary.className = 'nlweb-fanout-summary';
+    const langTag = language && language !== 'en'
+      ? `<span class="nlweb-fanout-badge">${escapeHtml(language.toUpperCase())} → EN</span>`
+      : '';
+    summary.innerHTML = `
+      <span class="nlweb-fanout-label">
+        <span class="nlweb-fanout-icon">${ICONS.search}</span>
+        <span>Searching ...</span>
+        <span class="nlweb-fanout-count">${queries.length} ${queries.length === 1 ? 'query' : 'queries'}</span>
+        ${langTag}
+      </span>
+      <span class="nlweb-fanout-chevron">${ICONS.chevron}</span>
+    `;
+    details.appendChild(summary);
+
+    const body = document.createElement('div');
+    body.className = 'nlweb-fanout-body';
+
+    const list = document.createElement('ul');
+    list.className = 'nlweb-fanout-list';
+    queries.forEach((q) => {
+      const li = document.createElement('li');
+      li.className = 'nlweb-fanout-item';
+      li.innerHTML = `<span class="nlweb-fanout-item-icon">${ICONS.search}</span><span>${escapeHtml(q)}</span>`;
+      list.appendChild(li);
+    });
+    body.appendChild(list);
+    details.appendChild(body);
+
+    return details;
   }
 
   // Helper: Safe Markdown Parser
@@ -503,13 +545,26 @@
 
       let leadText = msg.content;
       if (msg.role === 'agent') {
+        if (msg.fanOutQueries && msg.fanOutQueries.length > 0) {
+          const fanoutDropdown = createFanOutDropdown(msg.fanOutQueries, msg.language);
+          if (fanoutDropdown) {
+            const fanoutSlot = document.createElement('div');
+            fanoutSlot.className = 'nlweb-fanout-slot';
+            fanoutSlot.appendChild(fanoutDropdown);
+            bubble.appendChild(fanoutSlot);
+          }
+        }
+
         const queryForMsg = msg.query || (index > 0 && messages[index - 1]?.role === 'user' ? messages[index - 1].content : '');
+        const leadDiv = document.createElement('div');
+        leadDiv.className = 'nlweb-lead-content';
         if (!queryForMsg) {
-          bubble.innerHTML = renderMarkdown(msg.content);
+          leadDiv.innerHTML = renderMarkdown(msg.content);
         } else {
           leadText = extractSmartAnswer(msg.content, queryForMsg) || msg.content;
-          bubble.innerHTML = `<div class="nlweb-lead-content">${renderMarkdown(leadText)}</div>`;
+          leadDiv.innerHTML = renderMarkdown(leadText);
         }
+        bubble.appendChild(leadDiv);
       } else {
         bubble.innerHTML = renderMarkdown(msg.content);
       }
@@ -710,8 +765,8 @@
     return rendered + '<span class="nlweb-typing-cursor" aria-hidden="true"></span>';
   }
 
-  // Helper: Create live agent message bubble when first token chunk arrives
-  function createLiveAgentBubble() {
+  // Helper: Create live agent message bubble when fan-out queries or first token chunk arrives
+  function createLiveAgentBubble(fanOutQueries = [], language = 'en') {
     const typingIndicator = document.getElementById('nlwebTypingIndicator');
     if (typingIndicator) typingIndicator.remove();
     isGenerating = false;
@@ -730,8 +785,17 @@
     const bubble = document.createElement('div');
     bubble.className = 'nlweb-msg-bubble';
 
+    const fanoutSlot = document.createElement('div');
+    fanoutSlot.className = 'nlweb-fanout-slot';
+    if (Array.isArray(fanOutQueries) && fanOutQueries.length > 0) {
+      const dropdown = createFanOutDropdown(fanOutQueries, language);
+      if (dropdown) fanoutSlot.appendChild(dropdown);
+    }
+    bubble.appendChild(fanoutSlot);
+
     const leadContent = document.createElement('div');
     leadContent.className = 'nlweb-lead-content';
+    leadContent.innerHTML = '<span class="nlweb-typing-cursor" aria-hidden="true"></span>';
     bubble.appendChild(leadContent);
     row.appendChild(bubble);
     container.appendChild(row);
@@ -748,24 +812,42 @@
     }
     container.scrollTop = Math.max(0, targetTop);
 
-    return { container, row, bubble, leadContent, prevScrollBehavior };
+    return { container, row, bubble, fanoutSlot, leadContent, prevScrollBehavior };
   }
 
-  // Helper: Finalize live agent message bubble with sources, copy action, and session persistence
-  function finalizeLiveAgentBubble(liveBubble, targetText, sources, userQuestion) {
+  // Helper: Finalize live agent message bubble with sources, fan-outs, copy action, and session persistence
+  function finalizeLiveAgentBubble(liveBubble, targetText, sources, userQuestion, fanOutQueries = [], language = 'en') {
     isStreaming = false;
+    const cleanFanOut = isRefusalResponse(targetText) ? [] : (Array.isArray(fanOutQueries) ? [...fanOutQueries] : []);
 
     if (!liveBubble || !liveBubble.container) {
-      messages.push({ role: 'agent', content: targetText, query: userQuestion, sources: sources });
+      messages.push({
+        role: 'agent',
+        content: targetText,
+        query: userQuestion,
+        sources: sources,
+        fanOutQueries: cleanFanOut,
+        language: language
+      });
       saveHistory();
       updateSendBtnState();
       return;
     }
 
-    const { container, row, bubble, leadContent, prevScrollBehavior } = liveBubble;
+    const { container, row, bubble, fanoutSlot, leadContent, prevScrollBehavior } = liveBubble;
 
     // Restore normal smooth scroll behavior
     container.style.scrollBehavior = prevScrollBehavior || '';
+
+    // Ensure fanoutSlot matches final state (clear on refusal, populate if not already rendered)
+    if (fanoutSlot) {
+      if (cleanFanOut.length === 0) {
+        fanoutSlot.innerHTML = '';
+      } else if (!fanoutSlot.hasChildNodes()) {
+        const dropdown = createFanOutDropdown(cleanFanOut, language);
+        if (dropdown) fanoutSlot.appendChild(dropdown);
+      }
+    }
 
     // Clean final render without cursor
     leadContent.innerHTML = renderMarkdown(targetText);
@@ -811,7 +893,9 @@
       role: 'agent',
       content: targetText,
       query: userQuestion,
-      sources: sources
+      sources: sources,
+      fanOutQueries: cleanFanOut,
+      language: language
     });
     saveHistory();
 
@@ -821,11 +905,19 @@
   }
 
   // Stream agent response word-by-word with typewriter effect at 5 words per second (used for NLWeb answers, guardrails, and JSON fallback)
-  function streamAgentResponse(targetText, sources, userQuestion) {
+  function streamAgentResponse(targetText, sources, userQuestion, fanOutQueries = [], language = 'en') {
     return new Promise((resolve) => {
-      const liveBubble = createLiveAgentBubble();
+      const cleanFanOut = isRefusalResponse(targetText) ? [] : fanOutQueries;
+      const liveBubble = createLiveAgentBubble(cleanFanOut, language);
       if (!liveBubble) {
-        messages.push({ role: 'agent', content: targetText, query: userQuestion, sources: sources });
+        messages.push({
+          role: 'agent',
+          content: targetText,
+          query: userQuestion,
+          sources: sources,
+          fanOutQueries: cleanFanOut,
+          language: language
+        });
         saveHistory();
         isStreaming = false;
         updateSendBtnState();
@@ -855,7 +947,7 @@
         if (tokenIndex >= totalChunks) {
           clearInterval(streamingTimer);
           streamingTimer = null;
-          finalizeLiveAgentBubble(liveBubble, targetText, sources, userQuestion);
+          finalizeLiveAgentBubble(liveBubble, targetText, sources, userQuestion, cleanFanOut, language);
           resolve();
         }
       }, WORD_TICK_MS);
@@ -988,6 +1080,8 @@
     let streamedChunkText = '';
     let liveBubble = null;
     const gatheredSources = [];
+    const gatheredFanOut = [];
+    let fanOutLang = 'en';
     let streamedSuccessfully = false;
     let sseFinished = false;
     let streamWordChunks = [];
@@ -1012,7 +1106,7 @@
 
     streamingTimer = setInterval(() => {
       if (!liveBubble && streamWordChunks.length > 0) {
-        liveBubble = createLiveAgentBubble();
+        liveBubble = createLiveAgentBubble(gatheredFanOut, fanOutLang);
       }
 
       if (liveBubble && streamWordIndex < streamWordChunks.length) {
@@ -1062,6 +1156,37 @@
           streamWordChunks = [];
           streamWordIndex = 0;
           gatheredSources.length = 0;
+          gatheredFanOut.length = 0;
+          if (liveBubble && liveBubble.fanoutSlot) {
+            liveBubble.fanoutSlot.innerHTML = '';
+          }
+        } else if (evType === 'fanout') {
+          try {
+            const fanoutObj = JSON.parse(cleanBody);
+            if (Array.isArray(fanoutObj.queries) && fanoutObj.queries.length > 0) {
+              gatheredFanOut.length = 0;
+              fanoutObj.queries.forEach(q => {
+                if (q && typeof q === 'string') gatheredFanOut.push(q);
+              });
+              fanOutLang = fanoutObj.language || 'en';
+              console.info('[NLWeb Fan-Out]', {
+                query: userQuestion,
+                language: fanOutLang,
+                queries: gatheredFanOut,
+                bm25Queries: fanoutObj.bm25_queries || gatheredFanOut,
+                fromCache: Boolean(fanoutObj.from_cache)
+              });
+              if (!liveBubble) {
+                liveBubble = createLiveAgentBubble(gatheredFanOut, fanOutLang);
+              } else if (liveBubble.fanoutSlot) {
+                liveBubble.fanoutSlot.innerHTML = '';
+                const dropdown = createFanOutDropdown(gatheredFanOut, fanOutLang);
+                if (dropdown) liveBubble.fanoutSlot.appendChild(dropdown);
+              }
+            }
+          } catch (e) {
+            // Ignore malformed fanout JSON
+          }
         } else if (evType === 'chunk') {
           try {
             const chunkObj = JSON.parse(cleanBody);
@@ -1091,6 +1216,10 @@
             if (isRefusalResponse(cleanBody) && cleanBody !== streamedChunkText) {
               streamWordIndex = 0;
               gatheredSources.length = 0;
+              gatheredFanOut.length = 0;
+              if (liveBubble && liveBubble.fanoutSlot) {
+                liveBubble.fanoutSlot.innerHTML = '';
+              }
             }
             agentResponseText = cleanBody;
             streamWordChunks = tokenizeIntoWords(cleanBody);
@@ -1155,9 +1284,9 @@
       await typewriterPromise;
 
       if (liveBubble) {
-        finalizeLiveAgentBubble(liveBubble, targetText, gatheredSources, userQuestion);
+        finalizeLiveAgentBubble(liveBubble, targetText, gatheredSources, userQuestion, gatheredFanOut, fanOutLang);
       } else {
-        await streamAgentResponse(targetText, gatheredSources, userQuestion);
+        await streamAgentResponse(targetText, gatheredSources, userQuestion, gatheredFanOut, fanOutLang);
       }
       streamedSuccessfully = true;
 
@@ -1213,12 +1342,21 @@
         const data = await jsonRes.json();
         const summary = data.summary || "I've retrieved information from radustoian.com, but no summary could be generated for this query.";
         const sources = extractSources(data.results);
+        const fallbackFanOut = Array.isArray(data.search_queries) ? data.search_queries : [];
+        const fallbackLang = data.language || 'en';
+        if (fallbackFanOut.length > 0) {
+          console.info('[NLWeb Fan-Out]', {
+            query: userQuestion,
+            language: fallbackLang,
+            queries: fallbackFanOut
+          });
+        }
 
         const targetText = extractSmartAnswer(summary, userQuestion) || summary;
         if (!isRefusalResponse(targetText)) {
           prevQuery = userQuestion;
         }
-        await streamAgentResponse(targetText, sources, userQuestion);
+        await streamAgentResponse(targetText, sources, userQuestion, fallbackFanOut, fallbackLang);
         streamedSuccessfully = true;
 
       } catch (jsonError) {
