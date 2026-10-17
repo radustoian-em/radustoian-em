@@ -12,7 +12,7 @@ canonical: https://radustoian.com/agentic-architecture-mcp-llms.html
 
 ---
 
-## Step 0: Incoming User Prompt (Trigger Stage)
+## Step 0: Incoming User Prompt (Trigger Stage) (#step-0)
 
 - **User Inquiry:** *"Tell me about Radu Stoian (radustoian.com)"*
 - **Action:** The agent initiates reconnaissance on the target domain [`radustoian.com`](https://radustoian.com).
@@ -51,7 +51,7 @@ canonical: https://radustoian.com/agentic-architecture-mcp-llms.html
 
 ---
 
-## Layer 3: The Discovery & Signalling Layer
+## Layer 3: The Discovery & Signalling Layer (#layer-3)
 *(Network, Transport & Predictable Endpoints)*
 
 ### 01. DNS Resolution (RFC 9460) - Service Binding & AI Discovery (DNS-AID)
@@ -99,7 +99,7 @@ Standardized `/.well-known/` paths where agents reliably inspect manifests and c
 
 ---
 
-## Layer 2: The Documentation Layer
+## Layer 2: The Documentation Layer (#layer-2)
 *(Instruction Manuals, Schemas & Domain Skills)*
 
 ### 01. llms.txt & llms-full.txt
@@ -126,7 +126,7 @@ Standardized metadata declarations for interoperability across agent frameworks:
 
 ---
 
-## Layer 1: The Technical Infrastructure
+## Layer 1: The Technical Infrastructure (#layer-1)
 *(Actionable Execution Routes & Tool Engines)*
 
 > **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
@@ -190,7 +190,7 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 
 ---
 
-## Synthesis Phase: Grounded Answer Formulated
+## Synthesis Phase: Grounded Answer Formulated (#synthesis)
 
 **Radu Stoian** is the [Technical Director at Enhance Media](https://www.enhancemedia.co.uk/), specializing in the shift from search engine discovery to **Agentic AI recommendations** in talent acquisition.
 
@@ -211,7 +211,7 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 
 ---
 
-## Master Resource Directory (25 Accessible Endpoints)
+## Master Resource Directory (25 Accessible Endpoints) (#directory)
 
 | # | Endpoint / Resource | Description |
 |---|---------------------|-------------|
