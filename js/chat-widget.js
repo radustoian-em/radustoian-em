@@ -103,6 +103,41 @@
       .replace(/'/g, '&#039;');
   }
 
+  // Helper: Detect whether a URL points to radustoian.com (including anchors, relative paths, and current hostname)
+  function isInternalUrl(url) {
+    if (!url || typeof url !== 'string') return false;
+    const clean = url.trim();
+    if (clean.startsWith('#')) return true;
+    if (clean.startsWith('/') && !clean.startsWith('//')) return true;
+    try {
+      const parsed = new URL(clean, window.location.href);
+      return (
+        parsed.hostname === 'radustoian.com' ||
+        parsed.hostname === 'www.radustoian.com' ||
+        parsed.hostname === window.location.hostname
+      );
+    } catch {
+      return /^(https?:\/\/)?(www\.)?radustoian\.com/i.test(clean);
+    }
+  }
+
+  // Helper: Create a Grounded Source chip element
+  function createSourceChip(src) {
+    const chip = document.createElement('a');
+    chip.className = 'nlweb-source-chip';
+    chip.href = src.url;
+    const isInternal = isInternalUrl(src.url);
+    if (isInternal) {
+      chip.target = '_self';
+    } else {
+      chip.target = '_blank';
+      chip.rel = 'noopener noreferrer';
+    }
+    const name = src.name || src.url.replace(/^https?:\/\//, '');
+    chip.innerHTML = `<span>${escapeHtml(name)}</span>${isInternal ? '' : ' ↗'}`;
+    return chip;
+  }
+
   // Helper: Safe Markdown Parser
   function renderMarkdown(md) {
     if (!md) return '';
@@ -123,12 +158,18 @@
 
     // Markdown Links: [Text](URL)
     text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*)\)/g, (match, title, url) => {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="nlweb-link">${title} ↗</a>`;
+      const isInternal = isInternalUrl(url);
+      const targetAttr = isInternal ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
+      const arrow = isInternal ? '' : ' ↗';
+      return `<a href="${url}" ${targetAttr} class="nlweb-link">${title}${arrow}</a>`;
     });
 
     // Bare URLs (not already inside an anchor tag)
     text = text.replace(/(^|[\s(])(https?:\/\/[^\s)<]+)/g, (match, prefix, url) => {
-      return `${prefix}<a href="${url}" target="_blank" rel="noopener noreferrer" class="nlweb-link">${url} ↗</a>`;
+      const isInternal = isInternalUrl(url);
+      const targetAttr = isInternal ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
+      const arrow = isInternal ? '' : ' ↗';
+      return `${prefix}<a href="${url}" ${targetAttr} class="nlweb-link">${url}${arrow}</a>`;
     });
 
     // Unordered lists
@@ -455,14 +496,7 @@
         const list = document.createElement('div');
         list.className = 'nlweb-sources-list';
         msg.sources.forEach(src => {
-          const chip = document.createElement('a');
-          chip.className = 'nlweb-source-chip';
-          chip.href = src.url;
-          chip.target = '_blank';
-          chip.rel = 'noopener noreferrer';
-          const name = src.name || src.url.replace(/^https?:\/\//, '');
-          chip.innerHTML = `<span>${escapeHtml(name)}</span> ↗`;
-          list.appendChild(chip);
+          list.appendChild(createSourceChip(src));
         });
         sourcesWrap.appendChild(list);
         bubble.appendChild(sourcesWrap);
@@ -717,14 +751,7 @@
       const list = document.createElement('div');
       list.className = 'nlweb-sources-list';
       sources.forEach(src => {
-        const chip = document.createElement('a');
-        chip.className = 'nlweb-source-chip';
-        chip.href = src.url;
-        chip.target = '_blank';
-        chip.rel = 'noopener noreferrer';
-        const name = src.name || src.url.replace(/^https?:\/\//, '');
-        chip.innerHTML = `<span>${escapeHtml(name)}</span> ↗`;
-        list.appendChild(chip);
+        list.appendChild(createSourceChip(src));
       });
       sourcesWrap.appendChild(list);
       bubble.appendChild(sourcesWrap);
@@ -1302,6 +1329,25 @@
         window.nlwebChat.open(query);
       }
     });
+
+    // Anchor clicks within messages (smooth scrolling for internal hash links)
+    const messagesContainer = document.getElementById('nlwebMessages');
+    if (messagesContainer) {
+      messagesContainer.addEventListener('click', (e) => {
+        const anchor = e.target.closest('a');
+        if (anchor && isInternalUrl(anchor.getAttribute('href') || anchor.href)) {
+          try {
+            const parsed = new URL(anchor.href, window.location.href);
+            if (parsed.pathname === window.location.pathname && parsed.hash) {
+              const targetEl = document.querySelector(parsed.hash);
+              if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth' });
+              }
+            }
+          } catch {}
+        }
+      });
+    }
   }
 
   // Startup initialization on DOM ready
