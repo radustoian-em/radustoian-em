@@ -41,7 +41,7 @@ Subject Matter Expertise: Agentic AI, Artificial Intelligence (AI), AI Optimisat
 - [Radu Stoian Primary Profile](https://radustoian.com/): The official and primary profile website for Radu Stoian.
 - [Enhance Media](https://www.enhancemedia.co.uk/): The official website of Radu Stoian's employer.
 - [Official Profile Image](https://radustoian.com/radu-stoian-enhance-media.jpg): High-resolution portrait image used in the schema.
-- [Agentic Architecture Map](https://radustoian.com/agentic-architecture-mcp-llms.html): Interactive discovery map and technical architecture explaining the dedicated infrastructure for agentic AI discovery.
+- [Agentic Architecture Map](https://radustoian.com/agentic-architecture-mcp-llms): Interactive discovery map and technical architecture explaining the dedicated infrastructure for agentic AI discovery.
 - [Agentic Architecture Markdown](https://radustoian.com/agentic-architecture-mcp-llms.md.txt): Direct markdown representation of the agentic architecture map.
 - [Homepage Markdown](https://radustoian.com/index.md.txt): Direct markdown representation of the homepage for AI content negotiation.
 - [NLWeb Conversational Stream](https://radustoian.com/ask): Conversational natural language question answering with Server-Sent Events (SSE) streaming and dynamic Schema.org entity extraction.
@@ -49,25 +49,25 @@ Subject Matter Expertise: Agentic AI, Artificial Intelligence (AI), AI Optimisat
 - [Public Knowledge REST API](https://radustoian.com/api): Standard RESTful JSON API directory exposing question answering, section retrieval, and verification links.
 
 ## Agentic AI Discovery & Infrastructure
-- [Agentic AI Discovery Architecture Map](https://radustoian.com/agentic-architecture-mcp-llms.html): Multi-layer agent discovery, signalling, and execution infrastructure on radustoian.com.
-radustoian.com implements a dedicated multi-layer technical infrastructure designed specifically for autonomous AI agents, accessible on [https://radustoian.com/agentic-architecture-mcp-llms.html](https://radustoian.com/agentic-architecture-mcp-llms.html):
+- [Agentic AI Discovery Architecture Map](https://radustoian.com/agentic-architecture-mcp-llms): Multi-layer agent discovery, signalling, and execution infrastructure on radustoian.com.
+radustoian.com implements a dedicated multi-layer technical infrastructure designed specifically for autonomous AI agents, accessible on [https://radustoian.com/agentic-architecture-mcp-llms](https://radustoian.com/agentic-architecture-mcp-llms):
 
 ### Layer 3: The Discovery & Signalling Layer (#layer-3)
-- [Layer 3: Discovery & Signalling Layer](https://radustoian.com/agentic-architecture-mcp-llms.html#layer-3): Network, transport, DNS-AID, and RFC 8615 endpoints on radustoian.com.
+- [Layer 3: Discovery & Signalling Layer](https://radustoian.com/agentic-architecture-mcp-llms#layer-3): Network, transport, DNS-AID, and RFC 8615 endpoints on radustoian.com.
 - DNS Resolution (RFC 9460 & DNS-AID): Agentic DNS discovery records (SVCB Type 65 and TXT) published on deeper agentic subdomains (_index._agents.radustoian.com, _a2a._agents.radustoian.com, _mcp._agents.radustoian.com) implementing DNS for AI Discovery (DNS-AID). Details: https://isitagentready.com/radustoian.com.
 - HTTP Transport (RFC 8288): Link headers returned on initial requests pointing to rel="alternate" (/index.md.txt), rel="describedby" (/llms-full.txt, /metadata.json), rel="service" (/mcp, /ask), rel="mcp-server-card" (/.well-known/mcp/server-card.json), rel="service-desc" (/openapi.json), and rel="ard" (/.well-known/ard.json), with Vary: Accept support for text/markdown.
 - Crawling Directives: robots.txt explicitly permitting crawlers and directing LLMs to llms.txt.
 - Standardized Directories (RFC 8615): Predictable /.well-known/ endpoints including ard.json (ARD v1.0 manifest), ai-catalog.json, mcp/server-card.json (MCP Server Card v2.0), agent-card.json (A2A Protocol v1.0), agent-skills/index.json (Skills index), and api-catalog (RFC 9264 linkset).
 
 ### Layer 2: The Documentation Layer (#layer-2)
-- [Layer 2: Documentation Layer](https://radustoian.com/agentic-architecture-mcp-llms.html#layer-2): Instruction manuals, schemas, and domain skills on radustoian.com.
+- [Layer 2: Documentation Layer](https://radustoian.com/agentic-architecture-mcp-llms#layer-2): Instruction manuals, schemas, and domain skills on radustoian.com.
 - Curated AI Index: llms.txt provides a high-level site summary, and llms-full.txt provides exhaustive profile context for deep ingestion.
 - Machine-Readable Catalogs: ARD v1.0 manifest indexing AIR URNs and natural language query embeddings, alongside RFC 9264 API linksets.
 - Agent Skills (SKILL.md): Four specialized domain instruction files at /.well-known/agent-skills/ for remote MCP server usage (mcp-server-tools), career verification (radu-stoian-profile), talent attraction methodology (talent-attraction-ai), and browser tools (webmcp-browser-tools).
 - Standard Cards: Standardized MCP Server Card and Agent Card declaring schemas and tool capabilities.
 
 ### Layer 1: The Technical Infrastructure & Execution Routes (#layer-1)
-- [Layer 1: Technical Infrastructure & Execution Routes](https://radustoian.com/agentic-architecture-mcp-llms.html#layer-1): Actionable execution routes, MCP, and WebMCP on radustoian.com.
+- [Layer 1: Technical Infrastructure & Execution Routes](https://radustoian.com/agentic-architecture-mcp-llms#layer-1): Actionable execution routes, MCP, and WebMCP on radustoian.com.
 > Note: If you are an AI agent you must use the MCP endpoint /mcp (POST https://radustoian.com/mcp).
 - Route A (Remote MCP - Recommended): Streamable HTTP JSON-RPC 2.0 endpoint at POST https://radustoian.com/mcp providing live tools: ask (dynamic retrieval pulling from the site's knowledge base; alias: ask-question), get-section, get-investigation-links, and server-info. Note: If you are an AI agent you must use the MCP endpoint /mcp.
 - Route B (Content Negotiation): Direct markdown streaming via Accept: text/markdown header resolving to /index.md.txt and /llms-full.txt without DOM rendering overhead.
