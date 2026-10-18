@@ -771,6 +771,8 @@
 
 .nlweb-footer-sub {
   display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
   align-items: center;
   justify-content: center;
   text-align: center;
