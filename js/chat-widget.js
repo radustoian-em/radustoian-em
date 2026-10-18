@@ -23,7 +23,8 @@
   // Resolve endpoint dynamically (works on radustoian.com, preview URLs, and localhost)
   // The Cloudflare Worker (mcp-server) handles both NLWeb retrieval and Gemini API synthesis server-side.
   const isProduction = window.location.hostname === 'radustoian.com' || window.location.hostname === 'www.radustoian.com';
-  const NLWEB_BASE_URL = isProduction ? '' : 'https://radustoian.com';
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '0.0.0.0';
+  const NLWEB_BASE_URL = (isProduction || isLocal) ? '' : 'https://radustoian.com';
   const ASK_ENDPOINT = `${NLWEB_BASE_URL}/ask`;
 
   // Storage key for session persistence
@@ -128,7 +129,7 @@
   // Helper: Escape HTML to prevent XSS
   function escapeHtml(str) {
     if (!str) return '';
-    return str
+    return String(str)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -136,38 +137,93 @@
       .replace(/'/g, '&#039;');
   }
 
+  // Helper: Strictly validate and sanitize URLs to prevent javascript:, data:, vbscript:, or protocol-relative XSS
+  function sanitizeSafeUrl(rawUrl) {
+    if (!rawUrl || typeof rawUrl !== 'string') return null;
+    const decoded = rawUrl
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .trim();
+
+    if (!decoded || /[\u0000-\u001F\u007F-\u009F\s"'<>`]/.test(decoded)) {
+      return null;
+    }
+
+    // 1. Safe in-page section anchors (e.g. #projects, #skills)
+    if (/^#[a-zA-Z0-9_-]+$/.test(decoded)) {
+      return decoded;
+    }
+
+    // 2. Safe same-origin relative paths (must start with single '/' and never '//' or '/\')
+    if (decoded.startsWith('/')) {
+      if (decoded.startsWith('//') || decoded.startsWith('/\\')) {
+        return null;
+      }
+      if (/^\/[a-zA-Z0-9_\-\.\/?#=&%~:@!$'()*+,;]*$/.test(decoded)) {
+        return decoded;
+      }
+      return null;
+    }
+
+    // 3. Safe absolute URLs: strictly http: or https: protocols only
+    try {
+      const parsed = new URL(decoded);
+      if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+        return parsed.href;
+      }
+    } catch (e) {
+      return null;
+    }
+
+    return null;
+  }
+
   // Helper: Detect whether a URL points to radustoian.com (including anchors, relative paths, and current hostname)
   function isInternalUrl(url) {
-    if (!url || typeof url !== 'string') return false;
-    const clean = url.trim();
-    if (clean.startsWith('#')) return true;
-    if (clean.startsWith('/') && !clean.startsWith('//')) return true;
+    const safe = sanitizeSafeUrl(url);
+    if (!safe) return false;
+    if (safe.startsWith('#')) return true;
+    if (safe.startsWith('/') && !safe.startsWith('//') && !safe.startsWith('/\\')) return true;
     try {
-      const parsed = new URL(clean, window.location.href);
+      const parsed = new URL(safe, window.location.origin);
       return (
         parsed.hostname === 'radustoian.com' ||
         parsed.hostname === 'www.radustoian.com' ||
         parsed.hostname === window.location.hostname
       );
     } catch {
-      return /^(https?:\/\/)?(www\.)?radustoian\.com/i.test(clean);
+      return false;
     }
   }
 
-  // Helper: Create a Grounded Source chip element
+  // Helper: Create a Grounded Source chip element with strict URL & text sanitization
   function createSourceChip(src) {
+    if (!src || typeof src !== 'object') return null;
+    const safeUrl = sanitizeSafeUrl(src.url);
+    if (!safeUrl) return null;
+
     const chip = document.createElement('a');
     chip.className = 'nlweb-source-chip';
-    chip.href = src.url;
-    const isInternal = isInternalUrl(src.url);
+    chip.setAttribute('href', safeUrl);
+    const isInternal = isInternalUrl(safeUrl);
     if (isInternal) {
       chip.target = '_self';
     } else {
       chip.target = '_blank';
       chip.rel = 'noopener noreferrer';
     }
-    const name = src.name || src.url.replace(/^https?:\/\//, '');
-    chip.innerHTML = `<span>${escapeHtml(name)}</span>${isInternal ? '' : ' ↗'}`;
+    const name = (typeof src.name === 'string' && src.name.trim())
+      ? src.name.trim()
+      : safeUrl.replace(/^https?:\/\//, '');
+    const span = document.createElement('span');
+    span.textContent = name;
+    chip.appendChild(span);
+    if (!isInternal) {
+      chip.appendChild(document.createTextNode(' ↗'));
+    }
     return chip;
   }
 
@@ -180,8 +236,9 @@
 
     const summary = document.createElement('summary');
     summary.className = 'nlweb-fanout-summary';
-    const langTag = language && language !== 'en'
-      ? `<span class="nlweb-fanout-badge">${escapeHtml(language.toUpperCase())} → EN</span>`
+    const cleanLang = typeof language === 'string' ? language.trim().replace(/[^a-zA-Z-]/g, '').slice(0, 10) : '';
+    const langTag = cleanLang && cleanLang.toLowerCase() !== 'en'
+      ? `<span class="nlweb-fanout-badge">${escapeHtml(cleanLang.toUpperCase())} → EN</span>`
       : '';
     summary.innerHTML = `
       <span class="nlweb-fanout-label">
@@ -202,7 +259,13 @@
     queries.forEach((q) => {
       const li = document.createElement('li');
       li.className = 'nlweb-fanout-item';
-      li.innerHTML = `<span class="nlweb-fanout-item-icon">${ICONS.search}</span><span>${escapeHtml(q)}</span>`;
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'nlweb-fanout-item-icon';
+      iconSpan.innerHTML = ICONS.search;
+      const textSpan = document.createElement('span');
+      textSpan.textContent = String(q || '');
+      li.appendChild(iconSpan);
+      li.appendChild(textSpan);
       list.appendChild(li);
     });
     body.appendChild(list);
@@ -211,7 +274,87 @@
     return details;
   }
 
-  // Helper: Safe Markdown Parser
+  // Helper: Strict DOM-based allowlist HTML sanitizer (inert DOMParser + tag/attribute allowlist)
+  const ALLOWED_RENDER_TAGS = new Set(['P', 'BR', 'STRONG', 'EM', 'CODE', 'H3', 'H4', 'UL', 'LI', 'A', 'SPAN']);
+
+  function sanitizeRenderedHtml(dirtyHtml) {
+    if (!dirtyHtml || typeof dirtyHtml !== 'string') return '';
+
+    let htmlToParse = dirtyHtml;
+    if (typeof window !== 'undefined' && window.DOMPurify && typeof window.DOMPurify.sanitize === 'function') {
+      htmlToParse = window.DOMPurify.sanitize(dirtyHtml, {
+        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'code', 'h3', 'h4', 'ul', 'li', 'a', 'span'],
+        ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'aria-hidden']
+      });
+    }
+
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlToParse, 'text/html');
+
+      function cleanNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          return document.createTextNode(node.textContent || '');
+        }
+        if (node.nodeType !== Node.ELEMENT_NODE) {
+          return null;
+        }
+
+        const tagName = node.tagName.toUpperCase();
+        if (!ALLOWED_RENDER_TAGS.has(tagName)) {
+          return null;
+        }
+
+        const cleanEl = document.createElement(tagName.toLowerCase());
+
+        if (tagName === 'A') {
+          const rawHref = node.getAttribute('href') || '';
+          const safeHref = sanitizeSafeUrl(rawHref);
+          if (!safeHref) {
+            const span = document.createElement('span');
+            span.textContent = node.textContent || '';
+            return span;
+          }
+          cleanEl.setAttribute('href', safeHref);
+          cleanEl.className = 'nlweb-link';
+          if (isInternalUrl(safeHref)) {
+            cleanEl.setAttribute('target', '_self');
+          } else {
+            cleanEl.setAttribute('target', '_blank');
+            cleanEl.setAttribute('rel', 'noopener noreferrer');
+          }
+        } else if (tagName === 'SPAN') {
+          if (node.classList.contains('nlweb-typing-cursor')) {
+            cleanEl.className = 'nlweb-typing-cursor';
+            cleanEl.setAttribute('aria-hidden', 'true');
+          }
+        }
+
+        const children = node.childNodes;
+        for (let i = 0; i < children.length; i++) {
+          const cleanedChild = cleanNode(children[i]);
+          if (cleanedChild) {
+            cleanEl.appendChild(cleanedChild);
+          }
+        }
+        return cleanEl;
+      }
+
+      const wrapper = document.createElement('div');
+      const bodyNodes = doc.body ? doc.body.childNodes : [];
+      for (let i = 0; i < bodyNodes.length; i++) {
+        const cleaned = cleanNode(bodyNodes[i]);
+        if (cleaned) {
+          wrapper.appendChild(cleaned);
+        }
+      }
+      return wrapper.innerHTML;
+    } catch (e) {
+      return escapeHtml(dirtyHtml);
+    }
+  }
+
+  // Helper: Safe Markdown Parser (escapes input, formats markdown, and sanitizes final DOM tree)
   function renderMarkdown(md) {
     if (!md) return '';
     let text = escapeHtml(md);
@@ -230,24 +373,28 @@
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
 
     // Markdown Links: [Text](URL)
-    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*)\)/g, (match, title, url) => {
-      const isInternal = isInternalUrl(url);
+    text = text.replace(/\[([^\[\]\n]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*|#[a-zA-Z0-9_-]+)\)/g, (match, title, url) => {
+      const safeUrl = sanitizeSafeUrl(url);
+      if (!safeUrl) return title;
+      const isInternal = isInternalUrl(safeUrl);
       const targetAttr = isInternal ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
       const arrow = isInternal ? '' : ' ↗';
-      return `<a href="${url}" ${targetAttr} class="nlweb-link">${title}${arrow}</a>`;
+      return `<a href="${escapeHtml(safeUrl)}" ${targetAttr} class="nlweb-link">${title}${arrow}</a>`;
     });
 
     // Bare URLs (not already inside an anchor tag)
     text = text.replace(/(^|[\s(])(https?:\/\/[^\s)<]+)/g, (match, prefix, url) => {
-      const isInternal = isInternalUrl(url);
+      const safeUrl = sanitizeSafeUrl(url);
+      if (!safeUrl) return `${prefix}${url}`;
+      const isInternal = isInternalUrl(safeUrl);
       const targetAttr = isInternal ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
       const arrow = isInternal ? '' : ' ↗';
-      return `${prefix}<a href="${url}" ${targetAttr} class="nlweb-link">${url}${arrow}</a>`;
+      return `${prefix}<a href="${escapeHtml(safeUrl)}" ${targetAttr} class="nlweb-link">${escapeHtml(safeUrl)}${arrow}</a>`;
     });
 
     // Unordered lists
     text = text.replace(/^\s*[-*]\s+(.*)$/gim, '<li>$1</li>');
-    text = text.replace(/(<li>.*<\/li>)/gims, '<ul>$1</ul>');
+    text = text.replace(/(?:<li>.*?<\/li>\s*)+/gims, match => `<ul>${match}</ul>`);
     text = text.replace(/<\/ul>\s*<ul>/g, ''); // Join adjacent lists
 
     // Paragraphs
@@ -261,7 +408,7 @@
       return `<p>${p.replace(/\n/g, '<br>')}</p>`;
     }).join('');
 
-    return text;
+    return sanitizeRenderedHtml(text);
   }
 
   // Helper: Tokenize text into words while preserving attached markdown formatting and spacing
@@ -545,14 +692,16 @@
     container.innerHTML = '';
 
     messages.forEach((msg, index) => {
+      if (!msg || typeof msg !== 'object') return;
+      const safeRole = msg.role === 'user' ? 'user' : 'agent';
       const row = document.createElement('div');
-      row.className = `nlweb-msg-row is-${msg.role}`;
+      row.className = `nlweb-msg-row is-${safeRole}`;
 
       const bubble = document.createElement('div');
       bubble.className = 'nlweb-msg-bubble';
 
-      let leadText = msg.content;
-      if (msg.role === 'agent') {
+      let leadText = typeof msg.content === 'string' ? msg.content : '';
+      if (safeRole === 'agent') {
         if (msg.fanOutQueries && msg.fanOutQueries.length > 0) {
           const fanoutDropdown = createFanOutDropdown(msg.fanOutQueries, msg.language);
           if (fanoutDropdown) {
@@ -567,33 +716,36 @@
         const leadDiv = document.createElement('div');
         leadDiv.className = 'nlweb-lead-content';
         if (!queryForMsg) {
-          leadDiv.innerHTML = renderMarkdown(msg.content);
+          leadDiv.innerHTML = renderMarkdown(leadText);
         } else {
-          leadText = extractSmartAnswer(msg.content, queryForMsg) || msg.content;
+          leadText = extractSmartAnswer(leadText, queryForMsg) || leadText;
           leadDiv.innerHTML = renderMarkdown(leadText);
         }
         bubble.appendChild(leadDiv);
       } else {
-        bubble.innerHTML = renderMarkdown(msg.content);
+        bubble.innerHTML = renderMarkdown(leadText);
       }
 
       // Render Grounded Sources if present
-      if (msg.sources && msg.sources.length > 0) {
-        const sourcesWrap = document.createElement('div');
-        sourcesWrap.className = 'nlweb-sources-container';
-        
-        const header = document.createElement('div');
-        header.className = 'nlweb-sources-header';
-        header.innerHTML = `<span style="width: 12px; height: 12px; display: inline-flex;">${ICONS.citation}</span> Grounded in ${msg.sources.length} sources`;
-        sourcesWrap.appendChild(header);
+      if (Array.isArray(msg.sources) && msg.sources.length > 0) {
+        const validChips = msg.sources.map(src => createSourceChip(src)).filter(Boolean);
+        if (validChips.length > 0) {
+          const sourcesWrap = document.createElement('div');
+          sourcesWrap.className = 'nlweb-sources-container';
 
-        const list = document.createElement('div');
-        list.className = 'nlweb-sources-list';
-        msg.sources.forEach(src => {
-          list.appendChild(createSourceChip(src));
-        });
-        sourcesWrap.appendChild(list);
-        bubble.appendChild(sourcesWrap);
+          const header = document.createElement('div');
+          header.className = 'nlweb-sources-header';
+          header.innerHTML = `<span style="width: 12px; height: 12px; display: inline-flex;">${ICONS.citation}</span> Grounded in ${validChips.length} source${validChips.length > 1 ? 's' : ''}`;
+          sourcesWrap.appendChild(header);
+
+          const list = document.createElement('div');
+          list.className = 'nlweb-sources-list';
+          validChips.forEach(chip => {
+            list.appendChild(chip);
+          });
+          sourcesWrap.appendChild(list);
+          bubble.appendChild(sourcesWrap);
+        }
       }
 
       row.appendChild(bubble);
@@ -747,11 +899,13 @@
     const seen = new Set();
     const sources = [];
     for (const r of results) {
-      if (r && r.url && !seen.has(r.url)) {
-        seen.add(r.url);
+      if (!r || !r.url) continue;
+      const safeUrl = sanitizeSafeUrl(r.url);
+      if (safeUrl && !seen.has(safeUrl)) {
+        seen.add(safeUrl);
         sources.push({
-          url: r.url,
-          name: r.name || r.schema_object?.name || r.url
+          url: safeUrl,
+          name: r.name || r.schema_object?.name || safeUrl
         });
       }
     }
@@ -761,16 +915,19 @@
   // Helper: Render markdown with trailing typing cursor inside the closing block tag
   function renderMarkdownWithCursor(mdText) {
     const rendered = renderMarkdown(mdText);
+    let withCursor;
     if (rendered.endsWith('</p>')) {
-      return rendered.replace(/<\/p>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></p>');
+      withCursor = rendered.replace(/<\/p>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></p>');
     } else if (rendered.endsWith('</li></ul>')) {
-      return rendered.replace(/<\/li><\/ul>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></li></ul>');
+      withCursor = rendered.replace(/<\/li><\/ul>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></li></ul>');
     } else if (rendered.endsWith('</h3>')) {
-      return rendered.replace(/<\/h3>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></h3>');
+      withCursor = rendered.replace(/<\/h3>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></h3>');
     } else if (rendered.endsWith('</h4>')) {
-      return rendered.replace(/<\/h4>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></h4>');
+      withCursor = rendered.replace(/<\/h4>$/, ' <span class="nlweb-typing-cursor" aria-hidden="true"></span></h4>');
+    } else {
+      withCursor = rendered + '<span class="nlweb-typing-cursor" aria-hidden="true"></span>';
     }
-    return rendered + '<span class="nlweb-typing-cursor" aria-hidden="true"></span>';
+    return sanitizeRenderedHtml(withCursor);
   }
 
   // Helper: Create live agent message bubble when fan-out queries or first token chunk arrives
@@ -861,21 +1018,24 @@
     leadContent.innerHTML = renderMarkdown(targetText);
 
     // Render Grounded Sources Chips if present
-    if (sources && sources.length > 0) {
-      const sourcesWrap = document.createElement('div');
-      sourcesWrap.className = 'nlweb-sources-container';
-      const header = document.createElement('div');
-      header.className = 'nlweb-sources-header';
-      header.innerHTML = `<span style="width: 12px; height: 12px; display: inline-flex;">${ICONS.citation}</span> Grounded in ${sources.length} source${sources.length > 1 ? 's' : ''}`;
-      sourcesWrap.appendChild(header);
+    if (Array.isArray(sources) && sources.length > 0) {
+      const validChips = sources.map(src => createSourceChip(src)).filter(Boolean);
+      if (validChips.length > 0) {
+        const sourcesWrap = document.createElement('div');
+        sourcesWrap.className = 'nlweb-sources-container';
+        const header = document.createElement('div');
+        header.className = 'nlweb-sources-header';
+        header.innerHTML = `<span style="width: 12px; height: 12px; display: inline-flex;">${ICONS.citation}</span> Grounded in ${validChips.length} source${validChips.length > 1 ? 's' : ''}`;
+        sourcesWrap.appendChild(header);
 
-      const list = document.createElement('div');
-      list.className = 'nlweb-sources-list';
-      sources.forEach(src => {
-        list.appendChild(createSourceChip(src));
-      });
-      sourcesWrap.appendChild(list);
-      bubble.appendChild(sourcesWrap);
+        const list = document.createElement('div');
+        list.className = 'nlweb-sources-list';
+        validChips.forEach(chip => {
+          list.appendChild(chip);
+        });
+        sourcesWrap.appendChild(list);
+        bubble.appendChild(sourcesWrap);
+      }
     }
 
     // Copy Button
@@ -1211,10 +1371,11 @@
         } else if (evType === 'result') {
           try {
             const resObj = JSON.parse(cleanBody);
-            if (resObj.url && !gatheredSources.some(s => s.url === resObj.url)) {
+            const safeUrl = resObj && sanitizeSafeUrl(resObj.url);
+            if (safeUrl && !gatheredSources.some(s => s.url === safeUrl)) {
               gatheredSources.push({
-                url: resObj.url,
-                name: resObj.name || resObj.schema_object?.name || resObj.url
+                url: safeUrl,
+                name: resObj.name || resObj.schema_object?.name || safeUrl
               });
             }
           } catch (e) {
