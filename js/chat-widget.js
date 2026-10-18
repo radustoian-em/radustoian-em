@@ -490,7 +490,7 @@
           </button>
         </form>
         <div class="nlweb-footer-sub">
-          <span>Grounded live via <a href="/ask" target="_blank" rel="noopener">/ask</a> NLWeb and Gemini</span>
+          <span>Grounded live via <a href="/ask" target="_blank" rel="noopener">/ask</a> NLWeb and Gemini &middot; <a href="/terms-and-conditions.html" rel="nofollow">see Terms and Conditions</a></span>
         </div>
       </footer>
     `;
