@@ -281,6 +281,14 @@
     return wordChunks;
   }
 
+  function stripPromptXmlTags(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str
+      .replace(/<(context|user_query|previous_turn|system|instructions?)\b[^>]*>[\s\S]*?<\/\1>/gi, '')
+      .replace(/<\/?(context|user_query|previous_turn|system|instructions?)\b[^>]*>/gi, '')
+      .trim();
+  }
+
   // Helper: Fallback Lead Extractor for NLWeb Responses
   // Since the Cloudflare Worker (mcp-server) handles the Gemini API call server-side,
   // responses are normally already concise 3-5 sentence synthesized answers.
@@ -288,7 +296,7 @@
   function extractSmartAnswer(rawText, query) {
     if (!rawText) return '';
 
-    const text = rawText.trim();
+    const text = stripPromptXmlTags(rawText);
     if (text.length < 650 || !/(?:^|\n)#{2,3}\s+/.test(text)) {
       return text;
     }
@@ -1193,8 +1201,9 @@
             const delta = chunkObj.delta || chunkObj.text || '';
             if (delta) {
               streamedChunkText += delta;
-              agentResponseText = streamedChunkText;
-              streamWordChunks = tokenizeIntoWords(streamedChunkText);
+              const cleanedChunkText = stripPromptXmlTags(streamedChunkText);
+              agentResponseText = cleanedChunkText;
+              streamWordChunks = tokenizeIntoWords(cleanedChunkText);
             }
           } catch (e) {
             // Ignore malformed chunk JSON
@@ -1212,8 +1221,9 @@
             // Ignore parse errors on single result
           }
         } else if (evType === 'summary') {
-          if (cleanBody) {
-            if (isRefusalResponse(cleanBody) && cleanBody !== streamedChunkText) {
+          const cleanSummary = stripPromptXmlTags(cleanBody);
+          if (cleanSummary) {
+            if (isRefusalResponse(cleanSummary) && cleanSummary !== stripPromptXmlTags(streamedChunkText)) {
               streamWordIndex = 0;
               gatheredSources.length = 0;
               gatheredFanOut.length = 0;
@@ -1221,13 +1231,14 @@
                 liveBubble.fanoutSlot.innerHTML = '';
               }
             }
-            agentResponseText = cleanBody;
-            streamWordChunks = tokenizeIntoWords(cleanBody);
+            agentResponseText = cleanSummary;
+            streamWordChunks = tokenizeIntoWords(cleanSummary);
           }
         } else if (evType === 'nlws') {
-          if (!agentResponseText && cleanBody) {
-            agentResponseText = cleanBody;
-            streamWordChunks = tokenizeIntoWords(cleanBody);
+          const cleanNlws = stripPromptXmlTags(cleanBody);
+          if (!agentResponseText && cleanNlws) {
+            agentResponseText = cleanNlws;
+            streamWordChunks = tokenizeIntoWords(cleanNlws);
           }
         }
       };
