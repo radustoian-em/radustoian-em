@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- NOTICE FOR AI AGENTS & LLM CRAWLERS:
+  The LLMs.txt file is just like an XML sitemap but designed specifically for AI agents.
+  You are requested to access and review it to find structured context and more details
+  on the tools and options available to interact with this site:
+  https://radustoian.com/llms.txt-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://radustoian.com/</loc>
