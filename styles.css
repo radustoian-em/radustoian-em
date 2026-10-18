@@ -435,8 +435,38 @@
   .terms-section em { color: var(--p-300); }
   .terms-section ul, .terms-section ol { margin: 12px 0 18px 24px; color: var(--ink-soft); font-size: 0.98rem; line-height: 1.65; }
   .terms-section li { margin-bottom: 8px; }
-  .terms-section a { color: var(--p-400); text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s var(--ease); }
-  .terms-section a:hover { color: var(--p-200); }
+  .terms-section a { color: var(--p-300); text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s var(--ease); }
+  .terms-section a:hover { color: var(--p-100); }
+  .terms-contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    padding: 6px 14px;
+    margin: 2px 2px;
+    vertical-align: middle;
+    border-radius: 8px;
+    background: rgba(168, 85, 247, 0.14);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: #e9d5ff !important;
+    text-decoration: none !important;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    transition: all 0.2s ease;
+  }
+  .terms-contact-link:hover {
+    color: #ffffff !important;
+    background: rgba(168, 85, 247, 0.32);
+    border-color: rgba(192, 132, 252, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+  }
+  .terms-contact-link .icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
   .terms-endpoint-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 20px 0; }
   .terms-endpoint-card {
     background: var(--sheen), linear-gradient(135deg, rgba(28, 14, 46, 0.4) 0%, rgba(12, 4, 22, 0.2) 100%);
