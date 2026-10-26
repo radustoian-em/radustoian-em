@@ -1229,8 +1229,8 @@
       return;
     }
 
-    // 4. Guardrail Check: Politely refuse any question that is not about Radu or is an off-topic task
-    if (isOffTopicTaskAttempt(userQuestion) || !isQueryAboutRadu(userQuestion, prevQuery)) {
+    // 4. Guardrail Check: Politely refuse explicit off-topic task attempts; let the server & Gemini evaluate multilingual relevance
+    if (isOffTopicTaskAttempt(userQuestion)) {
       const refusalText = "I am only meant to answer questions about Radu Stoian. Please feel free to ask anything about him, his background, skills, case studies, or projects.";
       await streamAgentResponse(refusalText, [], userQuestion);
       return;
