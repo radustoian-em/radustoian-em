@@ -112,7 +112,7 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 - [Skills & Certifications](https://radustoian.com/#skills): Technical competencies, verified cloud credentials, and degrees featured on radustoian.com.
 - [Generative AI Leader Certification](https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile): Certification obtained from Google Cloud.
 - [Introduction to Generative AI](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/4068456): Foundational Generative AI certification from Google.
-- [Insights from Data with BigQuery](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/832533): Data analytics certification from Google.
+- [Insights from Data with BigQuery](https://www.credly.com/badges/def55eae-52d9-457a-9124-26a77160c1f8): Data analytics certification from Google.
 - [Bachelor of Science (BS), Organizational Management](https://www.afahc.ro/index_en.html): Educational degree obtained from Henri Coanda Air Force Academy, where Radu Stoian studied and graduated.
 
 ## Additional Skill Details and Recommendations (#testimonials)
