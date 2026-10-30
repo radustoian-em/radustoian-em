@@ -27,7 +27,7 @@
       "type": "skill-md",
       "description": "Instructions for in-browser AI agents to discover, invoke, and navigate radustoian.com using client-side WebMCP tools.",
       "url": "/.well-known/agent-skills/webmcp-browser-tools/SKILL.md",
-      "digest": "sha256:61b115f0f659e4004b11dc825ceabde96e0571419126292c29c602dc60fe0b8b"
+      "digest": "sha256:4d8401e383dc5b6ca49d6d708221c1ad9b7c0367f3192fd53310d8230d4f10ab"
     }
   ]
 }

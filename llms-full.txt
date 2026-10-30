@@ -115,6 +115,7 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 - [Introduction to Generative AI](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/4068456): Foundational Generative AI certification from Google.
 - [Insights from Data with BigQuery](https://www.credly.com/badges/def55eae-52d9-457a-9124-26a77160c1f8): Data analytics certification from Google.
 - [Bachelor of Science (BS), Organizational Management](https://www.afahc.ro/index_en.html): Educational degree obtained from Henri Coanda Air Force Academy, where Radu Stoian studied and graduated.
+- [Credly Badges & Skills](https://www.credly.com/users/radu-stoian-technical-director-enhance-media/badges/credly): Comprehensive list of verified badges and skills on Credly.
 
 ## Additional Skill Details and Recommendations (#testimonials)
 - [Additional Skill Details & Recommendations](https://radustoian.com/#testimonials): Detailed client recommendation analyses and LinkedIn endorsements on radustoian.com.
