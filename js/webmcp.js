@@ -502,7 +502,7 @@
     title: 'List certificates, skills & profile links',
     description:
       'Extracts Radu Stoian\'s main certificates and core skills, and identifies external links ' +
-      'to all skills and certifications on LinkedIn and Google Skills.',
+      'to all skills and certifications on LinkedIn, Credly, and Google Skills.',
     inputSchema: { type: 'object', properties: {} },
     annotations: { readOnlyHint: true },
     execute: async () => {
@@ -532,6 +532,10 @@
         || document.querySelector('a[href*="linkedin.com"][href*="skills"]')?.href
         || null;
 
+      const credlySkillsUrl = container.querySelector('a[href*="credly.com/users/"][href*="badges"]')?.href
+        || document.querySelector('a[href*="credly.com/users/"][href*="badges"]')?.href
+        || 'https://www.credly.com/users/radu-stoian-technical-director-enhance-media/badges/credly';
+
       const googleSkillsUrl = container.querySelector('a[href*="skills.google"]')?.href
         || document.querySelector('a[href*="skills.google"]')?.href
         || null;
@@ -545,6 +549,11 @@
             platform: 'LinkedIn Skills',
             description: 'Comprehensive list of verified professional skills and endorsements on LinkedIn',
             url: linkedInSkillsUrl
+          },
+          credlySkills: {
+            platform: 'Credly Badges & Skills',
+            description: 'Comprehensive list of verified digital credentials and badges on Credly',
+            url: credlySkillsUrl
           },
           googleSkills: {
             platform: 'Google Skills',

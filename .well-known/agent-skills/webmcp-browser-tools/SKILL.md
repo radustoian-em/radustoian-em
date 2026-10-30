@@ -46,7 +46,7 @@ All WebMCP tools are marked with `readOnly: true`, `readOnlyHint: true`, `idempo
    - **Returns:** Speaking engagements, masterclasses (BrightonSEO), podcast guest spots, panel sessions, and open-source contributions (OJCP RFC) with normalized direct `url` and `link` fields, `eventUrl`, and `resource` media links (YouTube, Speaker Deck, GitHub).
 8. **`listCertificatesAndSkills`** (alias: `getCertificatesAndSkills`)
    - **Parameters:** `{}`
-   - **Returns:** Professional credentials (Google Cloud GenAI Leader, Intro to GenAI, BigQuery), skill tags, and external profile links to all skills and certifications on LinkedIn and Google Skills.
+   - **Returns:** Professional credentials (Google Cloud GenAI Leader, Intro to GenAI, BigQuery), skill tags, and external profile links to all skills and certifications on LinkedIn, Credly, and Google Skills.
 
 ### Conversational Chat
 9. **`askChatbot`** (aliases: `askAIAboutRadu`, `askAiAboutRadu`, `openChatbot`, `openChat`, `askAboutRadu`, `ask_chatbot`)
