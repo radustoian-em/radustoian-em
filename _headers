@@ -98,6 +98,13 @@
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
+# OAuth 2.0 endpoints
+/oauth/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, Authorization, Accept
+  Cache-Control: no-store, no-cache, must-revalidate
+
 
 # Markdown representations for AI agents
 /*.md.txt

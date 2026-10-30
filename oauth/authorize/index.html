@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authorize Gemini MCP — Radu Stoian</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <style>
+    :root {
+      --bg: #0d0a14;
+      --card-bg: rgba(26, 19, 42, 0.9);
+      --card-border: rgba(139, 34, 226, 0.35);
+      --text: #f3f0f7;
+      --text-muted: #a39cb2;
+      --primary: #8b22e2;
+      --glow: rgba(139, 34, 226, 0.3);
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      background-image: radial-gradient(circle at 50% 25%, rgba(139, 34, 226, 0.18), transparent 65%);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 40px var(--glow);
+      max-width: 480px;
+      width: 100%;
+      padding: 2.25rem;
+      text-align: center;
+    }
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      margin: 0 auto 1.25rem;
+      display: block;
+      object-fit: cover;
+      box-shadow: 0 0 20px var(--glow);
+    }
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+      margin-bottom: 1.5rem;
+    }
+    .scopes-box {
+      background: rgba(13, 10, 20, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.1rem;
+      margin-bottom: 1.75rem;
+      text-align: left;
+    }
+    .scopes-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+    .scope-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      margin-bottom: 0.65rem;
+      font-size: 0.88rem;
+    }
+    .scope-item:last-child { margin-bottom: 0; }
+    .scope-icon {
+      color: #34d399;
+      font-size: 1.05rem;
+      line-height: 1.2;
+    }
+    .scope-desc strong {
+      color: var(--text);
+      display: block;
+      font-size: 0.88rem;
+    }
+    .scope-desc span {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      line-height: 1.35;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      background: linear-gradient(135deg, #8b22e2, #6b14b8);
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(139, 34, 226, 0.4);
+      transition: all 0.2s ease;
+    }
+    .btn:hover {
+      background: linear-gradient(135deg, #9d32f5, #7d1cd4);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(139, 34, 226, 0.6);
+    }
+    .countdown {
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .footer {
+      margin-top: 1.5rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="/apple-touch-icon.png" alt="Radu Stoian" class="avatar">
+    <h1>Authorize Gemini MCP</h1>
+    <p class="subtitle">Connect Google Gemini to <strong>radustoian-mcp</strong> for authoritative question answering &amp; knowledge retrieval.</p>
+    
+    <div class="scopes-box">
+      <div class="scopes-title">Permissions Granted</div>
+      <div class="scope-item">
+        <span class="scope-icon">&#10003;</span>
+        <div class="scope-desc">
+          <strong>read:profile</strong>
+          <span>Access public biographical facts, client case studies, and career history</span>
+        </div>
+      </div>
+      <div class="scope-item">
+        <span class="scope-icon">&#10003;</span>
+        <div class="scope-desc">
+          <strong>read:ai</strong>
+          <span>Execute dynamic question answering, section retrieval, and agent tools</span>
+        </div>
+      </div>
+    </div>
+
+    <button id="authBtn" class="btn" type="button">Authorize &amp; Continue</button>
+    <div id="countdown" class="countdown">Authorizing automatically in <span id="timer">2</span>s...</div>
+
+    <div class="footer">
+      Public Model Context Protocol server for <a href="https://radustoian.com" style="color:var(--text-muted);text-decoration:underline;">radustoian.com</a>
+    </div>
+  </div>
+
+  <script src="/js/oauth-authorize.js"></script>
+</body>
+</html>
