@@ -70,7 +70,7 @@
     {
       "id": "get-section",
       "name": "Get Profile Section",
-      "description": "Retrieves specific structured sections from Radu Stoian's profile context, including Skills and Certifications, Projects and Clients, Client Testimonials, and Publications.",
+      "description": "Retrieves specific structured sections from Radu Stoian's profile context, including Projects, Clients and Case Studies, Skills and Certifications, Areas of Expertise, Client Testimonials, Publications and Insights, and Speaking and Industry Engagement.",
       "tags": [
         "sections",
         "profile",
@@ -80,7 +80,7 @@
       ],
       "examples": [
         "Get the Skills and Certifications section",
-        "Retrieve the Projects and Clients section",
+        "Retrieve the Projects, Clients and Case Studies section",
         "Show Client Testimonials"
       ],
       "inputModes": [

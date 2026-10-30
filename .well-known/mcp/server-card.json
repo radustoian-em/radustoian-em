@@ -2,10 +2,10 @@
   "$schema": "https://modelcontextprotocol.io/schemas/server-card/v1.json",
   "serverInfo": {
     "name": "radustoian-mcp",
-    "version": "2.0.0"
+    "version": "2.4.1"
   },
   "name": "Radu Stoian MCP Server & Agent Tools",
-  "version": "2.0.0",
+  "version": "2.4.1",
   "description": "Model Context Protocol (MCP) server providing dynamic question answering, section retrieval, and external investigation links grounded in the site's knowledge base, plus client-side WebMCP tools.",
   "endpoint": "https://radustoian.com/mcp",
   "transports": [
@@ -54,7 +54,7 @@
     },
     {
       "name": "get-section",
-      "description": "Returns the complete text of a specific section from the site's knowledge base (e.g. 'Skills and Certifications', 'Projects and Clients', 'Client Testimonials', 'Publications and Insights').",
+      "description": "Returns the complete text of a specific section from the site's knowledge base (e.g. 'Projects, Clients and Case Studies', 'Skills and Certifications', 'Areas of Expertise', 'Client Testimonials', 'Publications and Insights', 'Speaking and Industry Engagement').",
       "readOnly": true,
       "annotations": {
         "readOnlyHint": true,
@@ -67,7 +67,7 @@
         "properties": {
           "section": {
             "type": "string",
-            "description": "Name or keyword of the section to retrieve"
+            "description": "Name or keyword of the section to retrieve. Valid canonical sections: 'About Radu Stoian (#about)', 'Profile Breakdown (#about)', 'Areas of Expertise (#expertise)', 'Client Testimonials (#testimonials)', 'Additional Skill Details and Recommendations (#testimonials)', 'Main Profile Links (#connect)', 'Public Profiles (#connect)', 'Contact and Connect (#connect)', 'Publications and Insights (#insights)', 'Projects, Clients and Case Studies (#projects)', 'Speaking and Industry Engagement (#speaking)', 'Skills and Certifications (#skills)', 'Agentic AI Discovery & Infrastructure', 'Layer 3: The Discovery & Signalling Layer (#layer-3)', 'Layer 2: The Documentation Layer (#layer-2)', 'Layer 1: The Technical Infrastructure & Execution Routes (#layer-1)'. Common aliases such as 'Career History', 'Projects and Clients', 'Expertise', 'Talks', or 'Education' are also supported."
           }
         },
         "required": [
