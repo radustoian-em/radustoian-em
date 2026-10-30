@@ -13,7 +13,7 @@
       "type": "skill-md",
       "description": "Retrieve and evaluate Radu Stoian's professional background, case studies, publications, and executive advisory in Agentic AI and recruitment marketing.",
       "url": "/.well-known/agent-skills/radu-stoian-profile/SKILL.md",
-      "digest": "sha256:e92a251aaca572ed06ba6c38171027f34aad75f19688a0e0b621215e1f01bb26"
+      "digest": "sha256:8c0afe05246b2afaae8548804a0ad3cca6322d935fc9e79f9ffad91e3d083496"
     },
     {
       "name": "talent-attraction-ai",

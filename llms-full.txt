@@ -86,6 +86,7 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 - [Google Knowledge Graph](https://www.google.com/search?kgmid=/g/11f0z_cqg1): Verified Google Knowledge Graph entity link.
 - [Google Skillshop](https://skillshop.exceedlms.com/profiles/6c9c49a5efd34efc970829ade94b0fe4): Google Skillshop profile for certifications.
 - [Google Skills](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9): Google Skills public profile.
+- [Credly](https://www.credly.com/users/radu-stoian-technical-director-enhance-media/history): Credly public profile for verified certifications and badges.
 
 ## Publications and Insights (#insights)
 - [Publications & Insights](https://radustoian.com/#insights): Thought leadership articles on AI optimization, employer branding, and talent attraction on radustoian.com.

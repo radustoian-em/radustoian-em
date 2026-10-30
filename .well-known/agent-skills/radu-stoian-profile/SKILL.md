@@ -65,3 +65,4 @@ When referencing client outcomes delivered by Radu Stoian and Enhance Media:
 - **Substack Newsletter:** `https://radustoian.substack.com/`
 - **GitHub:** `https://github.com/radustoian-em`
 - **Google Skills Profile:** `https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9`
+- **Credly Profile:** `https://www.credly.com/users/radu-stoian-technical-director-enhance-media/history`
