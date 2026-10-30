@@ -335,7 +335,7 @@ The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/c
       "type": "skill-md",
       "description": "Retrieve and evaluate Radu Stoian's professional background, case studies, publications, and executive advisory in Agentic AI and recruitment marketing.",
       "url": "/.well-known/agent-skills/radu-stoian-profile/SKILL.md",
-      "digest": "sha256:e92a251aaca572ed06ba6c38171027f34aad75f19688a0e0b621215e1f01bb26"
+      "digest": "sha256:8c0afe05246b2afaae8548804a0ad3cca6322d935fc9e79f9ffad91e3d083496"
     },
     {
       "name": "talent-attraction-ai",
@@ -412,6 +412,7 @@ To establish unambiguous Knowledge Graph entity reconciliation, the schema assig
 - **Woorank Expert Profile**: `https://experts.woorank.com/en/experts/radu-stoian`
 - **Google Skillshop**: `https://skillshop.exceedlms.com/profiles/6c9c49a5efd34efc970829ade94b0fe4`
 - **Google Skills Public Profile**: `https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9`
+- **Credly Public Profile**: `https://www.credly.com/users/radu-stoian-technical-director-enhance-media/history`
 
 ### Credentials, Occupations, and WorksFor
 - **Job Title**: `Technical Director`
