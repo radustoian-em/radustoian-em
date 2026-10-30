@@ -57,6 +57,21 @@
           "type": "text/markdown"
         }
       ]
+    },
+    {
+      "anchor": "https://radustoian.com/.well-known/poppy.json",
+      "service-desc": [
+        {
+          "href": "https://radustoian.com/.well-known/poppy.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://personalagentprotocol.org/docs/spec",
+          "type": "text/html"
+        }
+      ]
     }
   ]
 }

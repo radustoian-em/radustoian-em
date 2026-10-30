@@ -2,8 +2,13 @@
   "issuer": "https://radustoian.com",
   "authorization_endpoint": "https://radustoian.com/oauth/authorize",
   "token_endpoint": "https://radustoian.com/oauth/token",
+  "revocation_endpoint": "https://radustoian.com/oauth/revoke",
   "jwks_uri": "https://radustoian.com/.well-known/jwks.json",
   "registration_endpoint": "https://radustoian.com/oauth/register",
+  "poppy_domains": [
+    "radustoian.com",
+    "www.radustoian.com"
+  ],
   "response_types_supported": [
     "code",
     "token",
@@ -25,7 +30,9 @@
     "profile",
     "email",
     "read:profile",
-    "read:ai"
+    "read:ai",
+    "poppy:read",
+    "poppy:write"
   ],
   "token_endpoint_auth_methods_supported": [
     "client_secret_basic",

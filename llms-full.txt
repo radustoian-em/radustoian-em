@@ -57,7 +57,7 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 - DNS Resolution (RFC 9460 & DNS-AID): Agentic DNS discovery records (SVCB Type 65 and TXT) published on deeper agentic subdomains (_index._agents.radustoian.com, _a2a._agents.radustoian.com, _mcp._agents.radustoian.com) implementing DNS for AI Discovery (DNS-AID). Details: https://isitagentready.com/radustoian.com.
 - HTTP Transport (RFC 8288): Link headers returned on initial requests pointing to rel="alternate" (/index.md.txt), rel="describedby" (/llms-full.txt, /metadata.json), rel="service" (/mcp, /ask), rel="mcp-server-card" (/.well-known/mcp/server-card.json), rel="service-desc" (/openapi.json), and rel="ard" (/.well-known/ard.json), with Vary: Accept support for text/markdown.
 - Crawling Directives: robots.txt explicitly permitting crawlers and directing LLMs to llms.txt.
-- Standardized Directories (RFC 8615): Predictable /.well-known/ endpoints including ard.json (ARD v1.0 manifest), ai-catalog.json, mcp/server-card.json (MCP Server Card v2.0), agent-card.json (A2A Protocol v1.0), agent-skills/index.json (Skills index), and api-catalog (RFC 9264 linkset).
+- Standardized Directories (RFC 8615): Predictable /.well-known/ endpoints including ard.json (ARD v1.0 manifest), ai-catalog.json, mcp/server-card.json (MCP Server Card v2.0), agent-card.json (A2A Protocol v1.0), agent-skills/index.json (Skills index), api-catalog (RFC 9264 linkset), and poppy.json (Personal Agent Protocol draft 0.1).
 
 ### Layer 2: The Documentation Layer (#layer-2)
 - [Layer 2: Documentation Layer](https://radustoian.com/agentic-architecture-mcp-llms#layer-2): Instruction manuals, schemas, and domain skills on radustoian.com.

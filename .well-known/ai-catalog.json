@@ -92,6 +92,17 @@
         "Fetch case studies and credentials via HTTP GET/POST endpoints",
         "Access /api/v1/query, /api/v1/sections, and /api/v1/links on radustoian.com"
       ]
+    },
+    {
+      "identifier": "urn:air:radustoian.com:manifest:poppy",
+      "displayName": "Personal Agent Protocol (Poppy) Discovery Manifest",
+      "type": "application/json",
+      "url": "https://radustoian.com/.well-known/poppy.json",
+      "representativeQueries": [
+        "Personal Agent Protocol discovery manifest for radustoian.com",
+        "Poppy discovery metadata and OAuth issuer binding",
+        "Connect personal agent to Radu Stoian's APIs and profile"
+      ]
     }
   ]
 }

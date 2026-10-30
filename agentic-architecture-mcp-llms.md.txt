@@ -95,6 +95,7 @@ Standardized `/.well-known/` paths where agents reliably inspect manifests and c
 - [`/.well-known/agent-card.json`](https://radustoian.com/.well-known/agent-card.json) - Agent Card (A2A Protocol v1.0)
 - [`/.well-known/agent-skills/index.json`](https://radustoian.com/.well-known/agent-skills/index.json) - Skills Registry Index
 - [`/.well-known/api-catalog`](https://radustoian.com/.well-known/api-catalog) - RFC 9264 API Linkset
+- [`/.well-known/poppy.json`](https://radustoian.com/.well-known/poppy.json) - Personal Agent Protocol (Poppy v0.1)
 - [`/sitemap.xml`](https://radustoian.com/sitemap.xml) - XML Sitemap
 
 ---

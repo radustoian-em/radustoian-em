@@ -11,6 +11,7 @@
 - [Full Profile Context](https://radustoian.com/llms-full.txt): A single markdown file combining all details about Radu Stoian for deep AI ingestion.
 
 ## Agent Resource Discovery
+- [Personal Agent Protocol Manifest](https://radustoian.com/.well-known/poppy.json): Personal Agent Protocol (Poppy) draft 0.1 discovery manifest for autonomous agent discovery and OAuth issuer binding.
 - [Agent Discovery Manifest](https://radustoian.com/.well-known/ard.json): Machine-readable ARD v0.91 catalog indexing WebMCP tools, markdown alternates, and knowledge graph schemas.
 - [Agentic Architecture](https://radustoian.com/agentic-architecture-mcp-llms): Interactive architecture map detailing the dedicated infrastructure for agentic AI discovery, WebMCP in-browser tools, and MCP servers.
 - [Agentic Architecture Markdown](https://radustoian.com/agentic-architecture-mcp-llms.md.txt): Direct markdown representation of the agentic architecture map for AI agents and content negotiation.

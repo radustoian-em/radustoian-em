@@ -1,0 +1,35 @@
+{
+  "protocol_version": "0.1",
+  "organization": {
+    "name": "Radu Stoian",
+    "domain": "radustoian.com"
+  },
+  "auth": {
+    "issuer": "https://radustoian.com",
+    "direct": {
+      "scopes": [
+        "poppy:read",
+        "poppy:write",
+        "read:profile",
+        "read:ai"
+      ]
+    },
+    "custom_scopes": {
+      "read:profile": "Read professional profile, biography, credentials, and case studies",
+      "read:ai": "Query dynamic AI knowledge base, conversational endpoints, and MCP tools"
+    }
+  },
+  "apis": [
+    {
+      "type": "openapi",
+      "url": "https://radustoian.com/openapi.json",
+      "description": "Radu Stoian Profile and Agent Endpoints API"
+    },
+    {
+      "type": "mcp",
+      "url": "https://radustoian.com/mcp",
+      "description": "Radu Stoian MCP Server for profile knowledge retrieval"
+    }
+  ],
+  "web": {}
+}
