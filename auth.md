@@ -25,6 +25,7 @@ Autonomous agents can programmatically discover security configuration and endpo
 - OpenID Connect Configuration: https://radustoian.com/.well-known/openid-configuration
 - OAuth Protected Resource Metadata: https://radustoian.com/.well-known/oauth-protected-resource
 - JSON Web Key Set (JWKS): https://radustoian.com/.well-known/jwks.json
+- Personal Agent Protocol (Poppy): https://radustoian.com/.well-known/poppy.json
 
 ---
 

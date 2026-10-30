@@ -93,7 +93,8 @@ radustoian-em/
 │   │   └── server-card.json              # MCP server card specification for WebMCP
 │   ├── oauth-authorization-server        # RFC 8414 OAuth 2.0 Authorization Server metadata
 │   ├── oauth-protected-resource          # RFC 9728 OAuth Protected Resource Metadata
-│   └── openid-configuration              # OpenID Connect Discovery 1.0 metadata
+│   ├── openid-configuration              # OpenID Connect Discovery 1.0 metadata
+│   └── poppy.json                        # Personal Agent Protocol (Poppy) draft 0.1 discovery manifest
 ├── _headers                             # Cloudflare Pages HTTP security and caching directives
 ├── agentic-architecture-mcp-llms.html    # Interactive Agentic AI discovery & execution architecture map
 ├── agentic-architecture-mcp-llms.md      # Pure ASCII Markdown representation of the architecture map
