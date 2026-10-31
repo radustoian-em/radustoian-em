@@ -41,11 +41,6 @@ canonical: https://radustoian.com/agentic-architecture-mcp-llms.html
                                v
 +-------------------------------------------------------------+
 | Layer 1: Technical Infrastructure (MCP, WebMCP, Graph)      |
-+------------------------------+------------------------------+
-                               |
-                               v
-+-------------------------------------------------------------+
-| Grounded Answer Formulated & Verified                       |
 +-------------------------------------------------------------+
 ```
 
@@ -202,27 +197,6 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
   - [`GET /sites`](https://radustoian.com/sites) - Supported backend domains catalog
 - **Features:** Multi-turn context decontextualization (`prev`), dynamic Schema.org entity extraction, and streaming token delivery.
 - **Advantage:** Plug-and-play integration for NLWeb-enabled conversational clients, streaming web agents, and powers the native client-side chat widget on radustoian.com.
-
----
-
-## Synthesis Phase: Grounded Answer Formulated (#synthesis)
-
-**Radu Stoian** is the [Technical Director at Enhance Media](https://www.enhancemedia.co.uk/), specializing in the shift from search engine discovery to **Agentic AI recommendations** in talent acquisition.
-
-### Key Outcomes
-- [Virgin Atlantic (+83% conversions)](https://www.enhancemedia.co.uk/case-study/making-cabin-crew-applications-soar-for-virgin-atlantic/)
-- [John Lewis Partnership (GFJ & 3M reach)](https://www.enhancemedia.co.uk/case-study/expanding-the-reach-of-multiple-employer-brands-using-google-for-jobs/)
-- [University of Surrey Case Study](https://www.enhancemedia.co.uk/case-study/securing-diverse-top-tier-talent-for-the-university-of-surrey/)
-
-### Credentials & Standards
-- [Google Cloud Generative AI Leader](https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile)
-- [Google Skills Profile](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9)
-- [Open Job Context Protocol (OJCP) RFC Contributor](https://github.com/ojcp-org/ojcp/blob/main/docs/rfcs/0002-official-job-url.md)
-
-### Thought Leadership
-- [BrightonSEO Masterclasses](https://speakerdeck.com/radustoian)
-- [Substack Newsletter](https://radustoian.substack.com/)
-- [LinkedIn Official Profile](https://www.linkedin.com/in/radustoian/)
 
 ---
 
