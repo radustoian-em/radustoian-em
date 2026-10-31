@@ -2,7 +2,8 @@
   "protocol_version": "0.1",
   "organization": {
     "name": "Radu Stoian",
-    "domain": "radustoian.com"
+    "domain": "radustoian.com",
+    "icon": "https://radustoian.com/favicon-32x32.png"
   },
   "auth": {
     "issuer": "https://radustoian.com",
@@ -22,13 +23,20 @@
   "apis": [
     {
       "type": "openapi",
+      "name": "Radu Stoian MCP",
       "url": "https://radustoian.com/openapi.json",
+      "icon": "https://radustoian.com/favicon-32x32.png",
+      "creator": "Radu Stoian",
       "description": "Radu Stoian Profile and Agent Endpoints API"
     },
     {
       "type": "mcp",
+      "name": "Radu Stoian MCP",
+      "title": "Radu Stoian MCP",
       "url": "https://radustoian.com/mcp",
-      "description": "Radu Stoian MCP Server for profile knowledge retrieval"
+      "icon": "https://radustoian.com/favicon-32x32.png",
+      "creator": "Radu Stoian",
+      "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, profile section retrieval, and verified external investigation links."
     }
   ],
   "web": {}

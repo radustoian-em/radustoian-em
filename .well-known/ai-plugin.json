@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Radu Stoian MCP",
+  "name_for_model": "radu_stoian_mcp",
+  "description_for_human": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, section retrieval, and investigation links.",
+  "description_for_model": "Use Radu Stoian MCP to query authoritative information about Radu Stoian, Technical Director at Enhance Media, including career biography, client case studies, speaking engagements, publications, and verified credentials.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://radustoian.com/openapi.json"
+  },
+  "logo_url": "https://radustoian.com/favicon-32x32.png",
+  "contact_email": "contact@radustoian.com",
+  "legal_info_url": "https://radustoian.com/terms-and-conditions.html",
+  "creator": "Radu Stoian"
+}
