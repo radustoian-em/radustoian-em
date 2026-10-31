@@ -1,13 +1,18 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Radu Stoian Profile & Agent Endpoints API",
-    "description": "Public content negotiation and agent resource endpoints for radustoian.com",
-    "version": "1.0.0",
+    "title": "Radu Stoian MCP",
+    "description": "Authoritative Model Context Protocol (MCP) server, dynamic question answering, and public agent endpoints for Radu Stoian, Technical Director at Enhance Media.",
+    "version": "2.4.1",
     "contact": {
       "name": "Radu Stoian",
       "url": "https://radustoian.com"
-    }
+    },
+    "x-logo": {
+      "url": "https://radustoian.com/favicon-32x32.png",
+      "altText": "Radu Stoian MCP Favicon"
+    },
+    "x-creator": "Radu Stoian"
   },
   "servers": [
     {

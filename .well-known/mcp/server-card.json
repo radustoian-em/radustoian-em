@@ -1,13 +1,117 @@
 {
   "$schema": "https://modelcontextprotocol.io/schemas/server-card/v1.json",
-  "serverInfo": {
-    "name": "radustoian-mcp",
-    "version": "2.4.1"
-  },
-  "name": "Radu Stoian MCP Server & Agent Tools",
+  "name": "Radu Stoian MCP",
+  "title": "Radu Stoian MCP",
+  "displayName": "Radu Stoian MCP",
+  "slug": "radustoian-mcp",
   "version": "2.4.1",
-  "description": "Model Context Protocol (MCP) server providing dynamic question answering, section retrieval, and external investigation links grounded in the site's knowledge base, plus client-side WebMCP tools.",
+  "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, section retrieval, and external investigation links grounded in the site's knowledge base, plus client-side WebMCP tools.",
+  "websiteUrl": "https://radustoian.com",
   "endpoint": "https://radustoian.com/mcp",
+  "icon": "https://radustoian.com/favicon-32x32.png",
+  "iconUrl": "https://radustoian.com/favicon-32x32.png",
+  "logo_url": "https://radustoian.com/favicon-32x32.png",
+  "icons": [
+    {
+      "src": "https://radustoian.com/favicon-32x32.png",
+      "mimeType": "image/png",
+      "sizes": ["32x32"]
+    },
+    {
+      "src": "https://radustoian.com/favicon-16x16.png",
+      "mimeType": "image/png",
+      "sizes": ["16x16"]
+    },
+    {
+      "src": "https://radustoian.com/apple-touch-icon.png",
+      "mimeType": "image/png",
+      "sizes": ["180x180"]
+    },
+    {
+      "src": "https://radustoian.com/android-chrome-192x192.png",
+      "mimeType": "image/png",
+      "sizes": ["192x192"]
+    },
+    {
+      "src": "https://radustoian.com/android-chrome-512x512.png",
+      "mimeType": "image/png",
+      "sizes": ["512x512"]
+    }
+  ],
+  "creator": "Radu Stoian",
+  "author": {
+    "name": "Radu Stoian",
+    "role": "Technical Director at Enhance Media",
+    "url": "https://radustoian.com"
+  },
+  "vendor": {
+    "name": "Radu Stoian",
+    "organization": "Enhance Media",
+    "url": "https://radustoian.com"
+  },
+  "serverInfo": {
+    "name": "Radu Stoian MCP",
+    "title": "Radu Stoian MCP",
+    "displayName": "Radu Stoian MCP",
+    "slug": "radustoian-mcp",
+    "version": "2.4.1",
+    "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, profile section retrieval, and verified external investigation links.",
+    "websiteUrl": "https://radustoian.com",
+    "icon": "https://radustoian.com/favicon-32x32.png",
+    "iconUrl": "https://radustoian.com/favicon-32x32.png",
+    "logo_url": "https://radustoian.com/favicon-32x32.png",
+    "icons": [
+      {
+        "src": "https://radustoian.com/favicon-32x32.png",
+        "mimeType": "image/png",
+        "sizes": ["32x32"]
+      },
+      {
+        "src": "https://radustoian.com/favicon-16x16.png",
+        "mimeType": "image/png",
+        "sizes": ["16x16"]
+      },
+      {
+        "src": "https://radustoian.com/apple-touch-icon.png",
+        "mimeType": "image/png",
+        "sizes": ["180x180"]
+      },
+      {
+        "src": "https://radustoian.com/android-chrome-192x192.png",
+        "mimeType": "image/png",
+        "sizes": ["192x192"]
+      },
+      {
+        "src": "https://radustoian.com/android-chrome-512x512.png",
+        "mimeType": "image/png",
+        "sizes": ["512x512"]
+      }
+    ],
+    "creator": "Radu Stoian",
+    "author": {
+      "name": "Radu Stoian",
+      "role": "Technical Director at Enhance Media",
+      "url": "https://radustoian.com"
+    },
+    "vendor": {
+      "name": "Radu Stoian",
+      "organization": "Enhance Media",
+      "url": "https://radustoian.com"
+    },
+    "_meta": {
+      "name": "Radu Stoian MCP",
+      "title": "Radu Stoian MCP",
+      "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, profile section retrieval, and verified external investigation links.",
+      "creator": "Radu Stoian",
+      "author": {
+        "name": "Radu Stoian",
+        "role": "Technical Director at Enhance Media",
+        "url": "https://radustoian.com"
+      },
+      "websiteUrl": "https://radustoian.com",
+      "icon": "https://radustoian.com/favicon-32x32.png"
+    }
+  },
   "transports": [
     {
       "type": "streamable-http",
@@ -27,13 +131,23 @@
   "tools": [
     {
       "name": "ask",
+      "title": "Ask Radu Stoian",
       "description": "Answers generic or specific questions about Radu Stoian using a dynamic retrieval engine that grounds its answers by pulling from the site's knowledge base, along with external investigation links.",
       "readOnly": true,
+      "icons": [
+        {
+          "src": "https://radustoian.com/favicon-32x32.png",
+          "mimeType": "image/png",
+          "sizes": ["32x32"]
+        }
+      ],
       "annotations": {
+        "title": "Ask Radu Stoian",
         "readOnlyHint": true,
         "readOnly": true,
         "destructiveHint": false,
-        "idempotentHint": true
+        "idempotentHint": true,
+        "openWorldHint": false
       },
       "inputSchema": {
         "type": "object",
@@ -54,13 +168,23 @@
     },
     {
       "name": "get-section",
+      "title": "Get Profile Section",
       "description": "Returns the complete text of a specific section from the site's knowledge base (e.g. 'Projects, Clients and Case Studies', 'Skills and Certifications', 'Areas of Expertise', 'Client Testimonials', 'Publications and Insights', 'Speaking and Industry Engagement').",
       "readOnly": true,
+      "icons": [
+        {
+          "src": "https://radustoian.com/favicon-32x32.png",
+          "mimeType": "image/png",
+          "sizes": ["32x32"]
+        }
+      ],
       "annotations": {
+        "title": "Get Profile Section",
         "readOnlyHint": true,
         "readOnly": true,
         "destructiveHint": false,
-        "idempotentHint": true
+        "idempotentHint": true,
+        "openWorldHint": false
       },
       "inputSchema": {
         "type": "object",
@@ -77,13 +201,23 @@
     },
     {
       "name": "get-investigation-links",
+      "title": "Get Investigation Links",
       "description": "Returns external links and public profiles for AI agents to investigate Radu Stoian (LinkedIn, GitHub, Substack, SpeakerDeck, Credly, Google Skills, etc.).",
       "readOnly": true,
+      "icons": [
+        {
+          "src": "https://radustoian.com/favicon-32x32.png",
+          "mimeType": "image/png",
+          "sizes": ["32x32"]
+        }
+      ],
       "annotations": {
+        "title": "Get Investigation Links",
         "readOnlyHint": true,
         "readOnly": true,
         "destructiveHint": false,
-        "idempotentHint": true
+        "idempotentHint": true,
+        "openWorldHint": false
       },
       "inputSchema": {
         "type": "object",
@@ -92,13 +226,23 @@
     },
     {
       "name": "server-info",
-      "description": "Returns information about this MCP server, runtime environment, and available data sources.",
+      "title": "Radu Stoian MCP Server Info",
+      "description": "Returns information about this MCP server, creator details, runtime environment, and available data sources.",
       "readOnly": true,
+      "icons": [
+        {
+          "src": "https://radustoian.com/favicon-32x32.png",
+          "mimeType": "image/png",
+          "sizes": ["32x32"]
+        }
+      ],
       "annotations": {
+        "title": "Radu Stoian MCP Server Info",
         "readOnlyHint": true,
         "readOnly": true,
         "destructiveHint": false,
-        "idempotentHint": true
+        "idempotentHint": true,
+        "openWorldHint": false
       },
       "inputSchema": {
         "type": "object",

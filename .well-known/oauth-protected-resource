@@ -1,5 +1,9 @@
 {
   "resource": "https://radustoian.com",
+  "resource_name": "Radu Stoian MCP",
+  "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, profile section retrieval, and verified external investigation links.",
+  "creator": "Radu Stoian",
+  "logo_uri": "https://radustoian.com/favicon-32x32.png",
   "authorization_servers": [
     "https://radustoian.com"
   ],
@@ -10,5 +14,6 @@
   "bearer_methods_supported": [
     "header"
   ],
-  "resource_documentation": "https://radustoian.com/auth.md"
+  "resource_documentation": "https://radustoian.com/auth.md",
+  "resource_tos_uri": "https://radustoian.com/terms-and-conditions.html"
 }

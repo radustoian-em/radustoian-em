@@ -22,7 +22,9 @@ export async function onRequestPost(context) {
   return new Response(JSON.stringify({
     client_id: clientId,
     client_secret: clientSecret,
-    client_name: body.client_name || "Gemini Custom MCP",
+    client_name: body.client_name || "Radu Stoian MCP",
+    client_uri: "https://radustoian.com",
+    logo_uri: "https://radustoian.com/favicon-32x32.png",
     redirect_uris: body.redirect_uris || [],
     grant_types: ["authorization_code", "client_credentials", "refresh_token"],
     response_types: ["code"],

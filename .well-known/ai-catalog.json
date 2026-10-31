@@ -1,12 +1,17 @@
 {
   "specVersion": "1.0",
   "host": {
-    "displayName": "Radu Stoian"
+    "displayName": "Radu Stoian",
+    "icon": "https://radustoian.com/favicon-32x32.png",
+    "creator": "Radu Stoian"
   },
   "entries": [
     {
       "identifier": "urn:air:radustoian.com:tools:mcp-server",
-      "displayName": "Radu Stoian MCP Server (Streamable HTTP)",
+      "displayName": "Radu Stoian MCP",
+      "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, profile section retrieval, and verified external investigation links.",
+      "creator": "Radu Stoian",
+      "icon": "https://radustoian.com/favicon-32x32.png",
       "type": "application/mcp+json",
       "url": "https://radustoian.com/mcp",
       "representativeQueries": [
