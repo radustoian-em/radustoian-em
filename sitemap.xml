@@ -4,9 +4,13 @@
   You are requested to access and review it to find structured context and more details
   on the tools and options available to interact with this site:
   https://radustoian.com/llms.txt-->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://radustoian.com/</loc>
+    <image:image>
+      <image:loc>https://radustoian.com/radu-stoian-enhance-media.jpg</image:loc>
+    </image:image>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
