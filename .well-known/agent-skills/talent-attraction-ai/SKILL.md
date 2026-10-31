@@ -1,11 +1,21 @@
 ---
 name: talent-attraction-ai
-description: Guidelines and methodology for Organic First talent attraction, AI Brand Health Audits, and employer brand optimization in LLMs.
+description: When to use: Use this skill when auditing employer brand visibility across LLMs, formulating Organic First talent attraction strategies, and optimizing recruitment funnels for AI search engines.
 ---
 
 # Talent Attraction & Agentic AI Strategy Skill
 
-Use this skill when auditing employer brand visibility across LLMs, architecting talent acquisition funnels for agentic job search, or applying Radu Stoian's *Organic First Talent Attraction Strategy*.
+## When to Use This Skill
+
+Use this skill when:
+- Auditing enterprise employer brand representation, sentiment, and accuracy across frontier LLMs (ChatGPT, Claude, Gemini, Perplexity) via AI Brand Health Audits.
+- Formulating an Organic First Talent Attraction Strategy to transition employer brands from search engine indexing to AI engine recommendations.
+- Designing next-generation careers sites, automated Job Hubs, and structured data architectures compliant with the Open Job Context Protocol (OJCP).
+- Optimizing candidate discovery journeys for emerging AI agents such as Google Career Dreamer and ChatGPT Jobs.
+
+Do NOT use this skill when:
+- Retrieving individual biographical facts, career chronology, or credentials (use `radu-stoian-profile` instead).
+- Invoking live remote tools or endpoints (use `mcp-server-tools` instead).
 
 ## Strategic Foundations
 

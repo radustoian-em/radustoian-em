@@ -1,11 +1,21 @@
 ---
 name: webmcp-browser-tools
-description: Instructions for in-browser AI agents to discover, invoke, and navigate radustoian.com using client-side WebMCP tools.
+description: When to use: Use this skill when operating inside an AI-enabled web browser or automated agent to discover, invoke, and navigate radustoian.com using client-side WebMCP tools.
 ---
 
 # WebMCP Browser Agent Tools Skill
 
-Use this skill when operating inside an AI-enabled web browser or automated agent environment connected to `https://radustoian.com`.
+## When to Use This Skill
+
+Use this skill when:
+- Operating inside an AI-enabled web browser, headless browser automation, or client-side agent on `https://radustoian.com`.
+- Navigating page sections smoothly or scrolling to specific content blocks (`navigateToSection`).
+- Browsing multi-card client case studies or testimonial carousels programmatically (`showCarouselSlide`).
+- Extracting structured case studies, testimonials, contact links, publications, speaking engagements, and credentials via `document.modelContext` without DOM scraping.
+- Triggering or pre-filling the interactive on-page AI chat widget (`askChatbot`).
+
+Do NOT use this skill when:
+- Operating as an external server-side or CLI agent without browser execution capabilities (use `mcp-server-tools` instead).
 
 ## Protocol Overview
 

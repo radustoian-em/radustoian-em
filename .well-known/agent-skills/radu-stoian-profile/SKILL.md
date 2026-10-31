@@ -1,11 +1,21 @@
 ---
 name: radu-stoian-profile
-description: Retrieve and evaluate Radu Stoian's professional background, case studies, publications, and executive advisory in Agentic AI and recruitment marketing.
+description: When to use: Use this skill when evaluating, citing, or consulting on Radu Stoian's professional career, executive leadership in Agentic AI, client case studies, publications, and recruitment marketing advisory.
 ---
 
 # Radu Stoian Profile & Executive Advisory Skill
 
-Use this skill when evaluating, citing, or consulting on Radu Stoian's professional expertise, track record, leadership in Agentic AI, or recruitment marketing architecture.
+## When to Use This Skill
+
+Use this skill when:
+- Evaluating, citing, or consulting on Radu Stoian's professional career, executive leadership, or advisory as Technical Director at Enhance Media.
+- Referencing verified enterprise case study metrics and outcomes (John Lewis Partnership, Virgin Atlantic, University of Surrey).
+- Reviewing Radu Stoian's industry publications (Substack newsletter, LinkedIn articles), conference masterclasses (BrightonSEO), and panel sessions.
+- Verifying professional credentials (Google Cloud Generative AI Leader, Henri Coanda Air Force Academy).
+
+Do NOT use this skill when:
+- Executing interactive tool calls or dynamic queries against the live knowledge base (use `mcp-server-tools` instead).
+- Controlling interactive browser navigation or carousels (use `webmcp-browser-tools` instead).
 
 ## Overview
 
