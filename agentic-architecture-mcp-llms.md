@@ -82,6 +82,7 @@ Initial HTTP handshake returns headers pointing to agent entry points and declar
 - `rel="service"`: [`/mcp`](https://radustoian.com/mcp) (Streamable HTTP MCP endpoint)
 - `rel="service"`: [`/ask`](https://radustoian.com/ask) (NLWeb Conversational Stream)
 - `rel="mcp-server-card"`: [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) (MCP Server Card)
+- `rel="poppy"`: [`/.well-known/poppy.json`](https://radustoian.com/.well-known/poppy.json) (Personal Agent Protocol Manifest)
 - `rel="ard"`: [`/.well-known/ard.json`](https://radustoian.com/.well-known/ard.json) (Agent Resource Discovery)
 - **Content Negotiation:** `Vary: Accept` (`Accept: text/markdown`)
 - **Crawling Policy:** [`robots.txt`](https://radustoian.com/robots.txt)
@@ -89,13 +90,17 @@ Initial HTTP handshake returns headers pointing to agent entry points and declar
 ### 03. Well-Known URIs (RFC 8615) - Standardized Directories
 Standardized `/.well-known/` paths where agents reliably inspect manifests and catalogs without web scraping:
 
+- [`/.well-known/poppy.json`](https://radustoian.com/.well-known/poppy.json) - Personal Agent Protocol (Poppy v0.1) Manifest & Personal Agent Card
+- [`/.well-known/agent-card.json`](https://radustoian.com/.well-known/agent-card.json) - Agent Card (A2A Protocol v1.0)
+- [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) - MCP Server Card (v2.0)
 - [`/.well-known/ard.json`](https://radustoian.com/.well-known/ard.json) - Agent Resource Discovery (ARD v1.0)
 - [`/.well-known/ai-catalog.json`](https://radustoian.com/.well-known/ai-catalog.json) - AI Catalog
-- [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) - MCP Server Card (v2.0)
-- [`/.well-known/agent-card.json`](https://radustoian.com/.well-known/agent-card.json) - Agent Card (A2A Protocol v1.0)
-- [`/.well-known/agent-skills/index.json`](https://radustoian.com/.well-known/agent-skills/index.json) - Skills Registry Index
 - [`/.well-known/api-catalog`](https://radustoian.com/.well-known/api-catalog) - RFC 9264 API Linkset
-- [`/.well-known/poppy.json`](https://radustoian.com/.well-known/poppy.json) - Personal Agent Protocol (Poppy v0.1)
+- [`/.well-known/agent-skills/index.json`](https://radustoian.com/.well-known/agent-skills/index.json) - Skills Registry Index
+- [`/.well-known/oauth-authorization-server`](https://radustoian.com/.well-known/oauth-authorization-server) - RFC 8414 OAuth 2.0 Authorization Server Metadata
+- [`/.well-known/openid-configuration`](https://radustoian.com/.well-known/openid-configuration) - OpenID Connect Discovery 1.0 Metadata
+- [`/.well-known/oauth-protected-resource`](https://radustoian.com/.well-known/oauth-protected-resource) - RFC 9728 OAuth 2.0 Protected Resource Metadata
+- [`/.well-known/jwks.json`](https://radustoian.com/.well-known/jwks.json) - RFC 7517 JSON Web Key Set (JWKS)
 - [`/sitemap.xml`](https://radustoian.com/sitemap.xml) - XML Sitemap
 
 ---
@@ -120,10 +125,19 @@ Detailed domain instructions covering MCP server connection, career verification
 - [`talent-attraction-ai.md`](https://radustoian.com/.well-known/agent-skills/talent-attraction-ai/SKILL.md) - Organic First talent attraction and AI recommendation methodology.
 - [`webmcp-browser-tools.md`](https://radustoian.com/.well-known/agent-skills/webmcp-browser-tools/SKILL.md) - In-browser WebMCP tool definitions and integration guide.
 
-### 04. MCP & Agent Cards
-Standardized metadata declarations for interoperability across agent frameworks:
+### 04. Personal & Agentic Cards
+Standardized metadata declarations for interoperability across personal agent protocols and agent frameworks:
+- [`poppy.json`](https://radustoian.com/.well-known/poppy.json) - Personal Agent Protocol (Poppy v0.1) discovery manifest, direct scopes, and OAuth issuer binding.
 - [`server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) - MCP Server Card (v2.0) declaring tools and JSON schemas.
 - [`agent-card.json`](https://radustoian.com/.well-known/agent-card.json) - Agent-to-Agent (A2A) protocol specification.
+
+### 05. Authentication & Identity Discovery
+Standardized OAuth 2.0, OpenID Connect, and Auth.md metadata for agent authentication and access delegation:
+- [`auth.md`](https://radustoian.com/auth.md) - Auth.md agent authentication discovery specification.
+- [`oauth-authorization-server`](https://radustoian.com/.well-known/oauth-authorization-server) - RFC 8414 OAuth 2.0 Authorization Server metadata.
+- [`openid-configuration`](https://radustoian.com/.well-known/openid-configuration) - OpenID Connect Discovery 1.0 metadata.
+- [`oauth-protected-resource`](https://radustoian.com/.well-known/oauth-protected-resource) - RFC 9728 OAuth Protected Resource metadata.
+- [`jwks.json`](https://radustoian.com/.well-known/jwks.json) - RFC 7517 JSON Web Key Set (JWKS).
 
 ---
 
@@ -212,7 +226,7 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 
 ---
 
-## Master Resource Directory (25 Accessible Endpoints) (#directory)
+## Master Resource Directory (31 Accessible Endpoints) (#directory)
 
 | # | Endpoint / Resource | Description |
 |---|---------------------|-------------|
@@ -224,23 +238,29 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 | 6 | [`/openapi.json`](https://radustoian.com/openapi.json) | OpenAPI 3.1.0 schema specification |
 | 7 | [`/robots.txt`](https://radustoian.com/robots.txt) | Crawling permissions & LLM directives |
 | 8 | [`/sitemap.xml`](https://radustoian.com/sitemap.xml) | XML Sitemap |
-| 9 | [`/.well-known/ard.json`](https://radustoian.com/.well-known/ard.json) | Agent Resource Discovery (ARD v1.0) manifest |
-| 10 | [`/.well-known/ai-catalog.json`](https://radustoian.com/.well-known/ai-catalog.json) | AI Catalog catalog |
-| 11 | [`/.well-known/api-catalog`](https://radustoian.com/.well-known/api-catalog) | RFC 9264 Linkset API Catalog |
-| 12 | [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) | MCP Server Card (v2.0) |
-| 13 | [`/.well-known/agent-card.json`](https://radustoian.com/.well-known/agent-card.json) | Agent Card (A2A Protocol v1.0) |
-| 14 | [`/.well-known/agent-skills/index.json`](https://radustoian.com/.well-known/agent-skills/index.json) | Agent Skills Registry Index |
-| 15 | [`/.../agent-skills/mcp-server-tools/SKILL.md`](https://radustoian.com/.well-known/agent-skills/mcp-server-tools/SKILL.md) | Remote MCP tools skill |
-| 16 | [`/.../agent-skills/radu-stoian-profile/SKILL.md`](https://radustoian.com/.well-known/agent-skills/radu-stoian-profile/SKILL.md) | Radu Stoian profile skill |
-| 17 | [`/.../agent-skills/talent-attraction-ai/SKILL.md`](https://radustoian.com/.well-known/agent-skills/talent-attraction-ai/SKILL.md) | Talent Attraction AI skill |
-| 18 | [`/.../agent-skills/webmcp-browser-tools/SKILL.md`](https://radustoian.com/.well-known/agent-skills/webmcp-browser-tools/SKILL.md) | WebMCP browser tools skill |
-| 19 | [`/js/webmcp.js`](https://radustoian.com/js/webmcp.js) | In-browser WebMCP tool implementations |
-| 20 | [`/.webmcp/bridge.js`](https://radustoian.com/.webmcp/bridge.js) | WebMCP JavaScript bridge runner |
-| 21 | [`/api`](https://radustoian.com/api) | Public Knowledge REST API Directory |
-| 22 | [`/ask`](https://radustoian.com/ask) | NLWeb Conversational Stream (SSE / JSON) |
-| 23 | [`/who`](https://radustoian.com/who) | NLWeb Publisher Identity (Schema.org JSON-LD) |
-| 24 | [`/sites`](https://radustoian.com/sites) | NLWeb Sites Registry |
-| 25 | [`/js/chat-widget.js`](https://radustoian.com/js/chat-widget.js) | Native NLWeb Conversational AI Chat Widget |
+| 9 | [`/auth.md`](https://radustoian.com/auth.md) | Agent Authentication Discovery specification |
+| 10 | [`/.well-known/ard.json`](https://radustoian.com/.well-known/ard.json) | Agent Resource Discovery (ARD v1.0) manifest |
+| 11 | [`/.well-known/ai-catalog.json`](https://radustoian.com/.well-known/ai-catalog.json) | AI Catalog catalog |
+| 12 | [`/.well-known/api-catalog`](https://radustoian.com/.well-known/api-catalog) | RFC 9264 Linkset API Catalog |
+| 13 | [`/.well-known/poppy.json`](https://radustoian.com/.well-known/poppy.json) | Personal Agent Protocol (Poppy v0.1) manifest / Personal Agent Card |
+| 14 | [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) | MCP Server Card (v2.0) |
+| 15 | [`/.well-known/agent-card.json`](https://radustoian.com/.well-known/agent-card.json) | Agent Card (A2A Protocol v1.0) |
+| 16 | [`/.well-known/oauth-authorization-server`](https://radustoian.com/.well-known/oauth-authorization-server) | RFC 8414 OAuth 2.0 Authorization Server metadata |
+| 17 | [`/.well-known/openid-configuration`](https://radustoian.com/.well-known/openid-configuration) | OpenID Connect Discovery 1.0 metadata |
+| 18 | [`/.well-known/oauth-protected-resource`](https://radustoian.com/.well-known/oauth-protected-resource) | RFC 9728 OAuth Protected Resource metadata |
+| 19 | [`/.well-known/jwks.json`](https://radustoian.com/.well-known/jwks.json) | RFC 7517 JSON Web Key Set (JWKS) |
+| 20 | [`/.well-known/agent-skills/index.json`](https://radustoian.com/.well-known/agent-skills/index.json) | Agent Skills Registry Index |
+| 21 | [`/.../agent-skills/mcp-server-tools/SKILL.md`](https://radustoian.com/.well-known/agent-skills/mcp-server-tools/SKILL.md) | Remote MCP tools skill |
+| 22 | [`/.../agent-skills/radu-stoian-profile/SKILL.md`](https://radustoian.com/.well-known/agent-skills/radu-stoian-profile/SKILL.md) | Radu Stoian profile skill |
+| 23 | [`/.../agent-skills/talent-attraction-ai/SKILL.md`](https://radustoian.com/.well-known/agent-skills/talent-attraction-ai/SKILL.md) | Talent Attraction AI skill |
+| 24 | [`/.../agent-skills/webmcp-browser-tools/SKILL.md`](https://radustoian.com/.well-known/agent-skills/webmcp-browser-tools/SKILL.md) | WebMCP browser tools skill |
+| 25 | [`/js/webmcp.js`](https://radustoian.com/js/webmcp.js) | In-browser WebMCP tool implementations |
+| 26 | [`/js/chat-widget.js`](https://radustoian.com/js/chat-widget.js) | Native NLWeb Conversational AI Chat Widget |
+| 27 | [`/.webmcp/bridge.js`](https://radustoian.com/.webmcp/bridge.js) | WebMCP JavaScript bridge runner |
+| 28 | [`/api`](https://radustoian.com/api) | Public Knowledge REST API Directory |
+| 29 | [`/ask`](https://radustoian.com/ask) | NLWeb Conversational Stream (SSE / JSON) |
+| 30 | [`/who`](https://radustoian.com/who) | NLWeb Publisher Identity (Schema.org JSON-LD) |
+| 31 | [`/sites`](https://radustoian.com/sites) | NLWeb Sites Registry |
 
 ---
 
