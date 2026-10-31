@@ -327,30 +327,30 @@ The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/c
     {
       "name": "mcp-server-tools",
       "type": "skill-md",
-      "description": "Instructions for autonomous AI agents to connect to the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering and section retrieval grounded in the site's knowledge base.",
+      "description": "When to use: Use this skill when querying the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering, knowledge base section retrieval, and external link investigation.",
       "url": "/.well-known/agent-skills/mcp-server-tools/SKILL.md",
-      "digest": "sha256:15458e19b93a6b6417d1cc7151ecf0532afe427ab8168d25d2fbbc416274dbbb"
+      "digest": "sha256:004748f3bb5b028fdc6d5083c5cf7f9d18e7944ae734f66c90339b8a2b1ca950"
     },
     {
       "name": "radu-stoian-profile",
       "type": "skill-md",
-      "description": "Retrieve and evaluate Radu Stoian's professional background, case studies, publications, and executive advisory in Agentic AI and recruitment marketing.",
+      "description": "When to use: Use this skill when evaluating, citing, or consulting on Radu Stoian's professional career, executive leadership in Agentic AI, client case studies, publications, and recruitment marketing advisory.",
       "url": "/.well-known/agent-skills/radu-stoian-profile/SKILL.md",
-      "digest": "sha256:8c0afe05246b2afaae8548804a0ad3cca6322d935fc9e79f9ffad91e3d083496"
+      "digest": "sha256:74019d0813384d4300b02af66cb794064c19e80fccc738984ff745862487f051"
     },
     {
       "name": "talent-attraction-ai",
       "type": "skill-md",
-      "description": "Guidelines and methodology for Organic First talent attraction, AI Brand Health Audits, and employer brand optimization in LLMs.",
+      "description": "When to use: Use this skill when auditing employer brand visibility across LLMs, formulating Organic First talent attraction strategies, and optimizing recruitment funnels for AI search engines.",
       "url": "/.well-known/agent-skills/talent-attraction-ai/SKILL.md",
-      "digest": "sha256:b5397d0a7011a82e2a7d479e8d9ae794db60efe02d05044ef6888f70ad7235b5"
+      "digest": "sha256:1fdcf9529f222260ce9db2ae16061ef4eb5542c885975f4fdb1d01943771fdde"
     },
     {
       "name": "webmcp-browser-tools",
       "type": "skill-md",
-      "description": "Instructions for in-browser AI agents to discover, invoke, and navigate radustoian.com using client-side WebMCP tools.",
+      "description": "When to use: Use this skill when operating inside an AI-enabled web browser or automated agent to discover, invoke, and navigate radustoian.com using client-side WebMCP tools.",
       "url": "/.well-known/agent-skills/webmcp-browser-tools/SKILL.md",
-      "digest": "sha256:4d8401e383dc5b6ca49d6d708221c1ad9b7c0367f3192fd53310d8230d4f10ab"
+      "digest": "sha256:f0abbaebab76632db6d6c3c3d429bdf1ab3b60dd86301437a0e051abdb5dcc29"
     }
   ]
 }

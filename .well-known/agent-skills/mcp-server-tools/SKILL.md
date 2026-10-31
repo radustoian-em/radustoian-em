@@ -1,11 +1,22 @@
 ---
 name: mcp-server-tools
-description: Instructions for autonomous AI agents to connect to and query the live JSON-RPC 2.0 Streamable HTTP Model Context Protocol (MCP) server on radustoian.com.
+description: When to use: Use this skill when querying the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering, knowledge base section retrieval, and external link investigation.
 ---
 
 # MCP Server Tools Skill
 
-Use this skill when operating as a remote autonomous AI agent or MCP client communicating with `https://radustoian.com/mcp`.
+## When to Use This Skill
+
+Use this skill when:
+- Operating as a remote autonomous AI agent, MCP client, or LLM assistant communicating with `https://radustoian.com/mcp`.
+- Asking targeted questions about Radu Stoian's career, services, case studies, or methodology using the `ask` tool for grounded answers.
+- Retrieving the exact verbatim content of specific knowledge base sections using the `get-section` tool.
+- Fetching verified external profile, publication, and credential URLs for citation verification using `get-investigation-links`.
+- Querying runtime environment, supported capabilities, or protocol metadata using `server-info`.
+
+Do NOT use this skill when:
+- Operating in a client-side web browser environment with direct DOM access (use `webmcp-browser-tools` instead).
+- Requiring static document ingestion without interactive tool execution (fetch `/llms.txt` or `/llms-full.txt` directly).
 
 > **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
 
