@@ -2,17 +2,40 @@
 
 > This is the official profile website for Radu Stoian, Technical Director at Enhance Media. He helps employers move from being found by search engines to being recommended by AI.
 
-## Main Profile
+## Web Pages & Markdown Equivalents
 
 - [Radu Stoian](https://radustoian.com/): The primary profile page for Radu Stoian, Technical Director at Enhance Media detailing his public profiles, expertise, skills, projects, client testimonials, speaking and industry engagements.
 - [Homepage Markdown](https://radustoian.com/index.md.txt): Direct markdown representation of the homepage for AI agents and content negotiation.
-
-## Documentation & Full Context
-- [Full Profile Context](https://radustoian.com/llms-full.txt): A single markdown file combining all details about Radu Stoian for deep AI ingestion.
-
-## Agent Resource Discovery
-- [Personal Agent Protocol Manifest](https://radustoian.com/.well-known/poppy.json): Personal Agent Protocol (Poppy) draft 0.1 discovery manifest for autonomous agent discovery and OAuth issuer binding.
-- [Agent Discovery Manifest](https://radustoian.com/.well-known/ard.json): Machine-readable ARD v0.91 catalog indexing WebMCP tools, markdown alternates, and knowledge graph schemas.
 - [Agentic Architecture](https://radustoian.com/agentic-architecture-mcp-llms): Interactive architecture map detailing the dedicated infrastructure for agentic AI discovery, WebMCP in-browser tools, and MCP servers.
 - [Agentic Architecture Markdown](https://radustoian.com/agentic-architecture-mcp-llms.md.txt): Direct markdown representation of the agentic architecture map for AI agents and content negotiation.
 - [Terms and Conditions](https://radustoian.com/terms-and-conditions.html): Terms of Service, Privacy Policy, and Observability Policies covering MCP, Ask, Chatbot, and API endpoints.
+
+## Core Documentation & Metadata
+
+- [Full Profile Context](https://radustoian.com/llms-full.txt): A single markdown file combining all details about Radu Stoian for deep AI ingestion.
+- [Linked Data Knowledge Graph](https://radustoian.com/metadata.json): Complete Schema.org JSON-LD knowledge graph defining verified entities, credentials, publications, and professional background.
+- [Authentication Specification](https://radustoian.com/auth.md): Authentication and authorization discovery specification documentation for AI agents, RFC 8414, OIDC, and RFC 9728.
+- [OpenAPI Specification](https://radustoian.com/openapi.json): Complete OpenAPI 3.1.0 specification defining all API routes, parameter schemas, and response types.
+
+## Agent Skills (Agent Skills Discovery RFC)
+
+- [Agent Skills Registry Index](https://radustoian.com/.well-known/agent-skills/index.json): Machine-readable discovery manifest indexing available domain skills with cryptographic SHA-256 integrity digests.
+- [Radu Stoian Profile Skill](https://radustoian.com/.well-known/agent-skills/radu-stoian-profile/SKILL.md): Domain skill document for evaluating, citing, and consulting on Radu Stoian's professional career, credentials, and case studies.
+- [Talent Attraction AI Strategy Skill](https://radustoian.com/.well-known/agent-skills/talent-attraction-ai/SKILL.md): Domain skill document for auditing employer brand visibility in LLMs, formulating Organic First talent attraction strategies, and optimizing recruitment funnels for AI search.
+- [MCP Server Tools Skill](https://radustoian.com/.well-known/agent-skills/mcp-server-tools/SKILL.md): Domain skill document and operational manual guiding remote autonomous AI agents on querying live Model Context Protocol (MCP) server tools.
+- [WebMCP Browser Agent Tools Skill](https://radustoian.com/.well-known/agent-skills/webmcp-browser-tools/SKILL.md): Domain skill document guiding AI-enabled web browsers and client-side agents on navigating and extracting structured data using WebMCP tools.
+
+## Discovery Catalogs & Protocol Manifests (.well-known)
+
+- [Personal Agent Protocol Manifest](https://radustoian.com/.well-known/poppy.json): Personal Agent Protocol (Poppy) draft 0.1 discovery manifest for autonomous agent discovery and OAuth issuer binding.
+- [Agent Resource Discovery Manifest](https://radustoian.com/.well-known/ard.json): Machine-readable ARD v1.0 catalog indexing WebMCP tools, markdown alternates, and knowledge graph schemas.
+- [MCP Server Card](https://radustoian.com/.well-known/mcp/server-card.json): Model Context Protocol Server Card v2.0 defining server capabilities, tools, and execution metadata.
+- [MCP Server Specification](https://radustoian.com/.well-known/mcp/server.json): Official MCP server definition schema v2025-12-11 specifying tool schemas and protocol capabilities.
+- [Agent-to-Agent Card](https://radustoian.com/.well-known/agent-card.json): Agent-to-Agent (A2A) protocol card describing agent capabilities and metadata.
+- [AI Catalog](https://radustoian.com/.well-known/ai-catalog.json): Machine-readable catalog providing AIR URN entries, descriptions, and representative queries for AI discovery.
+- [AI Plugin Manifest](https://radustoian.com/.well-known/ai-plugin.json): OpenAI-compatible AI plugin manifest defining plugin identity and OpenAPI spec location.
+- [API Linkset Catalog](https://radustoian.com/.well-known/api-catalog): RFC 9264 application/linkset+json document declaring relationships between services and documentation.
+- [OAuth Protected Resource Metadata](https://radustoian.com/.well-known/oauth-protected-resource): RFC 9728 OAuth 2.0 Protected Resource metadata documenting authorization requirements and resource documentation.
+- [OAuth Authorization Server Metadata](https://radustoian.com/.well-known/oauth-authorization-server): RFC 8414 OAuth 2.0 Authorization Server metadata declaring auth flows, scopes, and token endpoints.
+- [OpenID Connect Discovery Configuration](https://radustoian.com/.well-known/openid-configuration): OpenID Connect Discovery 1.0 configuration document defining issuer, public keys, and supported scopes.
+- [JSON Web Key Set (JWKS)](https://radustoian.com/.well-known/jwks.json): RFC 7517 JSON Web Key Set document defining cryptographic public keys for token verification.
