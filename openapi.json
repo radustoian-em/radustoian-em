@@ -243,6 +243,27 @@
             "description": "Notification accepted (no response body)"
           }
         }
+      },
+      "delete": {
+        "summary": "Terminate MCP Session",
+        "description": "Cleanly terminates an active Model Context Protocol (MCP) Streamable HTTP session. Because the Worker operates statelessly, this immediately acknowledges session closure with 204 No Content.",
+        "operationId": "terminateMcpSession",
+        "parameters": [
+          {
+            "name": "Mcp-Session-Id",
+            "in": "header",
+            "required": false,
+            "description": "Session identifier previously issued during MCP initialization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Session terminated cleanly (no content)"
+          }
+        }
       }
     },
     "/api": {
