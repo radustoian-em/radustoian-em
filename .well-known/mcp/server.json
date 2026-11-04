@@ -4,6 +4,7 @@
   "title": "Radu Stoian MCP",
   "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, profile section retrieval, and verified external investigation links.",
   "version": "2.4.1",
+  "protocolVersion": "2025-11-25",
   "websiteUrl": "https://radustoian.com",
   "icon": "https://radustoian.com/favicon-32x32.png",
   "icons": [

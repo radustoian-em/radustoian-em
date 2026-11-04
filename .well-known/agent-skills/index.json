@@ -6,7 +6,7 @@
       "type": "skill-md",
       "description": "When to use: Use this skill when querying the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering, knowledge base section retrieval, and external link investigation.",
       "url": "/.well-known/agent-skills/mcp-server-tools/SKILL.md",
-      "digest": "sha256:004748f3bb5b028fdc6d5083c5cf7f9d18e7944ae734f66c90339b8a2b1ca950"
+      "digest": "sha256:361864166a0e2a5292a601dabfd2c9401ff536f37a2ce5e093bfba9d62965821"
     },
     {
       "name": "radu-stoian-profile",
