@@ -272,7 +272,7 @@ Both edge workers are version-controlled in dedicated Git repositories and autom
 
 #### Key Architectural Characteristics
 - **Transports:**
-  - **MCP:** Streamable HTTP (JSON responses, protocol version `2025-06-18`).
+  - **MCP:** Streamable HTTP (JSON responses, protocol version `2025-11-25`).
   - **NLWeb:** Server-Sent Events (SSE) streaming (`text/event-stream`) and standard JSON (`application/json`, protocol version `0.1`).
   - **REST:** Standard HTTP/1.1 & HTTP/2 JSON endpoints with CORS (`Access-Control-Allow-Origin: *`) and OpenAPI discovery headers.
 - **Knowledge Grounding:** The dynamic retrieval engine grounds its answers by pulling from the site's knowledge base.
@@ -301,10 +301,9 @@ The site features a native conversational AI chat widget powered directly by the
 
 | Tool Name | Parameters | Description |
 | :--- | :--- | :--- |
-| `ask` (alias: `ask-question`) | `query` (string, required; `question` accepted as alias) | Dynamically answers generic and specific questions about Radu Stoian using a dynamic retrieval engine that grounds its answers by pulling from the site's knowledge base. |
-| `get-section` | `section` (string, required) | Returns the complete text and links of any specific section from the site's knowledge base. |
-| `get-investigation-links` | None (`{}`) | Returns 32 external public profile, publication, and certification links for off-site agent exploration. |
-| `server-info` | None (`{}`) | Returns server version, runtime environment, protocol version, and knowledge base reference. |
+| `ask` | `query` (string, required) | Use this tool when the user wants to answer specific questions about Radu Stoian's professional background, executive leadership as Technical Director at Enhance Media, AI recruitment & talent acquisition strategies, client case study metrics, technical architecture, speaking engagements, or verified credentials. |
+| `get-section` | `section` (enum string, required) | Use this tool when the user wants an in-depth, complete breakdown of a specific profile domain (`about`, `case-studies`, `expertise`, `testimonials`, `publications`, `speaking`, `skills`, `contact`, `agentic-architecture`). |
+| `get-investigation-links` | None (`{}`) | Use this tool when the user wants verified external citations, official profile URLs, or primary source links for Radu Stoian across LinkedIn, GitHub, Substack, SpeakerDeck, Credly, Google Cloud Skills Boost, and the Google Knowledge Graph. |
 
 #### Available REST API Endpoints (`/api/*`)
 | Endpoint | Method | Parameters / Body | Description |

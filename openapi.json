@@ -142,7 +142,7 @@
     "/mcp": {
       "post": {
         "summary": "Model Context Protocol (MCP) Streamable HTTP Server",
-        "description": "JSON-RPC 2.0 Streamable HTTP endpoint for autonomous AI agents. Provides agentic tools: ask (dynamic question answering grounded in the site's knowledge base; alias: ask-question), get-section, get-investigation-links, and server-info.",
+        "description": "JSON-RPC 2.0 Streamable HTTP endpoint (protocol version 2025-11-25) for autonomous AI agents. Provides intent-driven agentic tools: ask, get-section, and get-investigation-links.",
         "operationId": "callMcpServer",
         "requestBody": {
           "required": true,

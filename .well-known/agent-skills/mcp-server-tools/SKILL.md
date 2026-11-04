@@ -12,7 +12,6 @@ Use this skill when:
 - Asking targeted questions about Radu Stoian's career, services, case studies, or methodology using the `ask` tool for grounded answers.
 - Retrieving the exact verbatim content of specific knowledge base sections using the `get-section` tool.
 - Fetching verified external profile, publication, and credential URLs for citation verification using `get-investigation-links`.
-- Querying runtime environment, supported capabilities, or protocol metadata using `server-info`.
 
 Do NOT use this skill when:
 - Operating in a client-side web browser environment with direct DOM access (use `webmcp-browser-tools` instead).
@@ -27,7 +26,7 @@ Do NOT use this skill when:
 - **Endpoint:** `https://radustoian.com/mcp`
 - **HTTP Method:** `POST`
 - **Transport:** Streamable HTTP (`application/json`)
-- **Protocol Version:** `2025-06-18` (backward-compatible with `2024-11-05`)
+- **Protocol Version:** `2025-11-25` (backward-compatible with `2025-06-18`, `2025-03-26`, and `2024-11-05`)
 - **CORS:** Enabled (`Access-Control-Allow-Origin: *`)
 
 ---
@@ -35,34 +34,30 @@ Do NOT use this skill when:
 ## Tool Inventory
 
 ### 1. `ask`
-- **Description:** Dynamically answers generic and specific questions about Radu Stoian using a dynamic retrieval engine that grounds its answers by pulling from the site's knowledge base. (The legacy name `ask-question` is retained as a backward-compatible alias).
+- **Description:** Use this tool when the user wants to answer specific questions about Radu Stoian's professional background, executive leadership as Technical Director at Enhance Media, AI recruitment & talent acquisition strategies, client case study metrics (e.g., John Lewis Partnership, Virgin Atlantic, University of Surrey), technical architecture, speaking engagements, or verified credentials.
 - **Input Parameters:**
   ```json
   {
     "query": "What did Radu do for Virgin Atlantic?"
   }
   ```
-  *(Note: `question` is also accepted as a backward-compatible alias for `query`)*.
-- **Returns:** JSON object containing `found`, `section`, `image`, `answer` (prefixed with Radu Stoian's official profile image in Markdown format), `relevantLinks`, and `investigationLinks`.
+- **Returns:** Clean Markdown response prefixed with Radu Stoian's official profile image, section heading, grounded answer, and relevant citation links (or `isError: true` on guardrail refusals).
 
 ### 2. `get-section`
-- **Description:** Retrieves the complete content and links of any specific section from the site's knowledge base.
+- **Description:** Use this tool when the user wants an in-depth, complete breakdown of a specific profile domain—such as full client case studies, comprehensive career history, areas of expertise, client testimonials, published articles, speaking engagements, certifications, or agentic AI architecture.
 - **Input Parameters:**
   ```json
   {
-    "section": "Skills and Certifications"
+    "section": "skills"
   }
   ```
-- **Returns:** Section title, `image`, complete `answer` string (prefixed with Radu Stoian's official profile image in Markdown format), and parsed `relevantLinks`.
+  *(Valid canonical sections: `about`, `case-studies`, `expertise`, `testimonials`, `publications`, `speaking`, `skills`, `contact`, `agentic-architecture`)*.
+- **Returns:** Clean Markdown response prefixed with Radu Stoian's official profile image, section heading, and complete section content (or `isError: true` if not found).
 
 ### 3. `get-investigation-links`
-- **Description:** Returns the complete directory of external public profiles, slide decks, code repositories, and certification links for off-site investigation.
+- **Description:** Use this tool when the user wants verified external citations, official profile URLs, or primary source links for Radu Stoian across LinkedIn, GitHub, Substack, SpeakerDeck, Credly, Google Cloud Skills Boost, and the Google Knowledge Graph.
 - **Input Parameters:** `{}`
-- **Returns:** Array of link objects with `title`, `url`, and `description` (Official Profile Image, LinkedIn, Substack, GitHub, SpeakerDeck, Google Skills, Credly, Google Knowledge Graph).
-
-### 4. `server-info`
-- **Description:** Returns server metadata, protocol version, available tools, runtime environment, and knowledge base reference.
-- **Input Parameters:** `{}`
+- **Returns:** Clean Markdown list of verified external profile, publication, and credential links.
 
 ---
 
@@ -94,7 +89,7 @@ curl -X POST https://radustoian.com/mcp \
     "content": [
       {
         "type": "text",
-        "text": "{\n  \"question\": \"What are Radu's speaking engagements?\",\n  \"found\": true,\n  \"section\": \"Speaking and Industry Engagement\",\n  \"image\": \"https://radustoian.com/radu-stoian-enhance-media.jpg\",\n  \"answer\": \"![Radu Stoian - Technical Director at Enhance Media](https://radustoian.com/radu-stoian-enhance-media.jpg)\\n\\n- [Implementation of Schemas via GTM](https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm): BrightonSEO masterclass presentation...\",\n  \"relevantLinks\": [...],\n  \"investigationLinks\": [...]\n}"
+        "text": "![Radu Stoian - Technical Director at Enhance Media](https://radustoian.com/radu-stoian-enhance-media.jpg)\n\n## Speaking and Industry Engagement (#speaking)\n\n- [Implementation of Schemas via GTM](https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm): BrightonSEO masterclass presentation..."
       }
     ]
   }

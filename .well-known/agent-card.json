@@ -66,7 +66,7 @@
     {
       "id": "ask",
       "name": "Ask",
-      "description": "Answers questions about Radu Stoian using a dynamic retrieval engine that grounds its answers by pulling from the site's knowledge base.",
+      "description": "Use this tool when the user wants to answer specific questions about Radu Stoian's professional background, executive leadership as Technical Director at Enhance Media, AI recruitment & talent acquisition strategies, client case study metrics (e.g., John Lewis Partnership, Virgin Atlantic, University of Surrey), technical architecture, speaking engagements, or verified credentials.",
       "tags": [
         "qa",
         "profile",
@@ -90,7 +90,7 @@
     {
       "id": "get-section",
       "name": "Get Profile Section",
-      "description": "Retrieves specific structured sections from Radu Stoian's profile context, including Projects, Clients and Case Studies, Skills and Certifications, Areas of Expertise, Client Testimonials, Publications and Insights, and Speaking and Industry Engagement.",
+      "description": "Use this tool when the user wants an in-depth, complete breakdown of a specific profile domain—such as full client case studies, comprehensive career history, areas of expertise, client testimonials, published articles, speaking engagements, certifications, or agentic AI architecture.",
       "tags": [
         "sections",
         "profile",
@@ -140,7 +140,7 @@
     {
       "id": "get-investigation-links",
       "name": "Get Investigation Links",
-      "description": "Provides authoritative external links and public verification profiles for AI agents to evaluate Radu Stoian across LinkedIn, GitHub, Substack, Credly, Google Skills, and SpeakerDeck.",
+      "description": "Use this tool when the user wants verified external citations, official profile URLs, or primary source links for Radu Stoian across LinkedIn, GitHub, Substack, SpeakerDeck, Credly, Google Cloud Skills Boost, and the Google Knowledge Graph.",
       "tags": [
         "verification",
         "external-links",

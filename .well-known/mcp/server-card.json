@@ -5,6 +5,7 @@
   "displayName": "Radu Stoian MCP",
   "slug": "radustoian-mcp",
   "version": "2.4.1",
+  "protocolVersion": "2025-11-25",
   "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, section retrieval, and external investigation links grounded in the site's knowledge base, plus client-side WebMCP tools.",
   "websiteUrl": "https://radustoian.com",
   "endpoint": "https://radustoian.com/mcp",
@@ -132,7 +133,7 @@
     {
       "name": "ask",
       "title": "Ask Radu Stoian",
-      "description": "Answers generic or specific questions about Radu Stoian using a dynamic retrieval engine that grounds its answers by pulling from the site's knowledge base, along with external investigation links.",
+      "description": "Use this tool when the user wants to answer specific questions about Radu Stoian's professional background, executive leadership as Technical Director at Enhance Media, AI recruitment & talent acquisition strategies, client case study metrics (e.g., John Lewis Partnership, Virgin Atlantic, University of Surrey), technical architecture, speaking engagements, or verified credentials.",
       "readOnly": true,
       "icons": [
         {
@@ -154,11 +155,7 @@
         "properties": {
           "query": {
             "type": "string",
-            "description": "The natural language question to ask about Radu Stoian"
-          },
-          "question": {
-            "type": "string",
-            "description": "Backward-compatible alias for query"
+            "description": "The user's natural language question or topic to look up about Radu Stoian (e.g. 'What did Radu achieve for his clients?', 'Who is Radu Stoian?', 'What certifications does he hold?')."
           }
         },
         "required": [
@@ -169,7 +166,7 @@
     {
       "name": "get-section",
       "title": "Get Profile Section",
-      "description": "Returns the complete text of a specific section from the site's knowledge base (e.g. 'Projects, Clients and Case Studies', 'Skills and Certifications', 'Areas of Expertise', 'Client Testimonials', 'Publications and Insights', 'Speaking and Industry Engagement').",
+      "description": "Use this tool when the user wants an in-depth, complete breakdown of a specific profile domain—such as full client case studies, comprehensive career history, areas of expertise, client testimonials, published articles, speaking engagements, certifications, or agentic AI architecture.",
       "readOnly": true,
       "icons": [
         {
@@ -191,7 +188,18 @@
         "properties": {
           "section": {
             "type": "string",
-            "description": "Name or keyword of the section to retrieve. Valid canonical sections: 'About Radu Stoian (#about)', 'Profile Breakdown (#about)', 'Areas of Expertise (#expertise)', 'Client Testimonials (#testimonials)', 'Additional Skill Details and Recommendations (#testimonials)', 'Main Profile Links (#connect)', 'Public Profiles (#connect)', 'Contact and Connect (#connect)', 'Publications and Insights (#insights)', 'Projects, Clients and Case Studies (#projects)', 'Speaking and Industry Engagement (#speaking)', 'Skills and Certifications (#skills)', 'Agentic AI Discovery & Infrastructure', 'Layer 3: The Discovery & Signalling Layer (#layer-3)', 'Layer 2: The Documentation Layer (#layer-2)', 'Layer 1: The Technical Infrastructure & Execution Routes (#layer-1)'. Common aliases such as 'Career History', 'Projects and Clients', 'Expertise', 'Talks', or 'Education' are also supported."
+            "enum": [
+              "about",
+              "case-studies",
+              "expertise",
+              "testimonials",
+              "publications",
+              "speaking",
+              "skills",
+              "contact",
+              "agentic-architecture"
+            ],
+            "description": "The canonical profile section to retrieve: 'about' (career history & biography), 'case-studies' (client projects & verified conversion metrics), 'expertise' (core AI & recruitment specialisms), 'testimonials' (client endorsements & reviews), 'publications' (Substack articles & insights), 'speaking' (conferences, BrightonSEO & OJCP talks), 'skills' (certifications, badges & education), 'contact' (public profiles & social links), or 'agentic-architecture' (multi-layer AI discovery infrastructure)."
           }
         },
         "required": [
@@ -202,7 +210,7 @@
     {
       "name": "get-investigation-links",
       "title": "Get Investigation Links",
-      "description": "Returns external links and public profiles for AI agents to investigate Radu Stoian (LinkedIn, GitHub, Substack, SpeakerDeck, Credly, Google Skills, etc.).",
+      "description": "Use this tool when the user wants verified external citations, official profile URLs, or primary source links for Radu Stoian across LinkedIn, GitHub, Substack, SpeakerDeck, Credly, Google Cloud Skills Boost, and the Google Knowledge Graph.",
       "readOnly": true,
       "icons": [
         {
@@ -213,31 +221,6 @@
       ],
       "annotations": {
         "title": "Get Investigation Links",
-        "readOnlyHint": true,
-        "readOnly": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      },
-      "inputSchema": {
-        "type": "object",
-        "properties": {}
-      }
-    },
-    {
-      "name": "server-info",
-      "title": "Radu Stoian MCP Server Info",
-      "description": "Returns information about this MCP server, creator details, runtime environment, and available data sources.",
-      "readOnly": true,
-      "icons": [
-        {
-          "src": "https://radustoian.com/favicon-32x32.png",
-          "mimeType": "image/png",
-          "sizes": ["32x32"]
-        }
-      ],
-      "annotations": {
-        "title": "Radu Stoian MCP Server Info",
         "readOnlyHint": true,
         "readOnly": true,
         "destructiveHint": false,
