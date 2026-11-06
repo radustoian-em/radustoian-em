@@ -23,8 +23,7 @@
   // Resolve endpoint dynamically (works on radustoian.com, preview URLs, and localhost)
   // The Cloudflare Worker (mcp-server) handles both NLWeb retrieval and Gemini API synthesis server-side.
   const isProduction = window.location.hostname === 'radustoian.com' || window.location.hostname === 'www.radustoian.com';
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '0.0.0.0';
-  const NLWEB_BASE_URL = (isProduction || isLocal) ? '' : 'https://radustoian.com';
+  const NLWEB_BASE_URL = isProduction ? '' : 'https://radustoian.com';
   const ASK_ENDPOINT = `${NLWEB_BASE_URL}/ask`;
 
   // Storage key for session persistence
@@ -109,6 +108,7 @@
 
   // State
   let isOpen = false;
+  let isAskBarOpen = false;
   let isMaximized = false;
   let isGenerating = false;
   let isStreaming = false;
@@ -124,6 +124,17 @@
     if (input && sendBtn) {
       sendBtn.disabled = !input.value.trim() || isGenerating || isStreaming;
     }
+
+    const askInput = document.getElementById('askTextInput');
+    const askSendBtn = document.getElementById('askSendBtn');
+    if (askInput && askSendBtn) {
+      askSendBtn.disabled = !askInput.value.trim() || isGenerating || isStreaming;
+    }
+
+    const askChips = document.querySelectorAll('.ask-chip');
+    askChips.forEach((chip) => {
+      chip.disabled = isGenerating || isStreaming;
+    });
   }
 
   // Helper: Escape HTML to prevent XSS
@@ -684,15 +695,20 @@
     }
   }
 
-  // Render all messages into DOM
-  function renderMessages() {
-    const container = document.getElementById('nlwebMessages');
+  // Helper: Render all messages into a specific DOM container
+  function renderMessagesIntoContainer(container, typingId, isAskBar = false) {
     if (!container) return;
 
     container.innerHTML = '';
 
     messages.forEach((msg, index) => {
       if (!msg || typeof msg !== 'object') return;
+
+      // For the horizontal ask bar, do not show the initial greeting message
+      if (isAskBar && index === 0 && msg.role === 'agent' && !msg.query) {
+        return;
+      }
+
       const safeRole = msg.role === 'user' ? 'user' : 'agent';
       const row = document.createElement('div');
       row.className = `nlweb-msg-row is-${safeRole}`;
@@ -779,7 +795,7 @@
     if (isGenerating) {
       const typingRow = document.createElement('div');
       typingRow.className = 'nlweb-msg-row is-agent';
-      typingRow.id = 'nlwebTypingIndicator';
+      typingRow.id = typingId;
       typingRow.innerHTML = `
         <div class="nlweb-typing">
           <span class="nlweb-typing-dot"></span>
@@ -811,7 +827,82 @@
     }
   }
 
-  // Open / Close Toggle
+  // Render all messages into both floating widget and horizontal ask bar
+  function renderMessages() {
+    const askPanel = document.getElementById('askAnswerPanel');
+    const hasUserQuestions = messages.some(m => m.role === 'user');
+    if (askPanel) {
+      if (hasUserQuestions) {
+        askPanel.classList.add('has-answer');
+      } else {
+        askPanel.classList.remove('has-answer');
+      }
+    }
+
+    renderMessagesIntoContainer(document.getElementById('nlwebMessages'), 'nlwebTypingIndicator', false);
+    renderMessagesIntoContainer(document.getElementById('askAnswerBody'), 'askTypingIndicator', true);
+  }
+
+  // Compute and set height of the horizontal ask bar's answer panel to cover the About section below
+  function updateAskBarHeight() {
+    const askSection = document.getElementById('ask-bar');
+    const aboutPanel = document.querySelector('#about .panel') || document.getElementById('about');
+    if (!askSection || !aboutPanel) return;
+
+    const askRect = askSection.getBoundingClientRect();
+    const aboutRect = aboutPanel.getBoundingClientRect();
+    const panelTop = askRect.bottom + 14;
+    const exactCoverHeight = Math.round(aboutRect.bottom - panelTop);
+    const fallbackHeight = Math.round(aboutRect.height);
+    const finalHeight = Math.max(exactCoverHeight, fallbackHeight, 340);
+    askSection.style.setProperty('--about-cover-height', `${finalHeight}px`);
+  }
+
+  // Open / Close Horizontal Ask Bar Overlay & Answer Box
+  function toggleAskBar(openState) {
+    const askSection = document.getElementById('ask-bar');
+    const answerPanel = document.getElementById('askAnswerPanel');
+    const askInput = document.getElementById('askTextInput');
+    if (!askSection || !answerPanel) return;
+
+    isAskBarOpen = (typeof openState === 'boolean') ? openState : !isAskBarOpen;
+
+    if (isAskBarOpen) {
+      if (isOpen) {
+        toggleDialog(false);
+      }
+
+      const navbar = document.getElementById('navbar');
+      if (navbar && navbar.classList.contains('mobile-open')) {
+        const navToggle = document.getElementById('navToggle');
+        if (navToggle) navToggle.click();
+      }
+
+      updateAskBarHeight();
+      document.body.classList.add('ask-overlay-open');
+      askSection.classList.add('is-active');
+      answerPanel.setAttribute('aria-hidden', 'false');
+      if (askInput) askInput.setAttribute('aria-expanded', 'true');
+
+      if (!isStreaming) {
+        renderMessages();
+      }
+
+      const rect = askSection.getBoundingClientRect();
+      if (rect.top < 16 || rect.top > window.innerHeight * 0.45) {
+        askSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      document.body.classList.remove('ask-overlay-open');
+      askSection.classList.remove('is-active');
+      answerPanel.setAttribute('aria-hidden', 'true');
+      if (askInput) {
+        askInput.setAttribute('aria-expanded', 'false');
+      }
+    }
+  }
+
+  // Open / Close Toggle (Floating Widget)
   function toggleDialog(openState) {
     const dialog = document.getElementById('nlwebChatDialog');
     const launcher = document.getElementById('nlwebChatLauncher');
@@ -820,6 +911,10 @@
     isOpen = (typeof openState === 'boolean') ? openState : !isOpen;
 
     if (isOpen) {
+      if (isAskBarOpen) {
+        toggleAskBar(false);
+      }
+
       dialog.classList.add('is-open');
       launcher.setAttribute('aria-expanded', 'true');
 
@@ -930,18 +1025,8 @@
     return sanitizeRenderedHtml(withCursor);
   }
 
-  // Helper: Create live agent message bubble when fan-out queries or first token chunk arrives
-  function createLiveAgentBubble(fanOutQueries = [], language = 'en') {
-    const typingIndicator = document.getElementById('nlwebTypingIndicator');
-    if (typingIndicator) typingIndicator.remove();
-    isGenerating = false;
-    isStreaming = true;
-    updateSendBtnState();
-
-    const dialog = document.getElementById('nlwebChatDialog');
-    if (dialog) dialog.classList.add('has-answer');
-
-    const container = document.getElementById('nlwebMessages');
+  // Helper: Create live agent message bubble inside a single container
+  function createLiveBubbleInContainer(container, fanOutQueries = [], language = 'en') {
     if (!container) return null;
 
     const row = document.createElement('div');
@@ -980,12 +1065,64 @@
     return { container, row, bubble, fanoutSlot, leadContent, prevScrollBehavior };
   }
 
+  // Helper: Create live agent message bubble across both chat surfaces when fan-out queries or first token chunk arrives
+  function createLiveAgentBubble(fanOutQueries = [], language = 'en') {
+    const typingIndicator = document.getElementById('nlwebTypingIndicator');
+    if (typingIndicator) typingIndicator.remove();
+    const askTypingIndicator = document.getElementById('askTypingIndicator');
+    if (askTypingIndicator) askTypingIndicator.remove();
+
+    isGenerating = false;
+    isStreaming = true;
+    updateSendBtnState();
+
+    const dialog = document.getElementById('nlwebChatDialog');
+    if (dialog) dialog.classList.add('has-answer');
+    const askPanel = document.getElementById('askAnswerPanel');
+    if (askPanel) askPanel.classList.add('has-answer');
+
+    const targets = [
+      createLiveBubbleInContainer(document.getElementById('nlwebMessages'), fanOutQueries, language),
+      createLiveBubbleInContainer(document.getElementById('askAnswerBody'), fanOutQueries, language)
+    ].filter(Boolean);
+
+    if (targets.length === 0) return null;
+
+    return {
+      targets,
+      setLeadHtml(html) {
+        targets.forEach((t) => {
+          t.leadContent.innerHTML = html;
+        });
+      },
+      clearFanout() {
+        targets.forEach((t) => {
+          if (t.fanoutSlot) t.fanoutSlot.innerHTML = '';
+        });
+      },
+      setFanout(queries, lang) {
+        targets.forEach((t) => {
+          if (t.fanoutSlot) {
+            t.fanoutSlot.innerHTML = '';
+            const dropdown = createFanOutDropdown(queries, lang);
+            if (dropdown) t.fanoutSlot.appendChild(dropdown);
+          }
+        });
+      },
+      removeRows() {
+        targets.forEach((t) => {
+          if (t.row) t.row.remove();
+        });
+      }
+    };
+  }
+
   // Helper: Finalize live agent message bubble with sources, fan-outs, copy action, and session persistence
   function finalizeLiveAgentBubble(liveBubble, targetText, sources, userQuestion, fanOutQueries = [], language = 'en') {
     isStreaming = false;
     const cleanFanOut = isRefusalResponse(targetText) ? [] : (Array.isArray(fanOutQueries) ? [...fanOutQueries] : []);
 
-    if (!liveBubble || !liveBubble.container) {
+    if (!liveBubble || !Array.isArray(liveBubble.targets) || liveBubble.targets.length === 0) {
       messages.push({
         role: 'agent',
         content: targetText,
@@ -999,62 +1136,66 @@
       return;
     }
 
-    const { container, row, bubble, fanoutSlot, leadContent, prevScrollBehavior } = liveBubble;
+    const finalHtml = renderMarkdown(targetText);
 
-    // Restore normal smooth scroll behavior
-    container.style.scrollBehavior = prevScrollBehavior || '';
+    liveBubble.targets.forEach((target) => {
+      const { container, row, bubble, fanoutSlot, leadContent, prevScrollBehavior } = target;
 
-    // Ensure fanoutSlot matches final state (clear on refusal, populate if not already rendered)
-    if (fanoutSlot) {
-      if (cleanFanOut.length === 0) {
-        fanoutSlot.innerHTML = '';
-      } else if (!fanoutSlot.hasChildNodes()) {
-        const dropdown = createFanOutDropdown(cleanFanOut, language);
-        if (dropdown) fanoutSlot.appendChild(dropdown);
+      // Restore normal smooth scroll behavior
+      container.style.scrollBehavior = prevScrollBehavior || '';
+
+      // Ensure fanoutSlot matches final state (clear on refusal, populate if not already rendered)
+      if (fanoutSlot) {
+        if (cleanFanOut.length === 0) {
+          fanoutSlot.innerHTML = '';
+        } else if (!fanoutSlot.hasChildNodes()) {
+          const dropdown = createFanOutDropdown(cleanFanOut, language);
+          if (dropdown) fanoutSlot.appendChild(dropdown);
+        }
       }
-    }
 
-    // Clean final render without cursor
-    leadContent.innerHTML = renderMarkdown(targetText);
+      // Clean final render without cursor
+      leadContent.innerHTML = finalHtml;
 
-    // Render Grounded Sources Chips if present
-    if (Array.isArray(sources) && sources.length > 0) {
-      const validChips = sources.map(src => createSourceChip(src)).filter(Boolean);
-      if (validChips.length > 0) {
-        const sourcesWrap = document.createElement('div');
-        sourcesWrap.className = 'nlweb-sources-container';
-        const header = document.createElement('div');
-        header.className = 'nlweb-sources-header';
-        header.innerHTML = `<span style="width: 12px; height: 12px; display: inline-flex;">${ICONS.citation}</span> Grounded in ${validChips.length} source${validChips.length > 1 ? 's' : ''}`;
-        sourcesWrap.appendChild(header);
+      // Render Grounded Sources Chips if present
+      if (Array.isArray(sources) && sources.length > 0) {
+        const validChips = sources.map(src => createSourceChip(src)).filter(Boolean);
+        if (validChips.length > 0) {
+          const sourcesWrap = document.createElement('div');
+          sourcesWrap.className = 'nlweb-sources-container';
+          const header = document.createElement('div');
+          header.className = 'nlweb-sources-header';
+          header.innerHTML = `<span style="width: 12px; height: 12px; display: inline-flex;">${ICONS.citation}</span> Grounded in ${validChips.length} source${validChips.length > 1 ? 's' : ''}`;
+          sourcesWrap.appendChild(header);
 
-        const list = document.createElement('div');
-        list.className = 'nlweb-sources-list';
-        validChips.forEach(chip => {
-          list.appendChild(chip);
-        });
-        sourcesWrap.appendChild(list);
-        bubble.appendChild(sourcesWrap);
+          const list = document.createElement('div');
+          list.className = 'nlweb-sources-list';
+          validChips.forEach(chip => {
+            list.appendChild(chip);
+          });
+          sourcesWrap.appendChild(list);
+          bubble.appendChild(sourcesWrap);
+        }
       }
-    }
 
-    // Copy Button
-    const actions = document.createElement('div');
-    actions.className = 'nlweb-msg-actions';
-    const copyBtn = document.createElement('button');
-    copyBtn.className = 'nlweb-msg-copy-btn';
-    copyBtn.innerHTML = `${ICONS.copy} <span>Copy</span>`;
-    copyBtn.onclick = async () => {
-      try {
-        await navigator.clipboard.writeText(targetText);
-        copyBtn.innerHTML = `${ICONS.check} <span>Copied!</span>`;
-        setTimeout(() => {
-          copyBtn.innerHTML = `${ICONS.copy} <span>Copy</span>`;
-        }, 2000);
-      } catch (err) {}
-    };
-    actions.appendChild(copyBtn);
-    row.appendChild(actions);
+      // Copy Button
+      const actions = document.createElement('div');
+      actions.className = 'nlweb-msg-actions';
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'nlweb-msg-copy-btn';
+      copyBtn.innerHTML = `${ICONS.copy} <span>Copy</span>`;
+      copyBtn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(targetText);
+          copyBtn.innerHTML = `${ICONS.check} <span>Copied!</span>`;
+          setTimeout(() => {
+            copyBtn.innerHTML = `${ICONS.copy} <span>Copy</span>`;
+          }, 2000);
+        } catch (err) {}
+      };
+      actions.appendChild(copyBtn);
+      row.appendChild(actions);
+    });
 
     // Add to messages and persist
     messages.push({
@@ -1093,7 +1234,6 @@
         return;
       }
 
-      const { leadContent } = liveBubble;
       const wordChunks = tokenizeIntoWords(targetText);
       let tokenIndex = 0;
       const totalChunks = wordChunks.length;
@@ -1108,7 +1248,7 @@
         if (tokenIndex < totalChunks) {
           tokenIndex++;
           const currentText = wordChunks.slice(0, tokenIndex).join('');
-          leadContent.innerHTML = renderMarkdownWithCursor(currentText);
+          liveBubble.setLeadHtml(renderMarkdownWithCursor(currentText));
           // Requirement 3: Do NOT scroll to bottom! Stay at the top of the answer.
         }
 
@@ -1280,7 +1420,7 @@
       if (liveBubble && streamWordIndex < streamWordChunks.length) {
         streamWordIndex++;
         const currentDisplay = streamWordChunks.slice(0, streamWordIndex).join('');
-        liveBubble.leadContent.innerHTML = renderMarkdownWithCursor(currentDisplay);
+        liveBubble.setLeadHtml(renderMarkdownWithCursor(currentDisplay));
         // Requirement 3: Do NOT scroll to bottom! Stay at top of answer.
       }
 
@@ -1325,8 +1465,8 @@
           streamWordIndex = 0;
           gatheredSources.length = 0;
           gatheredFanOut.length = 0;
-          if (liveBubble && liveBubble.fanoutSlot) {
-            liveBubble.fanoutSlot.innerHTML = '';
+          if (liveBubble) {
+            liveBubble.clearFanout();
           }
         } else if (evType === 'fanout') {
           try {
@@ -1346,10 +1486,8 @@
               });
               if (!liveBubble) {
                 liveBubble = createLiveAgentBubble(gatheredFanOut, fanOutLang);
-              } else if (liveBubble.fanoutSlot) {
-                liveBubble.fanoutSlot.innerHTML = '';
-                const dropdown = createFanOutDropdown(gatheredFanOut, fanOutLang);
-                if (dropdown) liveBubble.fanoutSlot.appendChild(dropdown);
+              } else {
+                liveBubble.setFanout(gatheredFanOut, fanOutLang);
               }
             }
           } catch (e) {
@@ -1388,8 +1526,8 @@
               streamWordIndex = 0;
               gatheredSources.length = 0;
               gatheredFanOut.length = 0;
-              if (liveBubble && liveBubble.fanoutSlot) {
-                liveBubble.fanoutSlot.innerHTML = '';
+              if (liveBubble) {
+                liveBubble.clearFanout();
               }
             }
             agentResponseText = cleanSummary;
@@ -1476,8 +1614,8 @@
       console.warn('NLWeb SSE stream fallback triggered:', streamError);
 
       // Remove partial live bubble if stream failed mid-flight before falling back to JSON
-      if (liveBubble && liveBubble.row) {
-        liveBubble.row.remove();
+      if (liveBubble) {
+        liveBubble.removeRows();
         liveBubble = null;
       }
 
@@ -1556,18 +1694,14 @@
     }
   }
 
-  // Handle Form Submission
-  async function handleSubmit(e) {
-    if (e) e.preventDefault();
+  // Shared Question Submission Handler (used by both floating widget and horizontal ask bar)
+  async function submitQuestionText(rawText) {
     if (isGenerating || isStreaming) return;
 
     const now = Date.now();
     if (now - lastSubmitTime < COOLDOWN_MS) return;
 
-    const input = document.getElementById('nlwebTextInput');
-    const sendBtn = document.getElementById('nlwebSendBtn');
-    let text = input.value.trim();
-
+    let text = (rawText || '').trim();
     if (!text) return;
 
     // Enforce maximum input character limit
@@ -1575,10 +1709,7 @@
       text = text.slice(0, MAX_INPUT_CHARS).trim();
     }
 
-    // Reset input
-    input.value = '';
-    input.style.height = 'auto';
-    sendBtn.disabled = true;
+    updateSendBtnState();
 
     // Add user message
     messages.push({
@@ -1601,11 +1732,61 @@
     await queryNLWeb(text);
   }
 
-  // Reset Conversation smoothly without disruptive browser alert
-  function handleReset() {
-    const resetBtn = document.getElementById('nlwebResetBtn');
-    const container = document.getElementById('nlwebMessages');
+  // Handle Floating Widget Form Submission
+  async function handleSubmit(e) {
+    if (e) e.preventDefault();
+    if (isGenerating || isStreaming) return;
+
     const input = document.getElementById('nlwebTextInput');
+    const sendBtn = document.getElementById('nlwebSendBtn');
+    if (!input) return;
+
+    const text = input.value.trim();
+    if (!text) return;
+
+    const now = Date.now();
+    if (now - lastSubmitTime < COOLDOWN_MS) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+    if (sendBtn) sendBtn.disabled = true;
+
+    await submitQuestionText(text);
+  }
+
+  // Handle Horizontal Ask Bar Form Submission
+  async function handleAskBarSubmit(e) {
+    if (e) e.preventDefault();
+    if (isGenerating || isStreaming) return;
+
+    const askInput = document.getElementById('askTextInput');
+    const askSendBtn = document.getElementById('askSendBtn');
+    if (!askInput) return;
+
+    const text = askInput.value.trim();
+    if (!text) return;
+
+    const now = Date.now();
+    if (now - lastSubmitTime < COOLDOWN_MS) return;
+
+    if (!isAskBarOpen) {
+      toggleAskBar(true);
+    }
+
+    askInput.value = '';
+    if (askSendBtn) askSendBtn.disabled = true;
+
+    await submitQuestionText(text);
+  }
+
+  // Reset Conversation smoothly without disruptive browser alert
+  function handleReset(source = 'dialog') {
+    const resetBtn = document.getElementById('nlwebResetBtn');
+    const askResetBtn = document.getElementById('askResetBtn');
+    const container = document.getElementById('nlwebMessages');
+    const askContainer = document.getElementById('askAnswerBody');
+    const input = document.getElementById('nlwebTextInput');
+    const askInput = document.getElementById('askTextInput');
 
     if (activeAbortController) {
       try { activeAbortController.abort(); } catch (e) {}
@@ -1618,32 +1799,44 @@
     isStreaming = false;
     isGenerating = false;
 
-    // Trigger subtle rotation animation on the reset button
-    if (resetBtn) {
-      resetBtn.classList.remove('is-spinning');
-      void resetBtn.offsetWidth; // trigger reflow
-      resetBtn.classList.add('is-spinning');
-      setTimeout(() => resetBtn.classList.remove('is-spinning'), 500);
-    }
+    // Trigger subtle rotation animation on the reset button(s)
+    [resetBtn, askResetBtn].forEach((btn) => {
+      if (btn) {
+        btn.classList.remove('is-spinning');
+        void btn.offsetWidth; // trigger reflow
+        btn.classList.add('is-spinning');
+        setTimeout(() => btn.classList.remove('is-spinning'), 500);
+      }
+    });
 
     const dialogEl = document.getElementById('nlwebChatDialog');
     if (dialogEl) dialogEl.classList.remove('has-answer');
+    const askPanelEl = document.getElementById('askAnswerPanel');
+    if (askPanelEl) askPanelEl.classList.remove('has-answer');
     if (isMaximized) toggleMaximize(false);
 
-    // Smooth fade transition of messages
-    if (container) {
-      container.style.scrollBehavior = 'auto';
-      container.classList.add('is-resetting');
+    const activeContainers = [container, askContainer].filter(Boolean);
+    if (activeContainers.length > 0) {
+      activeContainers.forEach((c) => {
+        c.style.scrollBehavior = 'auto';
+        c.classList.add('is-resetting');
+      });
 
       setTimeout(() => {
         sessionStorage.removeItem(STORAGE_KEY);
         prevQuery = '';
         loadHistory();
         renderMessages();
-        container.classList.remove('is-resetting');
-        container.style.scrollBehavior = '';
+        activeContainers.forEach((c) => {
+          c.classList.remove('is-resetting');
+          c.style.scrollBehavior = '';
+        });
         updateSendBtnState();
-        if (input) input.focus();
+        if (source === 'ask' && askInput) {
+          askInput.focus();
+        } else if (input && isOpen) {
+          input.focus();
+        }
       }, 150);
     } else {
       sessionStorage.removeItem(STORAGE_KEY);
@@ -1651,7 +1844,6 @@
       loadHistory();
       renderMessages();
       updateSendBtnState();
-      if (input) input.focus();
     }
   }
 
@@ -1664,6 +1856,16 @@
     const form = document.getElementById('nlwebInputForm');
     const input = document.getElementById('nlwebTextInput');
 
+    // Horizontal Ask Bar Elements
+    const askSection = document.getElementById('ask-bar');
+    const askForm = document.getElementById('askInputForm');
+    const askInput = document.getElementById('askTextInput');
+    const askResetBtn = document.getElementById('askResetBtn');
+    const askCloseBtn = document.getElementById('askCloseBtn');
+    const askBackdrop = document.getElementById('askBackdrop');
+    const askSuggestions = document.getElementById('askSuggestions');
+    const askAnswerBody = document.getElementById('askAnswerBody');
+
     // Launcher click
     launcher.addEventListener('click', () => toggleDialog());
 
@@ -1671,7 +1873,7 @@
     if (closeBtn) closeBtn.addEventListener('click', () => toggleDialog(false));
 
     // Reset button
-    if (resetBtn) resetBtn.addEventListener('click', handleReset);
+    if (resetBtn) resetBtn.addEventListener('click', () => handleReset('dialog'));
 
     // Maximise / Restore button
     if (maxBtn) maxBtn.addEventListener('click', () => toggleMaximize());
@@ -1695,10 +1897,69 @@
       });
     }
 
-    // Escape key closes dialog
+    // Horizontal Ask Bar Listeners
+    if (askSection && askInput) {
+      askInput.addEventListener('focus', () => {
+        if (!isAskBarOpen) {
+          toggleAskBar(true);
+        }
+      });
+
+      askInput.addEventListener('click', () => {
+        if (!isAskBarOpen) {
+          toggleAskBar(true);
+        }
+      });
+
+      askInput.addEventListener('input', () => {
+        updateSendBtnState();
+      });
+
+      if (askForm) {
+        askForm.addEventListener('submit', handleAskBarSubmit);
+      }
+
+      if (askResetBtn) {
+        askResetBtn.addEventListener('click', () => handleReset('ask'));
+      }
+
+      if (askCloseBtn) {
+        askCloseBtn.addEventListener('click', () => toggleAskBar(false));
+      }
+
+      if (askBackdrop) {
+        askBackdrop.addEventListener('click', () => toggleAskBar(false));
+      }
+
+      if (askSuggestions) {
+        askSuggestions.addEventListener('click', (e) => {
+          const chip = e.target.closest('.ask-chip');
+          if (!chip || chip.disabled || isGenerating || isStreaming) return;
+          const query = chip.getAttribute('data-query');
+          if (!query) return;
+
+          if (!isAskBarOpen) {
+            toggleAskBar(true);
+          }
+          submitQuestionText(query);
+        });
+      }
+
+      window.addEventListener('resize', () => {
+        if (isAskBarOpen) {
+          updateAskBarHeight();
+        }
+      }, { passive: true });
+    }
+
+    // Escape key closes dialog or horizontal ask bar overlay
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        toggleDialog(false);
+      if (e.key === 'Escape') {
+        if (isAskBarOpen) {
+          toggleAskBar(false);
+        } else if (isOpen) {
+          toggleDialog(false);
+        }
       }
     });
 
@@ -1742,22 +2003,30 @@
     });
 
     // Anchor clicks within messages (smooth scrolling for internal hash links)
+    const handleInternalAnchorClick = (e) => {
+      const anchor = e.target.closest('a');
+      if (anchor && isInternalUrl(anchor.getAttribute('href') || anchor.href)) {
+        try {
+          const parsed = new URL(anchor.href, window.location.href);
+          if (parsed.pathname === window.location.pathname && parsed.hash) {
+            const targetEl = document.querySelector(parsed.hash);
+            if (targetEl) {
+              if (isAskBarOpen) {
+                toggleAskBar(false);
+              }
+              targetEl.scrollIntoView({ behavior: 'smooth' });
+            }
+          }
+        } catch {}
+      }
+    };
+
     const messagesContainer = document.getElementById('nlwebMessages');
     if (messagesContainer) {
-      messagesContainer.addEventListener('click', (e) => {
-        const anchor = e.target.closest('a');
-        if (anchor && isInternalUrl(anchor.getAttribute('href') || anchor.href)) {
-          try {
-            const parsed = new URL(anchor.href, window.location.href);
-            if (parsed.pathname === window.location.pathname && parsed.hash) {
-              const targetEl = document.querySelector(parsed.hash);
-              if (targetEl) {
-                targetEl.scrollIntoView({ behavior: 'smooth' });
-              }
-            }
-          } catch {}
-        }
-      });
+      messagesContainer.addEventListener('click', handleInternalAnchorClick);
+    }
+    if (askAnswerBody) {
+      askAnswerBody.addEventListener('click', handleInternalAnchorClick);
     }
   }
 
@@ -1766,32 +2035,23 @@
     loadHistory();
     const dom = createWidgetDOM();
     initListeners(dom);
+    renderMessages();
 
     // Public API
     window.nlwebChat = {
       open: (initialQuery) => {
         toggleDialog(true);
         if (initialQuery && typeof initialQuery === 'string' && !isGenerating && !isStreaming) {
-          const now = Date.now();
-          if (now - lastSubmitTime < COOLDOWN_MS) return;
-
-          const cleanQuery = initialQuery.slice(0, MAX_INPUT_CHARS).trim();
-          if (!cleanQuery) return;
-
-          messages.push({ role: 'user', content: cleanQuery });
-          saveHistory();
-          renderMessages();
-
-          const sessionCount = getSessionQueryCount();
-          if (sessionCount >= MAX_SESSION_QUESTIONS) {
-            streamAgentResponse(LIMIT_REACHED_MESSAGE, [], cleanQuery);
-            return;
-          }
-
-          lastSubmitTime = now;
-          queryNLWeb(cleanQuery);
+          submitQuestionText(initialQuery);
         }
       },
+      openAskBar: (initialQuery) => {
+        toggleAskBar(true);
+        if (initialQuery && typeof initialQuery === 'string' && !isGenerating && !isStreaming) {
+          submitQuestionText(initialQuery);
+        }
+      },
+      closeAskBar: () => toggleAskBar(false),
       openReady: (prefill) => {
         toggleDialog(true);
         const input = document.getElementById('nlwebTextInput');
