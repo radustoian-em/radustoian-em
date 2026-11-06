@@ -354,24 +354,6 @@
   min-height: 0;
 }
 
-/* When an answer is present in maximized mode, expand the answer box height relative to chat box */
-.nlweb-dialog.is-maximized .nlweb-msg-row.is-agent:not(:first-child):last-child {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.nlweb-dialog.is-maximized .nlweb-msg-row.is-agent:not(:first-child):last-child .nlweb-msg-bubble {
-  flex: 1 1 auto;
-  min-height: 180px;
-  display: flex;
-  flex-direction: column;
-}
-
-.nlweb-dialog.is-maximized .nlweb-msg-row.is-agent:not(:first-child):last-child .nlweb-lead-content {
-  flex: 1 1 auto;
-}
-
 /* Agent Message Formatting */
 .nlweb-msg-bubble p {
   margin: 0 0 8px 0;
@@ -430,10 +412,19 @@
   color: #e9d5ff;
 }
 
-/* Lead Content Styling */
+/* Lead Content Styling: Default 10 rows of copy while streaming, adjusts to answer height once received */
 .nlweb-lead-content {
   color: var(--nlweb-text-subtle);
   line-height: 1.55;
+  min-height: calc(10 * 1.55em);
+  height: auto;
+}
+
+.nlweb-lead-content.is-complete,
+.nlweb-msg-row:first-child .nlweb-lead-content {
+  min-height: 0;
+  height: auto;
+  flex: 0 0 auto;
 }
 
 .nlweb-lead-content p:last-child {
@@ -858,14 +849,14 @@
     padding-bottom: max(16px, calc(12px + env(safe-area-inset-bottom, 0px)));
   }
 
-  .nlweb-messages {
+  .nlweb-dialog .nlweb-messages {
     flex: 1 1 auto;
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
-  .nlweb-footer {
+  .nlweb-dialog .nlweb-footer {
     padding-bottom: max(16px, calc(12px + env(safe-area-inset-bottom, 0px)));
   }
 }
@@ -906,7 +897,7 @@ body.ask-overlay-open .wrap {
 
 body.ask-overlay-open .ask-backdrop {
   opacity: 1;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 body.ask-overlay-open .ask-section {
@@ -959,6 +950,11 @@ body.ask-overlay-open .nlweb-launcher {
               0 0 28px rgba(168, 85, 247, 0.22);
 }
 
+.ask-input-form.is-locked {
+  opacity: 0.72;
+  cursor: pointer;
+}
+
 .ask-input-icon {
   width: 18px;
   height: 18px;
@@ -986,6 +982,11 @@ body.ask-overlay-open .nlweb-launcher {
   font-size: 14.5px;
   line-height: 1.4;
   padding: 8px 0;
+}
+
+.ask-input:disabled {
+  pointer-events: none;
+  cursor: pointer;
 }
 
 .ask-input::placeholder {
@@ -1083,14 +1084,14 @@ body.ask-overlay-open .nlweb-launcher {
   cursor: not-allowed;
 }
 
-/* Expanding Answer Box (Covers About Section Height Below) */
+/* Expanding Answer Box */
 .ask-answer-panel {
   position: absolute;
   top: calc(100% + 14px);
   left: 0;
   right: 0;
   z-index: 955;
-  height: var(--about-cover-height, 420px);
+  height: auto;
   max-height: 0;
   background: var(--nlweb-bg);
   border: 1px solid rgba(216, 180, 254, 0.24);
@@ -1106,14 +1107,14 @@ body.ask-overlay-open .nlweb-launcher {
   visibility: hidden;
   pointer-events: none;
   transform: translateY(-8px);
-  transition: max-height 0.36s cubic-bezier(0.22, 1, 0.36, 1),
-              opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+  transition: opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-              visibility 0.36s;
+              visibility 0.3s;
 }
 
 .ask-section.is-active .ask-answer-panel {
-  max-height: var(--about-cover-height, 420px);
+  max-height: none;
+  overflow: visible;
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -1124,6 +1125,7 @@ body.ask-overlay-open .nlweb-launcher {
   padding: 10px 16px;
   background: rgba(26, 12, 45, 0.4);
   border-bottom: 1px solid rgba(216, 180, 254, 0.1);
+  border-radius: var(--radius-lg, 12px) var(--radius-lg, 12px) 0 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -1140,8 +1142,16 @@ body.ask-overlay-open .nlweb-launcher {
 .ask-answer-messages {
   padding: 20px 24px 16px;
   gap: 16px;
-  flex: 1 1 auto;
-  overflow-y: auto;
+  flex: 0 0 auto;
+  min-height: calc(10 * 1.6em + 36px);
+  height: auto;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
+.ask-answer-panel.has-answer .ask-answer-messages {
+  min-height: 0;
+  height: auto;
 }
 
 .ask-answer-messages .nlweb-msg-row.is-agent .nlweb-msg-bubble {
@@ -1150,36 +1160,18 @@ body.ask-overlay-open .nlweb-launcher {
   line-height: 1.6;
 }
 
-.ask-answer-messages .nlweb-msg-row.is-agent:not(:first-child):last-child {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.ask-answer-messages .nlweb-msg-row.is-agent:not(:first-child):last-child .nlweb-msg-bubble {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.ask-answer-messages .nlweb-msg-row.is-agent:not(:first-child):last-child .nlweb-lead-content {
-  flex: 1 1 auto;
-}
-
 .ask-answer-footer {
   display: none;
-  padding: 8px 16px 10px;
+  padding: 12px 20px 12px;
   background: rgba(18, 8, 32, 0.85);
   border-top: 1px solid var(--nlweb-border);
+  border-radius: 0 0 var(--radius-lg, 12px) var(--radius-lg, 12px);
   flex-shrink: 0;
+  animation: nlweb-fade-in 0.25s ease-out;
 }
 
 .ask-answer-panel.has-answer .ask-answer-footer {
   display: block;
-}
-
-.ask-answer-footer .nlweb-footer-sub {
-  margin-top: 0;
 }
 
 @media (max-width: 640px) {
@@ -1217,6 +1209,10 @@ body.ask-overlay-open .nlweb-launcher {
   }
 
   .ask-answer-footer {
-    padding: 8px 12px 10px;
+    padding: 10px 14px 12px;
+  }
+
+  .ask-answer-footer .nlweb-input {
+    font-size: 16px; /* Prevents iOS auto-zoom on focus */
   }
 }

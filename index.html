@@ -55,10 +55,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="styles.css?v=2.7">
-<link rel="stylesheet" href="chat-widget.css?v=3.2">
+<link rel="stylesheet" href="chat-widget.css?v=3.4">
 <script src="js/script.js" defer></script>
 <script src="js/webmcp.js" defer></script>
-<script src="js/chat-widget.js?v=3.6" defer></script>
+<script src="js/chat-widget.js?v=3.8" defer></script>
 </head>
 <body id="top">
 
@@ -207,7 +207,20 @@
             <!-- Rendered Messages will go here -->
           </div>
 
-          <footer class="nlweb-footer ask-answer-footer">
+          <footer class="nlweb-footer ask-answer-footer" id="askAnswerFooter">
+            <form class="nlweb-input-form" id="askFollowupForm">
+              <textarea
+                class="nlweb-input"
+                id="askFollowupInput"
+                rows="2"
+                maxlength="300"
+                placeholder="Ask a follow-up question..."
+                aria-label="Ask a follow-up question about Radu Stoian"
+              ></textarea>
+              <button type="submit" class="nlweb-send-btn" id="askFollowupSendBtn" disabled aria-label="Send message">
+                <span style="width: 16px; height: 16px; display: inline-flex;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></span>
+              </button>
+            </form>
             <div class="nlweb-footer-sub">
               <span>Grounded live via <a href="/ask" target="_blank" rel="noopener">/ask</a> NLWeb and Gemini &middot; <a href="/terms-and-conditions.html" rel="nofollow">see Terms and Conditions</a></span>
             </div>
