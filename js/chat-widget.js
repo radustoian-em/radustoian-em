@@ -26,7 +26,7 @@
       const link = document.createElement('link');
       link.id = 'nlwebChatStylesLink';
       link.rel = 'stylesheet';
-      link.href = '/chat-widget.css?v=3.5';
+      link.href = '/chat-widget.css?v=3.6';
       document.head.appendChild(link);
     }
   }

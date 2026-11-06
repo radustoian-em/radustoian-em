@@ -1,3 +1,21 @@
+  @font-face {
+    font-family: 'Inter Fallback';
+    src: local('Liberation Sans'), local('Arimo'), local('Arial'), local('Helvetica Neue'), local('Helvetica');
+    size-adjust: 107.64%;
+    ascent-override: 90.44%;
+    descent-override: 22.52%;
+    line-gap-override: 0%;
+  }
+
+  @font-face {
+    font-family: 'Fraunces Fallback';
+    src: local('Liberation Serif'), local('Tinos'), local('Times New Roman'), local('Georgia');
+    size-adjust: 109.9%;
+    ascent-override: 89%;
+    descent-override: 22%;
+    line-gap-override: 0%;
+  }
+
   :root{
     --p-50:  #faf5ff; --p-100: #f3e8ff; --p-200: #e9d5ff; --p-300: #d8b4fe; 
     --p-400: #c084fc; --p-500: #a855f7; --p-600: #4e0d89; --p-700: #7e22ce; 
@@ -30,8 +48,8 @@
 
     --radius-lg: 12px; --radius-md: 8px; --radius-sm: 6px;
 
-    --font-display: 'Fraunces', serif;
-    --font-body: 'Inter', sans-serif;
+    --font-display: 'Fraunces', 'Fraunces Fallback', serif;
+    --font-body: 'Inter', 'Inter Fallback', sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -269,9 +287,9 @@
 
   section{ scroll-margin-top: 96px; }
   .section-title{ font-family: var(--font-display); font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.1rem); color: var(--ink); margin-bottom: 22px; letter-spacing: -0.01em; }
-  .lede{ font-size: 1.08rem; color: var(--ink-soft); max-width: 62ch; line-height: 1.65; }
+  .lede{ font-size: 1.08rem; color: var(--ink-soft); max-width: 40rem; line-height: 1.65; }
   .lede + .lede{ margin-top: 14px; }
-  #about p{ font-size: 1.02rem; color: var(--ink-soft); max-width: 68ch; line-height: 1.7; }
+  #about p{ font-size: 1.02rem; color: var(--ink-soft); max-width: 43.7rem; line-height: 1.7; }
   #about p + p{ margin-top: 16px; }
   #about strong, .connect-panel strong{ color: var(--p-200); font-weight: 600; text-shadow: 0 0 8px rgba(233, 213, 255, 0.2); }
 
@@ -490,6 +508,18 @@
   /* ==========================================================================
      Horizontal Ask Chatbot Bar Section (#ask-bar) - Critical In-Page Layout
      ========================================================================== */
+  .ask-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 1, 10, 0.8);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 940;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   .ask-section {
     position: relative;
     width: 100%;
@@ -662,6 +692,25 @@
   .ask-chip:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .ask-answer-panel {
+    position: absolute;
+    top: calc(100% + 14px);
+    left: 0;
+    right: 0;
+    z-index: 955;
+    height: auto;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+  }
+
+  .ask-answer-footer {
+    display: none;
   }
 
   @media (max-width: 640px) {
