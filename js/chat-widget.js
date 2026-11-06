@@ -904,7 +904,6 @@
       document.body.classList.add('ask-overlay-open');
       askSection.classList.add('is-active');
       answerPanel.setAttribute('aria-hidden', 'false');
-      if (askInput) askInput.setAttribute('aria-expanded', 'true');
 
       if (!isStreaming) {
         renderMessages();
@@ -918,9 +917,6 @@
       document.body.classList.remove('ask-overlay-open');
       askSection.classList.remove('is-active');
       answerPanel.setAttribute('aria-hidden', 'true');
-      if (askInput) {
-        askInput.setAttribute('aria-expanded', 'false');
-      }
     }
   }
 
