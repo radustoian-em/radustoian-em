@@ -117,7 +117,17 @@
   let prevQuery = '';
   let messages = [];
 
-  // Helper: Update Send Button Enabled State
+  // Helper: Check if the user has already asked at least one question in this conversation
+  function hasUserQuestions() {
+    return messages.some((m) => m && m.role === 'user');
+  }
+
+  // Helper: Check if at least one agent answer (after the initial welcome item) has been provided
+  function hasCompletedAnswer() {
+    return messages.some((m, idx) => m && m.role === 'agent' && idx > 0);
+  }
+
+  // Helper: Update Send Button & Ask Input States
   function updateSendBtnState() {
     const input = document.getElementById('nlwebTextInput');
     const sendBtn = document.getElementById('nlwebSendBtn');
@@ -125,10 +135,31 @@
       sendBtn.disabled = !input.value.trim() || isGenerating || isStreaming;
     }
 
+    const firstQuestionAsked = hasUserQuestions();
+    const answerReady = hasCompletedAnswer();
+
+    const askForm = document.getElementById('askInputForm');
     const askInput = document.getElementById('askTextInput');
     const askSendBtn = document.getElementById('askSendBtn');
+    if (askForm) {
+      askForm.classList.toggle('is-locked', firstQuestionAsked);
+    }
+    if (askInput) {
+      askInput.disabled = firstQuestionAsked;
+    }
     if (askInput && askSendBtn) {
-      askSendBtn.disabled = !askInput.value.trim() || isGenerating || isStreaming;
+      askSendBtn.disabled = firstQuestionAsked || !askInput.value.trim() || isGenerating || isStreaming;
+    }
+
+    const askPanel = document.getElementById('askAnswerPanel');
+    if (askPanel) {
+      askPanel.classList.toggle('has-answer', answerReady);
+    }
+
+    const askFollowupInput = document.getElementById('askFollowupInput');
+    const askFollowupSendBtn = document.getElementById('askFollowupSendBtn');
+    if (askFollowupInput && askFollowupSendBtn) {
+      askFollowupSendBtn.disabled = !askFollowupInput.value.trim() || isGenerating || isStreaming;
     }
 
     const askChips = document.querySelectorAll('.ask-chip');
@@ -730,7 +761,7 @@
 
         const queryForMsg = msg.query || (index > 0 && messages[index - 1]?.role === 'user' ? messages[index - 1].content : '');
         const leadDiv = document.createElement('div');
-        leadDiv.className = 'nlweb-lead-content';
+        leadDiv.className = msg.isStreaming ? 'nlweb-lead-content' : 'nlweb-lead-content is-complete';
         if (!queryForMsg) {
           leadDiv.innerHTML = renderMarkdown(leadText);
         } else {
@@ -829,16 +860,7 @@
 
   // Render all messages into both floating widget and horizontal ask bar
   function renderMessages() {
-    const askPanel = document.getElementById('askAnswerPanel');
-    const hasUserQuestions = messages.some(m => m.role === 'user');
-    if (askPanel) {
-      if (hasUserQuestions) {
-        askPanel.classList.add('has-answer');
-      } else {
-        askPanel.classList.remove('has-answer');
-      }
-    }
-
+    updateSendBtnState();
     renderMessagesIntoContainer(document.getElementById('nlwebMessages'), 'nlwebTypingIndicator', false);
     renderMessagesIntoContainer(document.getElementById('askAnswerBody'), 'askTypingIndicator', true);
   }
@@ -854,7 +876,7 @@
     const panelTop = askRect.bottom + 14;
     const exactCoverHeight = Math.round(aboutRect.bottom - panelTop);
     const fallbackHeight = Math.round(aboutRect.height);
-    const finalHeight = Math.max(exactCoverHeight, fallbackHeight, 340);
+    const finalHeight = Math.max(exactCoverHeight, fallbackHeight, 440);
     askSection.style.setProperty('--about-cover-height', `${finalHeight}px`);
   }
 
@@ -1078,8 +1100,6 @@
 
     const dialog = document.getElementById('nlwebChatDialog');
     if (dialog) dialog.classList.add('has-answer');
-    const askPanel = document.getElementById('askAnswerPanel');
-    if (askPanel) askPanel.classList.add('has-answer');
 
     const targets = [
       createLiveBubbleInContainer(document.getElementById('nlwebMessages'), fanOutQueries, language),
@@ -1154,7 +1174,8 @@
         }
       }
 
-      // Clean final render without cursor
+      // Clean final render without cursor and adjust container height to the received answer
+      leadContent.classList.add('is-complete');
       leadContent.innerHTML = finalHtml;
 
       // Render Grounded Sources Chips if present
@@ -1754,10 +1775,10 @@
     await submitQuestionText(text);
   }
 
-  // Handle Horizontal Ask Bar Form Submission
+  // Handle Horizontal Ask Bar Form Submission (First question only)
   async function handleAskBarSubmit(e) {
     if (e) e.preventDefault();
-    if (isGenerating || isStreaming) return;
+    if (isGenerating || isStreaming || hasUserQuestions()) return;
 
     const askInput = document.getElementById('askTextInput');
     const askSendBtn = document.getElementById('askSendBtn');
@@ -1779,6 +1800,32 @@
     await submitQuestionText(text);
   }
 
+  // Handle Follow-up Ask Box Form Submission inside the Answer Panel
+  async function handleAskFollowupSubmit(e) {
+    if (e) e.preventDefault();
+    if (isGenerating || isStreaming) return;
+
+    const followupInput = document.getElementById('askFollowupInput');
+    const followupSendBtn = document.getElementById('askFollowupSendBtn');
+    if (!followupInput) return;
+
+    const text = followupInput.value.trim();
+    if (!text) return;
+
+    const now = Date.now();
+    if (now - lastSubmitTime < COOLDOWN_MS) return;
+
+    if (!isAskBarOpen) {
+      toggleAskBar(true);
+    }
+
+    followupInput.value = '';
+    followupInput.style.height = 'auto';
+    if (followupSendBtn) followupSendBtn.disabled = true;
+
+    await submitQuestionText(text);
+  }
+
   // Reset Conversation smoothly without disruptive browser alert
   function handleReset(source = 'dialog') {
     const resetBtn = document.getElementById('nlwebResetBtn');
@@ -1787,6 +1834,7 @@
     const askContainer = document.getElementById('askAnswerBody');
     const input = document.getElementById('nlwebTextInput');
     const askInput = document.getElementById('askTextInput');
+    const askFollowupInput = document.getElementById('askFollowupInput');
 
     if (activeAbortController) {
       try { activeAbortController.abort(); } catch (e) {}
@@ -1798,6 +1846,15 @@
     }
     isStreaming = false;
     isGenerating = false;
+
+    if (askInput) {
+      askInput.value = '';
+      askInput.disabled = false;
+    }
+    if (askFollowupInput) {
+      askFollowupInput.value = '';
+      askFollowupInput.style.height = 'auto';
+    }
 
     // Trigger subtle rotation animation on the reset button(s)
     [resetBtn, askResetBtn].forEach((btn) => {
@@ -1860,6 +1917,8 @@
     const askSection = document.getElementById('ask-bar');
     const askForm = document.getElementById('askInputForm');
     const askInput = document.getElementById('askTextInput');
+    const askFollowupForm = document.getElementById('askFollowupForm');
+    const askFollowupInput = document.getElementById('askFollowupInput');
     const askResetBtn = document.getElementById('askResetBtn');
     const askCloseBtn = document.getElementById('askCloseBtn');
     const askBackdrop = document.getElementById('askBackdrop');
@@ -1917,6 +1976,36 @@
 
       if (askForm) {
         askForm.addEventListener('submit', handleAskBarSubmit);
+        askForm.addEventListener('click', () => {
+          if (!isAskBarOpen) {
+            toggleAskBar(true);
+          }
+          if (hasCompletedAnswer() && askFollowupInput) {
+            const isMobileOrTouch = window.matchMedia('(max-width: 640px), (pointer: coarse)').matches;
+            if (!isMobileOrTouch) {
+              askFollowupInput.focus();
+            }
+          }
+        });
+      }
+
+      if (askFollowupForm) {
+        askFollowupForm.addEventListener('submit', handleAskFollowupSubmit);
+      }
+
+      if (askFollowupInput) {
+        askFollowupInput.addEventListener('input', () => {
+          askFollowupInput.style.height = 'auto';
+          askFollowupInput.style.height = `${Math.min(Math.max(askFollowupInput.scrollHeight, 44), 120)}px`;
+          updateSendBtnState();
+        });
+
+        askFollowupInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleAskFollowupSubmit();
+          }
+        });
       }
 
       if (askResetBtn) {
@@ -1930,6 +2019,15 @@
       if (askBackdrop) {
         askBackdrop.addEventListener('click', () => toggleAskBar(false));
       }
+
+      document.addEventListener('click', (e) => {
+        if (!isAskBarOpen) return;
+        if (askSection && !askSection.contains(e.target)) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleAskBar(false);
+        }
+      }, true);
 
       if (askSuggestions) {
         askSuggestions.addEventListener('click', (e) => {
