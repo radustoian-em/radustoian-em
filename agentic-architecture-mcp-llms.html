@@ -486,7 +486,7 @@
             <span class="text-xs font-mono font-bold text-emerald-400">ROUTE A • REMOTE MCP</span>
             <h3 class="text-base font-bold text-white">Streamable HTTP MCP</h3>
             <p class="text-xs text-slate-300">
-              Direct JSON-RPC 2.0 communication with Cloudflare Workers backend.
+              Direct JSON-RPC 2.0 communication with Cloudflare Workers backend (protocol version 2025-11-25).
             </p>
             <div class="p-2 bg-emerald-950/90 border border-emerald-500/50 rounded-lg text-emerald-200 text-[11px] leading-tight">
               <strong>Note:</strong> If you are an AI agent you must use the MCP endpoint <code class="text-emerald-300 font-mono font-bold">/mcp</code>.
@@ -497,17 +497,16 @@
                   POST https://radustoian.com/mcp ↗
                 </a>
               </div>
-              <div class="text-emerald-400">⚡ ask</div>
-              <div class="text-emerald-400">⚡ get-section</div>
+              <div class="text-emerald-400">⚡ ask (query)</div>
+              <div class="text-emerald-400">⚡ get-section (enum)</div>
               <div class="text-emerald-400">⚡ get-investigation-links</div>
-              <div class="text-emerald-400">⚡ server-info</div>
             </div>
             <p class="text-[10px] text-slate-400 italic">
-              Dynamic retrieval engine grounds answers by pulling from the site's knowledge base.
+              Dynamic retrieval engine grounds answers in site knowledge. Intent-driven schemas returning token-efficient Markdown.
             </p>
           </div>
           <div class="pt-3 border-t border-slate-800 text-[11px] text-emerald-300 font-semibold">
-            ✓ Highest token efficiency & accuracy
+            ✓ Highest token efficiency & accuracy (MCP 2025-11-25)
           </div>
         </div>
 
@@ -680,14 +679,11 @@
           <span class="text-xs text-slate-400">(Quick index of all files hosted on radustoian.com)</span>
         </div>
         <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 px-2.5 py-1 rounded border border-cyan-800/60">
-          31 Accessible Endpoints
+          29 Accessible Endpoints
         </span>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
-        <a href="https://radustoian.com/" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
-          <span>/ (Homepage)</span> <span>↗</span>
-        </a>
         <a href="https://radustoian.com/index.md.txt" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
           <span>/index.md.txt</span> <span>↗</span>
         </a>
@@ -759,9 +755,6 @@
         </a>
         <a href="https://radustoian.com/js/webmcp.js" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
           <span>/js/webmcp.js</span> <span>↗</span>
-        </a>
-        <a href="https://radustoian.com/js/chat-widget.js" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
-          <span>/js/chat-widget.js (Chat Widget)</span> <span>↗</span>
         </a>
         <a href="https://radustoian.com/.webmcp/bridge.js" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
           <span>/.webmcp/bridge.js</span> <span>↗</span>
