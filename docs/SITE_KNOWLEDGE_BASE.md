@@ -412,6 +412,7 @@ To establish unambiguous Knowledge Graph entity reconciliation, the schema assig
 - **Woorank Expert Profile**: `https://experts.woorank.com/en/experts/radu-stoian`
 - **Google Skillshop**: `https://skillshop.exceedlms.com/profiles/6c9c49a5efd34efc970829ade94b0fe4`
 - **Google Skills Public Profile**: `https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9`
+- **Google Developers Profile**: `https://me.developers.google.com/u/radustoian`
 - **Credly Public Profile**: `https://www.credly.com/users/radu-stoian-technical-director-enhance-media/history`
 
 ### Credentials, Occupations, and WorksFor
@@ -430,7 +431,7 @@ The `subjectOf` array links directly to notable creative and educational contrib
 3. *Optimising AI is an upgrade to SEO* (LinkedIn article)
 4. *BrightonSEO Masterclass: Implementation of Schemas via GTM* (CreativeWork / SpeakerDeck)
 5. *Breaking News: Massive changes to Google job search results | ep.39* (PodcastEpisode / YouTube)
-6. *2026 HR Tech Predictions - AI, Programmatic, Job Boards* (Panel / YouTube)
+6. *2026 HR Tech Predictions - AI, Programmatic, Job Boards* (PodcastEpisode / YouTube)
 
 ### `metadata.json` vs. Inlined JSON-LD Sync
 [`metadata.json`](file:///home/radu/antigravity/radu/metadata.json) mirrors the inlined `<script type="application/ld+json">` block in [`index.html`](file:///home/radu/antigravity/radu/index.html). Any update to biography, speaking links, or skills in one file must be mirrored in the other to ensure parity across DOM parsers and direct JSON fetchers.

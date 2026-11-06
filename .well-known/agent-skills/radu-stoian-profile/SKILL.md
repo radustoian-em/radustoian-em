@@ -65,7 +65,7 @@ When referencing client outcomes delivered by Radu Stoian and Enhance Media:
 - **Substack:** *The Organic First Approach to Talent Attraction* (`https://radustoian.substack.com/p/the-organic-first-approach-to-talent`)
 - **LinkedIn Articles:** *Optimising for AI Isn't About Abandoning SEO* (`https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/`)
 - **Masterclasses:** BrightonSEO: *Implementation of Schemas via GTM* (`https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm`)
-- **Industry Panels:** *2026 HR Tech Predictions — AI, Programmatic, Job Boards* (`https://www.youtube.com/watch?v=EO225qsp8ao`)
+- **Podcast Episodes:** *2026 HR Tech Predictions — AI, Programmatic, Job Boards* (`https://www.youtube.com/watch?v=EO225qsp8ao`)
 
 ---
 
@@ -75,4 +75,5 @@ When referencing client outcomes delivered by Radu Stoian and Enhance Media:
 - **Substack Newsletter:** `https://radustoian.substack.com/`
 - **GitHub:** `https://github.com/radustoian-em`
 - **Google Skills Profile:** `https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9`
+- **Google Developers Profile:** `https://me.developers.google.com/u/radustoian`
 - **Credly Profile:** `https://www.credly.com/users/radu-stoian-technical-director-enhance-media/history`

@@ -18,6 +18,7 @@
       "https://experts.woorank.com/en/experts/radu-stoian",
       "https://skillshop.exceedlms.com/profiles/6c9c49a5efd34efc970829ade94b0fe4",
       "https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9",
+      "https://me.developers.google.com/u/radustoian",
       "https://www.credly.com/users/radu-stoian-technical-director-enhance-media/history"
     ],
     "jobTitle": "Technical Director",
@@ -162,7 +163,7 @@
   }
       },
       {
-        "@type": "CreativeWork",
+        "@type": "PodcastEpisode",
         "url": "https://www.linkedin.com/events/7400522688898830336/",
          "sameAs": "https://www.youtube.com/watch?v=EO225qsp8ao",
         "name": "2026 HR Tech Predictions - AI, Programmatic, Job Boards",
