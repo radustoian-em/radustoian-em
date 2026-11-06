@@ -142,7 +142,7 @@ Section `#projects` showcases client case studies from working with major brands
   Featured guest speaker covering the changing landscape of Google for Jobs and how employers must adapt their SEO strategies.  
   [Watch on YouTube](https://www.youtube.com/watch?v=Mz3QAj39FFk)
 
-- **Panel Member: [2026 HR Tech Predictions — AI, Programmatic, Job Boards](https://www.linkedin.com/events/7400522688898830336/)**  
+- **Podcast Episode: [2026 HR Tech Predictions — AI, Programmatic, Job Boards](https://www.linkedin.com/events/7400522688898830336/)**  
   Expert panel speaker covering Google for Jobs, technical SEO, and AIO (Artificial Intelligence Optimisation) trends within the HR Tech space.  
   [Watch on YouTube](https://www.youtube.com/watch?v=EO225qsp8ao)
 
@@ -218,6 +218,7 @@ It acts as a central hub for Radu’s digital presence, supported by a [dedicate
           "https://experts.woorank.com/en/experts/radu-stoian",
           "https://skillshop.exceedlms.com/profiles/6c9c49a5efd34efc970829ade94b0fe4",
           "https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9",
+          "https://me.developers.google.com/u/radustoian",
           "https://www.credly.com/users/radu-stoian-technical-director-enhance-media/history"
         ],
         "jobTitle": "Technical Director",
@@ -362,7 +363,7 @@ It acts as a central hub for Radu’s digital presence, supported by a [dedicate
             }
           },
           {
-            "@type": "CreativeWork",
+            "@type": "PodcastEpisode",
             "url": "https://www.linkedin.com/events/7400522688898830336/",
             "sameAs": "https://www.youtube.com/watch?v=EO225qsp8ao",
             "name": "2026 HR Tech Predictions - AI, Programmatic, Job Boards",
