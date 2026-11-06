@@ -142,16 +142,16 @@ Standardized OAuth 2.0, OpenID Connect, and Auth.md metadata for agent authentic
 > **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
 
 ### Route A: Remote MCP (Streamable HTTP MCP) - Recommended
-Direct JSON-RPC 2.0 communication with a Cloudflare Workers backend:
+Direct JSON-RPC 2.0 communication with a Cloudflare Workers backend adhering to the MCP protocol specification (`2025-11-25`):
 - **Endpoint:** `POST https://radustoian.com/mcp`
+- **Protocol Version:** `2025-11-25` (backward-compatible with `2025-06-18`, `2025-03-26`, and `2024-11-05`)
 - **Agent Requirement:** Note: If you are an AI agent you must use the MCP endpoint `/mcp`.
 - **Tools:**
-  - `ask` - Dynamic retrieval and relevance matching over site knowledge (alias: `ask-question`).
-  - `get-section` - Fetches a specific section of the knowledge base.
-  - `get-investigation-links` - Retrieves deep-dive verification URLs for fact checking.
-  - `server-info` - Inspects MCP capabilities and tool schemas.
-- **Knowledge Grounding:** Dynamic retrieval engine grounds answers by pulling from the site's knowledge base.
-- **Advantage:** Highest token efficiency and precision accuracy.
+  - `ask` - Intent-driven question answering grounded in the site's knowledge base regarding Radu's career, AI recruitment strategies, client case study metrics, and credentials (parameter: `query`). Returns clean, token-efficient Markdown.
+  - `get-section` - In-depth breakdown of canonical profile domains: `about`, `case-studies`, `expertise`, `testimonials`, `publications`, `speaking`, `skills`, `contact`, `agentic-architecture` (parameter: `section` enum). Returns clean, token-efficient Markdown.
+  - `get-investigation-links` - Verified external citations and primary source links across LinkedIn, GitHub, Substack, Credly, Google Skills, and SpeakerDeck.
+- **Knowledge Grounding:** Dynamic retrieval engine grounds answers by pulling from the site's knowledge base with bounded summaries and semantic error signaling (`isError: true`).
+- **Advantage:** Highest token efficiency, clean Markdown responses, and precision accuracy with Google Connected Apps MCP optimization.
 
 ### Route B: Content Negotiation (Direct Markdown Stream)
 HTTP content negotiation that completely bypasses HTML DOM rendering:
@@ -200,41 +200,39 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 
 ---
 
-## Master Resource Directory (31 Accessible Endpoints) (#directory)
+## Master Resource Directory (29 Accessible Endpoints) (#directory)
 
 | # | Endpoint / Resource | Description |
 |---|---------------------|-------------|
-| 1 | [`/`](https://radustoian.com/) | Official Homepage (HTML) |
-| 2 | [`/index.md.txt`](https://radustoian.com/index.md.txt) | Homepage Markdown representation |
-| 3 | [`/llms.txt`](https://radustoian.com/llms.txt) | LLMs.txt curated summary |
-| 4 | [`/llms-full.txt`](https://radustoian.com/llms-full.txt) | Exhaustive 10-section context file |
-| 5 | [`/metadata.json`](https://radustoian.com/metadata.json) | Linked Data Schema.org JSON-LD graph |
-| 6 | [`/openapi.json`](https://radustoian.com/openapi.json) | OpenAPI 3.1.0 schema specification |
-| 7 | [`/robots.txt`](https://radustoian.com/robots.txt) | Crawling permissions & LLM directives |
-| 8 | [`/sitemap.xml`](https://radustoian.com/sitemap.xml) | XML Sitemap |
-| 9 | [`/auth.md`](https://radustoian.com/auth.md) | Agent Authentication Discovery specification |
-| 10 | [`/.well-known/ard.json`](https://radustoian.com/.well-known/ard.json) | Agent Resource Discovery (ARD v1.0) manifest |
-| 11 | [`/.well-known/ai-catalog.json`](https://radustoian.com/.well-known/ai-catalog.json) | AI Catalog catalog |
-| 12 | [`/.well-known/api-catalog`](https://radustoian.com/.well-known/api-catalog) | RFC 9264 Linkset API Catalog |
-| 13 | [`/.well-known/poppy.json`](https://radustoian.com/.well-known/poppy.json) | Personal Agent Protocol (Poppy v0.1) manifest / Personal Agent Card |
-| 14 | [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) | MCP Server Card (v2.0) |
-| 15 | [`/.well-known/agent-card.json`](https://radustoian.com/.well-known/agent-card.json) | Agent Card (A2A Protocol v1.0) |
-| 16 | [`/.well-known/oauth-authorization-server`](https://radustoian.com/.well-known/oauth-authorization-server) | RFC 8414 OAuth 2.0 Authorization Server metadata |
-| 17 | [`/.well-known/openid-configuration`](https://radustoian.com/.well-known/openid-configuration) | OpenID Connect Discovery 1.0 metadata |
-| 18 | [`/.well-known/oauth-protected-resource`](https://radustoian.com/.well-known/oauth-protected-resource) | RFC 9728 OAuth Protected Resource metadata |
-| 19 | [`/.well-known/jwks.json`](https://radustoian.com/.well-known/jwks.json) | RFC 7517 JSON Web Key Set (JWKS) |
-| 20 | [`/.well-known/agent-skills/index.json`](https://radustoian.com/.well-known/agent-skills/index.json) | Agent Skills Registry Index |
-| 21 | [`/.../agent-skills/mcp-server-tools/SKILL.md`](https://radustoian.com/.well-known/agent-skills/mcp-server-tools/SKILL.md) | Remote MCP tools skill |
-| 22 | [`/.../agent-skills/radu-stoian-profile/SKILL.md`](https://radustoian.com/.well-known/agent-skills/radu-stoian-profile/SKILL.md) | Radu Stoian profile skill |
-| 23 | [`/.../agent-skills/talent-attraction-ai/SKILL.md`](https://radustoian.com/.well-known/agent-skills/talent-attraction-ai/SKILL.md) | Talent Attraction AI skill |
-| 24 | [`/.../agent-skills/webmcp-browser-tools/SKILL.md`](https://radustoian.com/.well-known/agent-skills/webmcp-browser-tools/SKILL.md) | WebMCP browser tools skill |
-| 25 | [`/js/webmcp.js`](https://radustoian.com/js/webmcp.js) | In-browser WebMCP tool implementations |
-| 26 | [`/js/chat-widget.js`](https://radustoian.com/js/chat-widget.js) | Native NLWeb Conversational AI Chat Widget |
-| 27 | [`/.webmcp/bridge.js`](https://radustoian.com/.webmcp/bridge.js) | WebMCP JavaScript bridge runner |
-| 28 | [`/api`](https://radustoian.com/api) | Public Knowledge REST API Directory |
-| 29 | [`/ask`](https://radustoian.com/ask) | NLWeb Conversational Stream (SSE / JSON) |
-| 30 | [`/who`](https://radustoian.com/who) | NLWeb Publisher Identity (Schema.org JSON-LD) |
-| 31 | [`/sites`](https://radustoian.com/sites) | NLWeb Sites Registry |
+| 1 | [`/index.md.txt`](https://radustoian.com/index.md.txt) | Homepage Markdown representation |
+| 2 | [`/llms.txt`](https://radustoian.com/llms.txt) | LLMs.txt curated summary |
+| 3 | [`/llms-full.txt`](https://radustoian.com/llms-full.txt) | Exhaustive 10-section context file |
+| 4 | [`/metadata.json`](https://radustoian.com/metadata.json) | Linked Data Schema.org JSON-LD graph |
+| 5 | [`/openapi.json`](https://radustoian.com/openapi.json) | OpenAPI 3.1.0 schema specification |
+| 6 | [`/robots.txt`](https://radustoian.com/robots.txt) | Crawling permissions & LLM directives |
+| 7 | [`/sitemap.xml`](https://radustoian.com/sitemap.xml) | XML Sitemap |
+| 8 | [`/auth.md`](https://radustoian.com/auth.md) | Agent Authentication Discovery specification |
+| 9 | [`/.well-known/ard.json`](https://radustoian.com/.well-known/ard.json) | Agent Resource Discovery (ARD v1.0) manifest |
+| 10 | [`/.well-known/ai-catalog.json`](https://radustoian.com/.well-known/ai-catalog.json) | AI Catalog catalog |
+| 11 | [`/.well-known/api-catalog`](https://radustoian.com/.well-known/api-catalog) | RFC 9264 Linkset API Catalog |
+| 12 | [`/.well-known/poppy.json`](https://radustoian.com/.well-known/poppy.json) | Personal Agent Protocol (Poppy v0.1) manifest / Personal Agent Card |
+| 13 | [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) | MCP Server Card (v2.0) |
+| 14 | [`/.well-known/agent-card.json`](https://radustoian.com/.well-known/agent-card.json) | Agent Card (A2A Protocol v1.0) |
+| 15 | [`/.well-known/oauth-authorization-server`](https://radustoian.com/.well-known/oauth-authorization-server) | RFC 8414 OAuth 2.0 Authorization Server metadata |
+| 16 | [`/.well-known/openid-configuration`](https://radustoian.com/.well-known/openid-configuration) | OpenID Connect Discovery 1.0 metadata |
+| 17 | [`/.well-known/oauth-protected-resource`](https://radustoian.com/.well-known/oauth-protected-resource) | RFC 9728 OAuth Protected Resource metadata |
+| 18 | [`/.well-known/jwks.json`](https://radustoian.com/.well-known/jwks.json) | RFC 7517 JSON Web Key Set (JWKS) |
+| 19 | [`/.well-known/agent-skills/index.json`](https://radustoian.com/.well-known/agent-skills/index.json) | Agent Skills Registry Index |
+| 20 | [`/.../agent-skills/mcp-server-tools/SKILL.md`](https://radustoian.com/.well-known/agent-skills/mcp-server-tools/SKILL.md) | Remote MCP tools skill |
+| 21 | [`/.../agent-skills/radu-stoian-profile/SKILL.md`](https://radustoian.com/.well-known/agent-skills/radu-stoian-profile/SKILL.md) | Radu Stoian profile skill |
+| 22 | [`/.../agent-skills/talent-attraction-ai/SKILL.md`](https://radustoian.com/.well-known/agent-skills/talent-attraction-ai/SKILL.md) | Talent Attraction AI skill |
+| 23 | [`/.../agent-skills/webmcp-browser-tools/SKILL.md`](https://radustoian.com/.well-known/agent-skills/webmcp-browser-tools/SKILL.md) | WebMCP browser tools skill |
+| 24 | [`/js/webmcp.js`](https://radustoian.com/js/webmcp.js) | In-browser WebMCP tool implementations |
+| 25 | [`/.webmcp/bridge.js`](https://radustoian.com/.webmcp/bridge.js) | WebMCP JavaScript bridge runner |
+| 26 | [`/api`](https://radustoian.com/api) | Public Knowledge REST API Directory |
+| 27 | [`/ask`](https://radustoian.com/ask) | NLWeb Conversational Stream (SSE / JSON) |
+| 28 | [`/who`](https://radustoian.com/who) | NLWeb Publisher Identity (Schema.org JSON-LD) |
+| 29 | [`/sites`](https://radustoian.com/sites) | NLWeb Sites Registry |
 
 ---
 
