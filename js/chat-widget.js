@@ -17,6 +17,21 @@
 (function initNLWebChatWidget() {
   'use strict';
 
+  // Ensure chat stylesheet is activated non-render-blocking
+  function ensureChatStyles() {
+    const preloadLink = document.getElementById('nlwebChatStylesLink');
+    if (preloadLink && preloadLink.rel !== 'stylesheet') {
+      preloadLink.rel = 'stylesheet';
+    } else if (!document.querySelector('link[href*="chat-widget.css"]')) {
+      const link = document.createElement('link');
+      link.id = 'nlwebChatStylesLink';
+      link.rel = 'stylesheet';
+      link.href = '/chat-widget.css?v=3.5';
+      document.head.appendChild(link);
+    }
+  }
+  ensureChatStyles();
+
   // Prevent multiple initializations
   if (document.getElementById('nlwebChatDialog')) return;
 
