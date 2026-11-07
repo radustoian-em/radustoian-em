@@ -658,6 +658,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 7px;
     padding: 8px 16px;
     border-radius: 999px;
     background: var(--sheen, none), linear-gradient(135deg, rgba(30, 15, 50, 0.52) 0%, rgba(12, 4, 22, 0.32) 100%);
@@ -679,6 +680,15 @@
                 background 0.25s ease;
   }
 
+  .ask-chip svg,
+  .ask-chip-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: #c084fc;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
   .ask-chip:hover:not(:disabled),
   .ask-chip:focus-visible {
     color: #ffffff;
@@ -687,6 +697,14 @@
     background: linear-gradient(135deg, rgba(48, 22, 78, 0.68) 0%, rgba(20, 8, 36, 0.45) 100%);
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6), 0 0 16px rgba(168, 85, 247, 0.22);
     outline: none;
+  }
+
+  .ask-chip:hover:not(:disabled) svg,
+  .ask-chip:hover:not(:disabled) .ask-chip-icon,
+  .ask-chip:focus-visible svg,
+  .ask-chip:focus-visible .ask-chip-icon {
+    color: #e9d5ff;
+    transform: scale(1.12);
   }
 
   .ask-chip:disabled {
@@ -741,6 +759,7 @@
     .ask-chip {
       padding: 7px 13px;
       font-size: 12px;
+      gap: 6px;
     }
   }
 
