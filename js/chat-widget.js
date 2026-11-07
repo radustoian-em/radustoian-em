@@ -9,7 +9,7 @@
  * - Real-time Server-Sent Events (SSE) streaming with non-streaming JSON fallback
  * - Multi-turn conversational context decontextualization (via `prev` parameter)
  * - Grounded Schema.org citation chips and link rendering
- * - Client & server-side safety guardrails and 5-question session limit
+ * - Client & server-side safety guardrails and 10-question session limit
  * - Dark glassmorphic UI matching site aesthetic
  * - Full a11y keyboard controls, ARIA attributes, and session persistence
  */
@@ -46,12 +46,12 @@
 
   // Safety & Anti-Abuse Configuration
   const MAX_INPUT_CHARS = 300;
-  const MAX_SESSION_QUESTIONS = 5;
+  const MAX_SESSION_QUESTIONS = 10;
   const COOLDOWN_MS = 2500;
   const SESSION_QUERY_COUNT_KEY = 'nlweb_query_count_v1';
   const PERSISTENT_QUOTA_KEY = 'nlweb_query_quota_v2';
   const QUOTA_WINDOW_MS = 24 * 60 * 60 * 1000; // 24-hour rolling window across tabs
-  const LIMIT_REACHED_MESSAGE = "You've reached the free limit of 5 questions about Radu. If you're interested to find out more reach out on LinkedIn https://www.linkedin.com/in/radustoian";
+  const LIMIT_REACHED_MESSAGE = "You've reached the free limit of 10 questions about Radu. If you're interested to find out more reach out on LinkedIn https://www.linkedin.com/in/radustoian";
   let lastSubmitTime = 0;
 
   // Typewriter Speed Configuration: 5 words per second (200ms per word)
@@ -1373,7 +1373,7 @@
       text.includes('proprietary and confidential') ||
       text.includes('cannot accept prompts asking to ignore') ||
       text.includes('cannot engage with abusive') ||
-      text.includes('reached the free limit of 5 questions') ||
+      text.includes('reached the free limit') ||
       text.includes('Please wait a moment before sending')
     );
   }
@@ -1408,7 +1408,7 @@
       return;
     }
 
-    // Only consume a question from the user's 5-question quota once pre-filters pass
+    // Only consume a question from the user's 10-question quota once pre-filters pass
     incrementSessionQueryCount();
 
     isGenerating = true;
@@ -1751,7 +1751,7 @@
     saveHistory();
     renderMessages();
 
-    // Check Question Cap (Maximum 5 questions per session / 24h window)
+    // Check Question Cap (Maximum 10 questions per session / 24h window)
     const sessionCount = getSessionQueryCount();
     if (sessionCount >= MAX_SESSION_QUESTIONS) {
       await streamAgentResponse(LIMIT_REACHED_MESSAGE, [], text);
