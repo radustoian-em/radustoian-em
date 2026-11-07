@@ -109,7 +109,7 @@ Section `#projects` showcases client case studies from working with major brands
 
 ## Client Testimonials (#testimonials)
 
-- [Client Testimonials & Recommendations](https://radustoian.com/#testimonials): Verifiable client endorsements and recommendations from John Lewis Partnership, Virgin Atlantic, Mott MacDonald, ActionHR, and Eteach on radustoian.com.
+- [Client Testimonials & Recommendations](https://radustoian.com/#testimonials): Verifiable client endorsements and recommendations from John Lewis Partnership, Virgin Atlantic, Mott MacDonald, ActionHR, Eteach, TRS Staffing Solutions, Lloyds Banking Group, and Sanctuary Group on radustoian.com.
 
 - **Becky Vieites** (Talent Marketing and Employer Brand at John Lewis Partnership):  
   > “Radu’s technical expertise and passion for all things AI, SEO, Google for Jobs is excellent and is what sets him apart. He does a great job of breaking down complex subjects and engaging his customers. We have achieved some impressive SEO and Google For Jobs results working alongside Radu and team.”
@@ -125,6 +125,15 @@ Section `#projects` showcases client case studies from working with major brands
 
 - **Robert Webb** (Marketing Director at Eteach):  
   > “Quite simply - outstanding. Radu is one of those rare beasts who delivers what is promised. In my lengthy experience, he is one the best technical SEO experts I have worked with. He is able to translate complex solutions into actionable proposals for my team and his responses always produce results.”
+
+- **Allen Taylor** (Strategic IT Director at TRS Staffing Solutions):  
+  > “I have worked with Radu for a number of years now. He is the consummate professional. Not only does he know his trade inside and out but he delivers that work with such an infectious enthusiasm. Radu is a personable, reliable and dedicated individual who works well in or leading a team.”
+
+- **Mahari Hay** (Senior Consultant - Branding, Attraction and Selection at Lloyds Banking Group):  
+  > “Radu has an excellent eye for detail and exceptional wealth of knowledge when it comes to data and analytical insight. It has always been a pleasure working with Radu because I always trust his judgement based on his recommendations. I would certainly recommend his skills to anyone seeking some analytical breakdown as you will struggle to find anyone better.”
+
+- **Ross Jukes** (Digital Marketing Officer at Sanctuary Group):  
+  > “Radu is without-peer when it comes to his detailed knowledge of search. As a consultant, he has provided us with innovative solutions at every stage of our campaigns and has been hugely influential in our growing performance online.”
 
 *See all recommendations on [LinkedIn Recommendations](https://www.linkedin.com/in/radustoian/details/recommendations/) or view the [Substack AI analysis](https://radustoian.substack.com/p/radu-stoian-technical-director-at-f99).*
 
