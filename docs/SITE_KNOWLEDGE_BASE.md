@@ -206,7 +206,7 @@ The site is built to bridge conventional search engine visibility with modern LL
 
 2. **[`llms-full.txt`](file:///home/radu/antigravity/radu/llms-full.txt)**:
    - Exhaustive 9.2 KB plain text document formatted in Markdown.
-   - Contains full professional biography, core expertise, client testimonials (John Lewis Partnership, Virgin Atlantic, Mott MacDonald, ActionHR, Eteach), list of verified public profiles, publications, case studies, speaking history, and credentials.
+   - Contains full professional biography, core expertise, client testimonials (John Lewis Partnership, Virgin Atlantic, Mott MacDonald, ActionHR, Eteach, TRS Staffing Solutions, Lloyds Banking Group, Sanctuary Group), list of verified public profiles, publications, case studies, speaking history, and credentials.
    - Allows AI agents to answer nuanced questions regarding Radu Stoian's track record without scraping and parsing DOM structures.
 
 3. **[`index.md.txt`](file:///home/radu/antigravity/radu/index.md.txt)**:
