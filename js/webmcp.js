@@ -132,6 +132,24 @@
     quote: clean(card.querySelector('blockquote'))
   });
 
+  const serializeExpertise = (card, i, total) => ({
+    position: `${i + 1} of ${total}`,
+    title: clean(card.querySelector('h3')),
+    description: clean(card.querySelector('p'))
+  });
+
+  const serializeTalkItem = (card, i, total) => {
+    const titleEl = card.querySelector('h3 a') || card.querySelector('h3');
+    const url = card.querySelector('h3 a')?.href || card.querySelector('.talk-links a')?.href || null;
+    return {
+      position: `${i + 1} of ${total}`,
+      format: clean(card.querySelector('.talk-format span')) || clean(card.querySelector('.talk-format')),
+      title: clean(titleEl),
+      description: clean(card.querySelector('p')),
+      url
+    };
+  };
+
   const CAROUSELS = {
     caseStudies: {
       sectionId: 'projects', viewportId: 'expViewport', trackId: 'expTrack',
@@ -144,6 +162,18 @@
     colleagueTestimonials: {
       sectionId: 'testimonials', viewportId: 'colleagueViewport', trackId: 'colleagueTrack',
       prevId: 'colleaguePrev', nextId: 'colleagueNext', tabId: 'colleagueTab', serialize: serializeColleagueTestimonial
+    },
+    expertise: {
+      sectionId: 'expertise', viewportId: 'expertiseViewport', trackId: 'expertiseTrack',
+      prevId: 'expertisePrev', nextId: 'expertiseNext', serialize: serializeExpertise
+    },
+    insights: {
+      sectionId: 'insights', viewportId: 'insightsViewport', trackId: 'insightsTrack',
+      prevId: 'insightsPrev', nextId: 'insightsNext', serialize: serializeTalkItem
+    },
+    speaking: {
+      sectionId: 'speaking', viewportId: 'speakingViewport', trackId: 'speakingTrack',
+      prevId: 'speakingPrev', nextId: 'speakingNext', serialize: serializeTalkItem
     }
   };
 

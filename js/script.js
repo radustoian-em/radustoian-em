@@ -219,26 +219,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (footer) observer.observe(footer);
   }
 
-  // 6. Flattened Responsive Slider (Pixel-accurate card steps, drag + horizontal wheel/trackpad support)
-  function setupSlider(trackId, prevBtnId, nextBtnId) {
-    const track = document.getElementById(trackId);
-    const prevBtn = document.getElementById(prevBtnId);
-    const nextBtn = document.getElementById(nextBtnId);
-    if (!track || !prevBtn || !nextBtn) return;
+  // 6. Unified Responsive Carousel Manager (Handles 'always' and 'mobile-only' sliders)
+  const desktopMediaQuery = window.matchMedia('(min-width: 641px)');
+  const sliderInstances = [];
+  const slidersById = {};
 
-    const viewport = track.parentElement;
+  function setupCarousel(wrapper) {
+    const mode = wrapper.dataset.carouselMode || 'always';
+    const carouselId = wrapper.dataset.carouselId || '';
+    const track = wrapper.querySelector('.slider-track');
+    const viewport = wrapper.querySelector('.slider-viewport');
+    const prevBtn = wrapper.querySelector('[data-carousel-prev]');
+    const nextBtn = wrapper.querySelector('[data-carousel-next]');
+    if (!track || !prevBtn || !nextBtn) return null;
+
     let currentIndex = 0;
-    const items = track.children; 
+    const items = track.children;
     const totalItems = items.length;
-    
+
     let isDragging = false;
     let isDraggingAction = false;
     let startX = 0;
     let draggedX = 0;
+    let cachedStep = 0;
+    let cachedMaxIndex = 0;
     let rAFId = null;
 
+    function isCarouselActive() {
+      return mode === 'always' || !desktopMediaQuery.matches;
+    }
+
     function getItemsPerView() {
-      return window.matchMedia('(min-width: 641px)').matches ? 2 : 1;
+      return (mode === 'always' && desktopMediaQuery.matches) ? 2 : 1;
     }
 
     function getMaxIndex() {
@@ -256,11 +268,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSlider(animate = true) {
+      if (!isCarouselActive()) {
+        currentIndex = 0;
+        track.style.transition = '';
+        track.style.transform = '';
+        track.style.cursor = '';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+      }
+
       const maxIndex = getMaxIndex();
       currentIndex = Math.min(Math.max(0, currentIndex), maxIndex);
       layoutEpoch++;
 
-      track.style.transition = animate ? 'transform 0.35s var(--ease)' : 'none';
+      track.style.cursor = 'grab';
+      track.style.transition = (animate && !prefersReducedMotion) ? 'transform 0.35s var(--ease)' : 'none';
 
       if (currentIndex === 0) {
         track.style.transform = 'translate3d(0px, 0, 0)';
@@ -278,12 +301,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function dragStart(e) {
+      if (!isCarouselActive()) return;
       if (e.type === 'mousedown' && e.button !== 0) return;
       isDragging = true;
       isDraggingAction = false;
       startX = getPositionX(e);
       draggedX = 0;
-      track.style.transition = 'none'; 
+      cachedStep = getStep();
+      cachedMaxIndex = getMaxIndex();
+      track.style.transition = 'none';
       track.style.cursor = 'grabbing';
       track.classList.add('is-dragging');
 
@@ -300,14 +326,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const currentX = getPositionX(e);
       draggedX = currentX - startX;
       if (Math.abs(draggedX) > 8) isDraggingAction = true;
-      
+
       if (!rAFId) {
         rAFId = requestAnimationFrame(() => {
-          const step = getStep();
-          const maxIndex = getMaxIndex();
-          const baseOffset = currentIndex * step;
+          const baseOffset = currentIndex * cachedStep;
           let effectiveDrag = draggedX;
-          if ((currentIndex === 0 && draggedX > 0) || (currentIndex >= maxIndex && draggedX < 0)) {
+          if ((currentIndex === 0 && draggedX > 0) || (currentIndex >= cachedMaxIndex && draggedX < 0)) {
             effectiveDrag = draggedX * 0.25;
           }
           track.style.transform = `translate3d(-${baseOffset - effectiveDrag}px, 0, 0)`;
@@ -323,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelAnimationFrame(rAFId);
         rAFId = null;
       }
-      track.style.cursor = 'grab';
+      track.style.cursor = isCarouselActive() ? 'grab' : '';
       track.classList.remove('is-dragging');
 
       window.removeEventListener('mousemove', dragMove);
@@ -334,30 +358,32 @@ document.addEventListener('DOMContentLoaded', () => {
       window.removeEventListener('blur', dragEnd);
 
       const threshold = 40;
-      if (Math.abs(draggedX) > threshold) {
-        const step = getStep();
-        const cardsMoved = Math.max(1, Math.round(Math.abs(draggedX) / step));
+      if (Math.abs(draggedX) > threshold && cachedStep > 0) {
+        const cardsMoved = Math.max(1, Math.round(Math.abs(draggedX) / cachedStep));
         if (draggedX < -threshold) currentIndex += cardsMoved;
         else if (draggedX > threshold) currentIndex -= cardsMoved;
       }
-      
+
       updateSlider(true);
     }
 
-    prevBtn.addEventListener('click', () => { 
-      currentIndex--; 
-      updateSlider(true); 
+    prevBtn.addEventListener('click', () => {
+      if (!isCarouselActive()) return;
+      currentIndex--;
+      updateSlider(true);
     });
 
-    nextBtn.addEventListener('click', () => { 
-      currentIndex++; 
-      updateSlider(true); 
+    nextBtn.addEventListener('click', () => {
+      if (!isCarouselActive()) return;
+      currentIndex++;
+      updateSlider(true);
     });
 
-    track.style.cursor = 'grab';
     track.addEventListener('mousedown', dragStart);
     track.addEventListener('touchstart', dragStart, { passive: true });
-    track.addEventListener('dragstart', e => e.preventDefault());
+    track.addEventListener('dragstart', e => {
+      if (isCarouselActive()) e.preventDefault();
+    });
 
     if (viewport) {
       let wheelAccum = 0;
@@ -365,6 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let wheelResetTimer = null;
 
       viewport.addEventListener('wheel', (e) => {
+        if (!isCarouselActive()) return;
         const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
         const isShiftWheel = e.shiftKey && Math.abs(e.deltaY) > 0;
         if (!isHorizontal && !isShiftWheel) return;
@@ -400,21 +427,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, true);
 
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        updateSlider(false);
-      }, 80);
-    }, { passive: true });
-
     updateSlider(false);
-    return { updateSlider };
+    const instance = { updateSlider };
+    sliderInstances.push(instance);
+    if (carouselId) slidersById[carouselId] = instance;
+    return instance;
   }
 
-  setupSlider('expTrack', 'expPrev', 'expNext');
-  const clientSlider = setupSlider('testTrack', 'testPrev', 'testNext');
-  const colleagueSlider = setupSlider('colleagueTrack', 'colleaguePrev', 'colleagueNext');
+  document.querySelectorAll('[data-carousel]').forEach(setupCarousel);
+
+  const clientSlider = slidersById.testimonials;
+  const colleagueSlider = slidersById.colleagueTestimonials;
+
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      sliderInstances.forEach(s => s.updateSlider(false));
+    }, 80);
+  }, { passive: true });
+
+  if (typeof desktopMediaQuery.addEventListener === 'function') {
+    desktopMediaQuery.addEventListener('change', () => {
+      sliderInstances.forEach(s => s.updateSlider(false));
+    });
+  }
 
   // 7. Testimonials Section Tabs & Mobile Mini Burger Switcher
   const clientTab = document.getElementById('clientTab');
