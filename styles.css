@@ -55,8 +55,8 @@
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
     --tilt-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
-    --testimonial-card-h-desktop: 460px;
-    --testimonial-card-h-mobile: 440px;
+    --testimonial-card-h-desktop: 480px;
+    --testimonial-card-h-mobile: 480px;
     --scrollbar-thumb: rgba(192, 132, 252, 0.45);
     --scrollbar-thumb-hover: rgba(216, 180, 254, 0.8);
     --scrollbar-track: rgba(255, 255, 255, 0.05);
