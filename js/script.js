@@ -310,7 +310,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function dragStart(e) {
       if (!isCarouselActive()) return;
       if (e.type === 'mousedown' && e.button !== 0) return;
-      if (e.target && e.target.closest && e.target.closest('.testimonial-expand-btn')) return;
+      if (e.target && e.target.closest && e.target.closest('.testimonial-expand-btn')) {
+        isDraggingAction = false;
+        return;
+      }
 
       const scrollableBq = e.target && e.target.closest ? e.target.closest('blockquote') : null;
       dragInScrollable = !!(scrollableBq && scrollableBq.scrollHeight > scrollableBq.clientHeight + 2);
@@ -394,6 +397,10 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (draggedX > threshold) currentIndex -= cardsMoved;
       }
 
+      setTimeout(() => {
+        isDraggingAction = false;
+      }, 60);
+
       updateSlider(true);
     }
 
@@ -451,9 +458,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     track.addEventListener('click', (e) => {
+      if (e.target && e.target.closest && e.target.closest('.testimonial-expand-btn')) {
+        isDraggingAction = false;
+        return;
+      }
       if (isDraggingAction) {
         e.preventDefault();
         e.stopPropagation();
+        isDraggingAction = false;
       }
     }, true);
 

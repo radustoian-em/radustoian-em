@@ -497,7 +497,11 @@
   .testimonial-expand-btn::before {
     content: '';
     position: absolute;
-    inset: -8px;
+    inset: -10px;
+  }
+  .testimonial-expand-btn svg,
+  .testimonial-expand-btn span {
+    pointer-events: none;
   }
   .testimonial-expand-btn svg {
     width: 8px;
