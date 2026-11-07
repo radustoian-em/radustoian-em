@@ -54,12 +54,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=3.3">
+<link rel="stylesheet" href="styles.css?v=3.4">
 <link rel="stylesheet" href="chat-widget.css?v=3.7" media="print" onload="this.media='all'" id="nlwebChatStylesLink">
 <noscript><link rel="stylesheet" href="chat-widget.css?v=3.7"></noscript>
-<script src="js/script.js?v=3.2" defer></script>
+<script src="js/script.js?v=3.3" defer></script>
 <script src="js/webmcp.js" defer></script>
-<script src="js/chat-widget.js?v=4.1" defer></script>
+<script src="js/chat-widget.js?v=4.2" defer></script>
 </head>
 <body id="top">
 
@@ -408,8 +408,24 @@
 
     <section id="testimonials">
       <div class="panel panel--deep">
-        <h2 class="section-title">Client testimonials</h2>
+        <div class="testimonials-header">
+          <h2 class="section-title testimonials-mobile-heading" id="testimonialsActiveHeading">Client Testimonials</h2>
+          <button type="button" class="testimonials-burger-btn" id="testimonialsBurgerBtn" aria-label="Switch between Client Testimonials and Feedback from Colleagues" aria-expanded="false" aria-controls="testimonialsTabs">
+            <svg class="burger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <line x1="4" y1="8" x2="20" y2="8"></line>
+              <polyline points="16 4.5 20 8 16 11.5"></polyline>
+              <line x1="20" y1="16" x2="4" y2="16"></line>
+              <polyline points="8 12.5 4 16 8 19.5"></polyline>
+            </svg>
+            <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><use href="icons.svg#icon-close"></use></svg>
+          </button>
+          <div class="testimonials-tabs" id="testimonialsTabs" role="tablist" aria-label="Testimonials categories">
+            <button type="button" class="testimonial-tab-btn is-active" id="clientTab" role="tab" aria-selected="true" aria-controls="clientTestimonialsPanel" tabindex="0">Client Testimonials</button>
+            <button type="button" class="testimonial-tab-btn" id="colleagueTab" role="tab" aria-selected="false" aria-controls="colleagueTestimonialsPanel" tabindex="-1">Feedback from Colleagues</button>
+          </div>
+        </div>
         
+        <div class="testimonials-tabpanel is-active" id="clientTestimonialsPanel" role="tabpanel" aria-labelledby="clientTab">
         <div class="slider-wrapper">
           <div class="slider-viewport" id="testViewport" role="region" aria-roledescription="carousel" aria-label="Client Testimonials">
             <div class="slider-track" id="testTrack">
@@ -490,6 +506,80 @@
             <p class="testimonial-note">See all recommendations on <a href="https://www.linkedin.com/in/radustoian/details/recommendations/" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">LinkedIn</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a> or view the <a href="https://radustoian.substack.com/p/radu-stoian-technical-director-at-f99" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">Substack AI analysis</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a></p>
             <button class="slider-btn" style="flex-shrink: 0;" id="testPrev" aria-label="Previous testimonials" aria-controls="testTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
             <button class="slider-btn" style="flex-shrink: 0;" id="testNext" aria-label="Next testimonials" aria-controls="testTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
+          </div>
+        </div>
+        </div>
+
+        <div class="testimonials-tabpanel" id="colleagueTestimonialsPanel" role="tabpanel" aria-labelledby="colleagueTab" hidden>
+          <div class="slider-wrapper">
+            <div class="slider-viewport" id="colleagueViewport" role="region" aria-roledescription="carousel" aria-label="Feedback from Colleagues">
+              <div class="slider-track" id="colleagueTrack">
+                <div class="testimonial-card card-3d" role="group" aria-roledescription="slide" aria-label="1 of 6">
+                  <div class="quote-mark">&ldquo;</div>
+                  <blockquote>Radu was my first and finest teacher in the world of SEO and wider digital marketing. His technical ability and attention to detail combined with strong management skills were instrumental in getting me to where I am today. I&rsquo;ve seen him lead and deliver complex SEO strategies for major brands first hand, whist also showing great knowledge of PPC, CRO and other digital disciplines. His ability to integrate these things into the wider long term vision of a project is something I will always look to emulate, and hope to work with him again one day!</blockquote>
+                  <div class="testimonial-attr">
+                    <span class="name">George Russell</span>
+                    <span class="role">Head of Engagement at Siren Design</span>
+                    <span class="context">October 2, 2020 &middot; George reported to Radu directly</span>
+                  </div>
+                </div>
+
+                <div class="testimonial-card card-3d" role="group" aria-roledescription="slide" aria-label="2 of 6">
+                  <div class="quote-mark">&ldquo;</div>
+                  <blockquote>There are lots of &lsquo;technical experts&rsquo; out there, but I&rsquo;ve genuinely never worked with one quite like Radu. This is backed by any and all of our clients who are constantly in awe of his work as well. His knowledge of digital marketing, coupled with his broad technical expertise and passion to deliver highly-innovative and accurate work is quite something. He is a strong and supportive leader of the Delivery team at Enhance, and plays an imperative role within our Leadership team too. I&rsquo;ve learned in my time working with him that if Radu suggests a strategy or initiative for a client, then you should generally do it, because 99% of the time it will be the right thing to do.</blockquote>
+                  <div class="testimonial-attr">
+                    <span class="name">Kabeer (Kabs) Ghale</span>
+                    <span class="role">Head of Growth &amp; Partnerships @ Devonshire</span>
+                    <span class="context">May 3, 2019 &middot; Kabeer (Kabs) worked with Radu on the same team</span>
+                  </div>
+                </div>
+
+                <div class="testimonial-card card-3d" role="group" aria-roledescription="slide" aria-label="3 of 6">
+                  <div class="quote-mark">&ldquo;</div>
+                  <blockquote>Since joining Enhance, Radu has assisted me every step of the way in developing my digital marketing knowledge, being hugely supportive. His teaching methods are easy to digest and reinforces his overall passion for digital marketing. Radu manages his delivery team extremely well and always makes sure he has time for everyone. From creating initial strategies, all the way to delivering the final product to high-profile clients, Radu can do it all to an exceptional level. I couldn&rsquo;t have had a better mentor for my time with Enhance.</blockquote>
+                  <div class="testimonial-attr">
+                    <span class="name">Harrison Woodward</span>
+                    <span class="role">Marketing Automation Specialist at Ledger</span>
+                    <span class="context">February 8, 2018 &middot; Harrison reported to Radu directly</span>
+                  </div>
+                </div>
+
+                <div class="testimonial-card card-3d" role="group" aria-roledescription="slide" aria-label="4 of 6">
+                  <div class="quote-mark">&ldquo;</div>
+                  <blockquote>Radu was always a pleasure to work with at Enhance Media. He was fantastic with SEO and the practical application of search technology to improve client&rsquo;s search offerings. As well as having the technical knowledge he was great to work with and always willing to help out and answer any questions. Coming from the creative side, I appreciated that he could pass on knowledge and briefs in an appropriate way. Whether you put him in front of clients or a screen of analytic, Radu will do a great job. I&rsquo;d recommend him for any forward-thinking agency or in-house position needing a search genius.</blockquote>
+                  <div class="testimonial-attr">
+                    <span class="name">Oliver Barter</span>
+                    <span class="role">Creative Director @ CNN | Creative leader | Award-winning content</span>
+                    <span class="context">August 13, 2014 &middot; Oliver worked with Radu but on different teams</span>
+                  </div>
+                </div>
+
+                <div class="testimonial-card card-3d" role="group" aria-roledescription="slide" aria-label="5 of 6">
+                  <div class="quote-mark">&ldquo;</div>
+                  <blockquote>Radu&rsquo;s knowledge of all things web and digital never ceases to amaze me. His attention to detail and inability to ever give up on a challenge has proved invaluable on a number of projects I have worked with him on. He is a great team player and always has loads to contribute on new web build projects and is the master of all things SEO-related. Radu is a pleasure to work with him and a valuable source of information. I would have no hesitation in recommending Radu.</blockquote>
+                  <div class="testimonial-attr">
+                    <span class="name">Nikki Dance</span>
+                    <span class="role">Head of Marketing and Ecommerce at Maidenhead Aquatics</span>
+                    <span class="context">April 7, 2014 &middot; Nikki was senior to Radu but didn&rsquo;t manage Radu directly</span>
+                  </div>
+                </div>
+
+                <div class="testimonial-card card-3d" role="group" aria-roledescription="slide" aria-label="6 of 6">
+                  <div class="quote-mark">&ldquo;</div>
+                  <blockquote>Radu is a visionary SEO operative, a great team mate and a pleasure to work with. He covers a range of clients and skillfully prioritises the needs of each, whether it&rsquo;s a structural site overhaul, a comprehensive approach to international SEO or a Knowledge Graph rebranding exercise. He stays up to date with the most current SEO trends but what&rsquo;s particularly impressive is the way in which he innovates as well as maintaining best practice at all times. Time and time again I&rsquo;ve seen industry thought leaders confirm the necessity for something which Radu has already scoped and put into practice. He relates technical issues to clients in a way they&rsquo;ll appreciate and understand, and he is sensitive to their commercial goals, challenges and requirements. He is in his element when taking ownership of a site build. Radu&rsquo;s a bit of a marvel really. Also he&rsquo;s just a really nice guy and we all appreciate having him on the team.</blockquote>
+                  <div class="testimonial-attr">
+                    <span class="name">Magda Knight</span>
+                    <span class="role">Digital Content Designer, Editor and Brand Builder</span>
+                    <span class="context">March 26, 2014 &middot; Magda worked with Radu on the same team</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="slider-controls" style="align-items: center;">
+              <p class="testimonial-note">See all recommendations on <a href="https://www.linkedin.com/in/radustoian/details/recommendations/" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">LinkedIn</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a> or view the <a href="https://radustoian.substack.com/p/radu-stoian-technical-director-at-f99" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">Substack AI analysis</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a></p>
+              <button class="slider-btn" style="flex-shrink: 0;" id="colleaguePrev" aria-label="Previous colleague feedback" aria-controls="colleagueTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
+              <button class="slider-btn" style="flex-shrink: 0;" id="colleagueNext" aria-label="Next colleague feedback" aria-controls="colleagueTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
+            </div>
           </div>
         </div>
       </div>

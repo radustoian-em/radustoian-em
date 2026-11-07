@@ -124,6 +124,14 @@
     quote: clean(card.querySelector('blockquote'))
   });
 
+  const serializeColleagueTestimonial = (card, i, total) => ({
+    position: `${i + 1} of ${total}`,
+    name: clean(card.querySelector('.name')),
+    role: clean(card.querySelector('.role')),
+    relationshipContext: clean(card.querySelector('.context')),
+    quote: clean(card.querySelector('blockquote'))
+  });
+
   const CAROUSELS = {
     caseStudies: {
       sectionId: 'projects', viewportId: 'expViewport', trackId: 'expTrack',
@@ -131,7 +139,11 @@
     },
     testimonials: {
       sectionId: 'testimonials', viewportId: 'testViewport', trackId: 'testTrack',
-      prevId: 'testPrev', nextId: 'testNext', serialize: serializeTestimonial
+      prevId: 'testPrev', nextId: 'testNext', tabId: 'clientTab', serialize: serializeTestimonial
+    },
+    colleagueTestimonials: {
+      sectionId: 'testimonials', viewportId: 'colleagueViewport', trackId: 'colleagueTrack',
+      prevId: 'colleaguePrev', nextId: 'colleagueNext', tabId: 'colleagueTab', serialize: serializeColleagueTestimonial
     }
   };
 
@@ -194,7 +206,7 @@
     name: 'showCarouselSlide',
     title: 'Browse case studies or testimonials',
     description:
-      'Moves the "caseStudies" or "testimonials" carousel (next, previous, or go to a 1-based slide index), ' +
+      'Moves the "caseStudies" (client projects), "testimonials" (client testimonials), or "colleagueTestimonials" (feedback from colleagues) carousel (next, previous, or go to a 1-based slide index), ' +
       'scrolls it into view, and returns the slides now visible plus whether the start/end has been reached.',
     inputSchema: {
       type: 'object',
@@ -209,6 +221,13 @@
     execute: async ({ carousel, action, index } = {}) => {
       const cfg = CAROUSELS[carousel];
       if (!cfg) return fail(`Unknown carousel "${carousel}". Use one of: ${Object.keys(CAROUSELS).join(', ')}.`);
+
+      if (cfg.tabId) {
+        const tabBtn = document.getElementById(cfg.tabId);
+        if (tabBtn && tabBtn.getAttribute('aria-selected') !== 'true') {
+          tabBtn.click();
+        }
+      }
 
       const track = document.getElementById(cfg.trackId);
       const prev = document.getElementById(cfg.prevId);
@@ -286,7 +305,7 @@
     name: 'listTestimonials',
     title: 'List client testimonials',
     description:
-      'Returns every client testimonial on the page with the person\'s name, role/company and full quote. ' +
+      'Returns every external client testimonial on the page (client project feedback — distinct from colleague feedback) with the person\'s name, role/company and full quote. ' +
       'Does not change the page.',
     inputSchema: { type: 'object', properties: {} },
     annotations: { readOnlyHint: true },
@@ -295,6 +314,21 @@
       return ok(slides.map((card, i) => serializeTestimonial(card, i, slides.length)));
     }
   }, ['getTestimonials']);
+
+  // ---------- Tool 4b: Colleague testimonial data ----------
+  register({
+    name: 'listColleagueTestimonials',
+    title: 'List feedback from colleagues',
+    description:
+      'Returns feedback and recommendations from Radu Stoian\'s colleagues, direct reports, and team members (distinct from client testimonials), including each person\'s name, current role, relationship context, and full quote. ' +
+      'Does not change the page.',
+    inputSchema: { type: 'object', properties: {} },
+    annotations: { readOnlyHint: true },
+    execute: async () => {
+      const slides = getSlides(CAROUSELS.colleagueTestimonials);
+      return ok(slides.map((card, i) => serializeColleagueTestimonial(card, i, slides.length)));
+    }
+  }, ['getColleagueTestimonials', 'listFeedbackFromColleagues']);
 
   // ---------- Tool 5: Contact links ----------
   register({

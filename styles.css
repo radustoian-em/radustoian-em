@@ -378,6 +378,191 @@
   .quote-mark{ font-family: var(--font-display); font-size: 2.4rem; line-height: 0.6; color: var(--p-500); opacity: 0.9; text-shadow: 0 0 12px rgba(168,85,247,0.3); }
   .testimonial-card blockquote{ font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.94); font-style: normal; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
   .testimonial-attr{ display:flex; flex-direction:column; gap: 2px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.12); margin-top: 14px; }
+  .testimonial-attr .name{ font-weight: 600; color: var(--ink); font-size: 0.96rem; }
+  .testimonial-attr .role{ font-size: 0.86rem; color: var(--ink-soft); line-height: 1.4; }
+  .testimonial-attr .context{ font-family: var(--font-mono); font-size: 0.76rem; color: var(--p-300); opacity: 0.92; margin-top: 4px; line-height: 1.35; }
+
+  /* Testimonials Section Heading Tabs & Mobile Mini Burger Switcher */
+  .testimonials-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+  .testimonials-mobile-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .testimonials-burger-btn {
+    display: none;
+  }
+  .testimonials-tabs {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 28px;
+    width: 100%;
+    border-bottom: 1px solid rgba(216, 180, 254, 0.14);
+    padding-bottom: 12px;
+  }
+  .testimonial-tab-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    padding: 0 0 10px 0;
+    margin-bottom: -13px;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.4rem, 2.6vw, 2.0rem);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: rgba(203, 203, 219, 0.5);
+    border-bottom: 2.5px solid transparent;
+    transition: color 0.2s var(--ease);
+  }
+  .testimonial-tab-btn:hover:not(.is-active) {
+    color: rgba(248, 250, 252, 0.85);
+    border-bottom-color: rgba(192, 132, 252, 0.35);
+  }
+  .testimonial-tab-btn.is-active {
+    color: var(--ink);
+    border-bottom-color: var(--p-400);
+    text-shadow: 0 0 18px rgba(192, 132, 252, 0.22);
+  }
+  .testimonials-tabpanel[hidden] {
+    display: none !important;
+  }
+
+  @media (max-width: 640px) {
+    .testimonials-header {
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .testimonials-mobile-heading {
+      position: static;
+      width: auto;
+      height: auto;
+      padding: 0;
+      margin: 0;
+      overflow: visible;
+      clip: auto;
+      white-space: normal;
+      font-size: clamp(1.35rem, 5.4vw, 1.7rem);
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .testimonials-burger-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+      cursor: pointer;
+      background: var(--sheen), linear-gradient(135deg, rgba(38, 18, 62, 0.85) 0%, rgba(14, 5, 26, 0.75) 100%);
+      border: 1px solid rgba(216, 180, 254, 0.28);
+      border-top-color: rgba(255, 255, 255, 0.28);
+      color: var(--ink);
+      box-shadow: var(--bevel-hi), var(--sh-chip);
+      transition: transform 0.2s var(--ease);
+    }
+    .testimonials-burger-btn .burger-icon {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+    .testimonials-burger-btn .close-icon {
+      width: 20px;
+      height: 20px;
+      display: none;
+    }
+    .testimonials-burger-btn[aria-expanded="true"] .burger-icon {
+      display: none;
+    }
+    .testimonials-burger-btn[aria-expanded="true"] .close-icon {
+      display: block;
+      color: var(--p-300);
+    }
+    .testimonials-burger-btn[aria-expanded="true"] {
+      border-color: var(--p-400);
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.35);
+    }
+    .testimonials-tabs {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      left: 0;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      padding: 10px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(30, 14, 50, 0.96) 0%, rgba(12, 4, 24, 0.95) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(192, 132, 252, 0.32);
+      border-top-color: rgba(255, 255, 255, 0.28);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(-6px) scale(0.98);
+      transform-origin: top right;
+      transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+    .testimonials-tabs.is-mobile-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+    .testimonial-tab-btn {
+      width: 100%;
+      text-align: left;
+      padding: 12px 14px;
+      margin: 0;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--ink-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 44px;
+    }
+    .testimonial-tab-btn:hover:not(.is-active) {
+      border-bottom-color: transparent;
+      background: rgba(192, 132, 252, 0.08);
+    }
+    .testimonial-tab-btn.is-active {
+      background: rgba(168, 85, 247, 0.18);
+      border-color: rgba(192, 132, 252, 0.35);
+      color: #ffffff;
+      font-weight: 600;
+      text-shadow: none;
+    }
+    .testimonial-tab-btn.is-active::after {
+      content: '\2713';
+      color: var(--p-300);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+  }
 
   .talk-list{ display:flex; flex-direction:column; gap: 14px; }
   .talk-item{

@@ -409,8 +409,123 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
 
     updateSlider(false);
+    return { updateSlider };
   }
 
   setupSlider('expTrack', 'expPrev', 'expNext');
-  setupSlider('testTrack', 'testPrev', 'testNext');
+  const clientSlider = setupSlider('testTrack', 'testPrev', 'testNext');
+  const colleagueSlider = setupSlider('colleagueTrack', 'colleaguePrev', 'colleagueNext');
+
+  // 7. Testimonials Section Tabs & Mobile Mini Burger Switcher
+  const clientTab = document.getElementById('clientTab');
+  const colleagueTab = document.getElementById('colleagueTab');
+  const clientPanel = document.getElementById('clientTestimonialsPanel');
+  const colleaguePanel = document.getElementById('colleagueTestimonialsPanel');
+  const testimonialsTabs = document.getElementById('testimonialsTabs');
+  const testimonialsBurgerBtn = document.getElementById('testimonialsBurgerBtn');
+  const testimonialsActiveHeading = document.getElementById('testimonialsActiveHeading');
+
+  if (clientTab && colleagueTab && clientPanel && colleaguePanel) {
+    const tabs = [clientTab, colleagueTab];
+
+    function closeTestimonialsBurger() {
+      if (testimonialsTabs && testimonialsBurgerBtn) {
+        testimonialsTabs.classList.remove('is-mobile-open');
+        testimonialsBurgerBtn.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    function activateTestimonialsTab(targetTab, focusTab = false) {
+      const isColleague = targetTab === colleagueTab;
+
+      tabs.forEach((tab) => {
+        const active = tab === targetTab;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        tab.setAttribute('tabindex', active ? '0' : '-1');
+      });
+
+      clientPanel.classList.toggle('is-active', !isColleague);
+      clientPanel.hidden = isColleague;
+
+      colleaguePanel.classList.toggle('is-active', isColleague);
+      colleaguePanel.hidden = !isColleague;
+
+      if (testimonialsActiveHeading) {
+        testimonialsActiveHeading.textContent = isColleague
+          ? 'Feedback from Colleagues'
+          : 'Client Testimonials';
+      }
+
+      closeTestimonialsBurger();
+
+      if (isColleague && colleagueSlider) {
+        colleagueSlider.updateSlider(false);
+      } else if (!isColleague && clientSlider) {
+        clientSlider.updateSlider(false);
+      }
+      layoutEpoch++;
+
+      if (focusTab) {
+        targetTab.focus();
+      }
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        activateTestimonialsTab(tab, false);
+      });
+
+      tab.addEventListener('keydown', (e) => {
+        const idx = tabs.indexOf(tab);
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const nextIdx = e.key === 'ArrowRight'
+            ? (idx + 1) % tabs.length
+            : (idx - 1 + tabs.length) % tabs.length;
+          activateTestimonialsTab(tabs[nextIdx], true);
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          activateTestimonialsTab(tabs[0], true);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          activateTestimonialsTab(tabs[tabs.length - 1], true);
+        }
+      });
+    });
+
+    if (testimonialsBurgerBtn && testimonialsTabs) {
+      testimonialsBurgerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = testimonialsTabs.classList.toggle('is-mobile-open');
+        testimonialsBurgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!testimonialsTabs.classList.contains('is-mobile-open')) return;
+        const header = testimonialsBurgerBtn.closest('.testimonials-header');
+        if (header && !header.contains(e.target)) {
+          closeTestimonialsBurger();
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && testimonialsTabs.classList.contains('is-mobile-open')) {
+          closeTestimonialsBurger();
+          testimonialsBurgerBtn.focus();
+        }
+      });
+    }
+
+    function handleTestimonialsHash() {
+      if (window.location.hash === '#colleague-testimonials') {
+        activateTestimonialsTab(colleagueTab, false);
+        const sec = document.getElementById('testimonials');
+        if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    handleTestimonialsHash();
+    window.addEventListener('hashchange', handleTestimonialsHash);
+  }
 });
