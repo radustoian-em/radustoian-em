@@ -205,8 +205,8 @@ The site is built to bridge conventional search engine visibility with modern LL
 > **`llms.txt` Sitemap Invariant:** The `llms.txt` file should be like an XML sitemap for AI agents pointing to live or documentation pages only. The `llms.txt` file should never point to endpoints (e.g., `/mcp`, `/api`, `/ask`).
 
 2. **[`llms-full.txt`](file:///home/radu/antigravity/radu/llms-full.txt)**:
-   - Exhaustive 9.2 KB plain text document formatted in Markdown.
-   - Contains full professional biography, core expertise, client testimonials (John Lewis Partnership, Virgin Atlantic, Mott MacDonald, ActionHR, Eteach, TRS Staffing Solutions, Lloyds Banking Group, Sanctuary Group), list of verified public profiles, publications, case studies, speaking history, and credentials.
+   - Exhaustive plain text document formatted in Markdown.
+   - Contains full professional biography, core expertise, client testimonials (John Lewis Partnership, Virgin Atlantic, Mott MacDonald, ActionHR, Eteach, TRS Staffing Solutions, Lloyds Banking Group, Sanctuary Group), feedback from colleagues (George Russell, Kabeer Ghale, Harrison Woodward, Oliver Barter, Nikki Dance, Magda Knight — strictly separated from client testimonials), list of verified public profiles, publications, case studies, speaking history, and credentials.
    - Allows AI agents to answer nuanced questions regarding Radu Stoian's track record without scraping and parsing DOM structures.
 
 3. **[`index.md.txt`](file:///home/radu/antigravity/radu/index.md.txt)**:
@@ -245,9 +245,10 @@ The site implements the emerging [WebMCP specification](https://webmachinelearni
 | Tool Name | Title | Input Parameters | Description |
 | :--- | :--- | :--- | :--- |
 | `navigateToSection` | Go to page section | `section` (enum: `top`, `about`, `expertise`, `insights`, `projects`, `testimonials`, `speaking`, `skills`, `connect`) | Scrolls the page smoothly or instantly to a section and returns its heading and text content. |
-| `showCarouselSlide` | Browse case studies or testimonials | `carousel` (`caseStudies` \| `testimonials`), `action` (`next` \| `previous` \| `goto`), `index` (optional 1-based integer) | Controls interactive multi-view carousels, awaiting CSS transitions before reporting visible cards and boundary states. |
+| `showCarouselSlide` | Browse case studies or testimonials | `carousel` (`caseStudies` \| `testimonials` \| `colleagueTestimonials`), `action` (`next` \| `previous` \| `goto`), `index` (optional 1-based integer) | Controls interactive multi-view carousels (automatically switching the Testimonials tab when needed), awaiting CSS transitions before reporting visible cards and boundary states. |
 | `listCaseStudies` | List client case studies | None (`{}`) | Returns all client case studies (John Lewis Partnership, University of Surrey, Virgin Atlantic, JLP Smart Careers) with titles, metric highlights, and case study links. |
-| `listTestimonials` | List client testimonials | None (`{}`) | Returns all verified client testimonials (names, roles, companies, and complete quotes). |
+| `listTestimonials` | List client testimonials | None (`{}`) | Returns all verified client testimonials (names, roles, companies, and complete quotes — strictly client feedback only). |
+| `listColleagueTestimonials` | List feedback from colleagues | None (`{}`) | Returns all colleague and peer testimonials (names, current roles, relationship contexts, and complete quotes — distinct from client testimonials). |
 | `getContactLinks` | Get contact & profile links | None (`{}`) | Extracts deduplicated social and profile links (LinkedIn, X, Substack, GitHub). |
 | `listPublications` | List publications & Substack articles | `platform` (optional enum: `all`, `substack`, `linkedin`) | Extracts main publications (titles, topics, summaries, URLs) and specifically identifies all direct links to Radu's articles on Substack. |
 | `listSpeakingEngagements` | List speaking & industry engagements | `format` (optional string filter) | Returns conference masterclasses (BrightonSEO), podcast appearances, expert panels, and open standards contributions (OJCP) with event links and media resources (YouTube, Speaker Deck, GitHub). |
@@ -302,7 +303,7 @@ The site features a native conversational AI chat widget powered directly by the
 | Tool Name | Parameters | Description |
 | :--- | :--- | :--- |
 | `ask` | `query` (string, required) | Use this tool when the user wants to answer specific questions about Radu Stoian's professional background, executive leadership as Technical Director at Enhance Media, AI recruitment & talent acquisition strategies, client case study metrics, technical architecture, speaking engagements, or verified credentials. |
-| `get-section` | `section` (enum string, required) | Use this tool when the user wants an in-depth, complete breakdown of a specific profile domain (`about`, `case-studies`, `expertise`, `testimonials`, `publications`, `speaking`, `skills`, `contact`, `agentic-architecture`). |
+| `get-section` | `section` (enum string, required) | Use this tool when the user wants an in-depth, complete breakdown of a specific profile domain (`about`, `case-studies`, `expertise`, `testimonials`, `colleague-testimonials`, `publications`, `speaking`, `skills`, `contact`, `agentic-architecture`). |
 | `get-investigation-links` | None (`{}`) | Use this tool when the user wants verified external citations, official profile URLs, or primary source links for Radu Stoian across LinkedIn, GitHub, Substack, SpeakerDeck, Credly, Google Cloud Skills Boost, and the Google Knowledge Graph. |
 
 #### Available REST API Endpoints (`/api/*`)
@@ -704,7 +705,7 @@ const observer = new IntersectionObserver((entries) => {
 ---
 
 ### Module 6: Responsive Multi-View Touch & Pointer Carousel Engine
-Powers both the **Projects & Clients** (`#expTrack`) and **Client Testimonials** (`#testTrack`) carousels without third-party slider libraries.
+Powers the **Projects & Clients** (`#expTrack`), **Client Testimonials** (`#testTrack`), and **Feedback from Colleagues** (`#colleagueTrack`) carousels without third-party slider libraries, alongside the accessible dual-tab switcher (`#clientTab` / `#colleagueTab`) and mobile mini burger switcher (`#testimonialsBurgerBtn`).
 
 #### Key Mechanics:
 1. **Dynamic Responsive Step Calculation**:

@@ -554,6 +554,11 @@
     }
 
     const allItems = [];
+    const colleagueIntentRegex = /\b(colleague|colleagues|peer|peers|teammate|teammates|coworker|coworkers|co-worker|co-workers|team\s+member|team\s+members|direct\s+report|direct\s+reports|reported\s+to|mentee|mentees|mentor|mentored|mentoring|mentorship|leadership\s+style|management\s+style|internal\s+feedback|george\s+russell|kabeer|kabs\s+ghale|harrison\s+woodward|oliver\s+barter|nikki\s+dance|magda\s+knight|coleg|colegi|colegii|collègue|collègues|colega|colegas|kollege|kollegen)\b/i;
+    const clientOrProjectIntentRegex = /\b(client|clients|customer|customers|project|projects|case\s+stud(y|ies)|portfolio|deliverable|deliverables|john\s+lewis|virgin\s+atlantic|mott\s+macdonald|surrey|actionhr|eteach|trs\s+staffing|lloyds|sanctuary\s+group|becky\s+vieites|claire\s+henderson|jemima\s+arnold|chris\s+harvey|robert\s+webb|allen\s+taylor|mahari\s+hay|ross\s+jukes)\b/i;
+    const isColleagueQuery = colleagueIntentRegex.test(cleanQuery);
+    const isClientOrProjectQuery = clientOrProjectIntentRegex.test(cleanQuery);
+
     rawSections.forEach((sec, sIdx) => {
       const secTrimmed = sec.trim();
       const lines = secTrimmed.split('\n');
@@ -563,6 +568,11 @@
         title = lines[0].replace(/^#{1,3}\s*/, '').trim();
         body = lines.slice(1).join('\n').trim();
       }
+
+      const isColleagueSec = /feedback\s+from\s+colleagues|#colleague-testimonials/i.test(title);
+      const isClientSec = !isColleagueSec && /client\s+testimonials|\(#testimonials\)/i.test(title);
+      if (isColleagueSec && !isColleagueQuery) return;
+      if (isClientSec && isColleagueQuery && !isClientOrProjectQuery) return;
 
       const rawItems = body.split(/\n\n+|\n(?=- )/).map(it => it.trim()).filter(Boolean);
       rawItems.forEach(it => {
@@ -1347,7 +1357,7 @@
     if (!question) return false;
     const q = question.trim();
     const directRef = /\b(radu('s)?|stoian|you|your|yours|yourself|he|him|his|tu|toi|te|vous|votre|vos|el|lui|tău|dumneavoastră|il|son|sa|ses|su|sus|usted|ustedes|er|ihm|ihn|sein|seine|du|dir|dich|dein|deine|sie|ihnen|ihr|euch|ele|dele|suo|sua|suoi)\b|radustoian/i;
-    const portfolioDomainRef = /\b(ojcp|open\s*job\s*context|brighton\s*seo|talent\s*attraction|employer\s*brand(ing)?|brand\s*health|webmcp|nlweb|case\s*stud(y|ies)|testimonial|testimonials|recommendation|recommendations|endorsement|endorsements|certification|certifications|credential|credentials|alma\s*mater|masterclass|google\s*cloud|genai\s*leader|bigquery|project|projects|proiect(e)?|projet(s)?|proyecto(s)?|projekt(e)?|client|clients|cliente(s)?|kunden|studi|étud|educa|education|degree|degrees|certifica|competen|limbi|langue(s)?|idioma(s)?|sprache(n)?|cariera|carrière|carrera|karriere|experien|experience|expertise|expert|profession|work|role|niche|location|located|live|living|based|locui[\p{L}]*|wohnen|habiter|speak|speaking|talk|talks|presentation|keynote|podcast|articol(e)?|article(s)?|artículo(s)?|publication|publications|director|directeur|direktor|result(s)?|outcome(s)?|metric(s)?|contact|connect|social|bio|biography|background|overview)\b/iu;
+    const portfolioDomainRef = /\b(ojcp|open\s*job\s*context|brighton\s*seo|talent\s*attraction|employer\s*brand(ing)?|brand\s*health|webmcp|nlweb|case\s*stud(y|ies)|testimonial|testimonials|recommendation|recommendations|endorsement|endorsements|colleague|colleagues|coleg(i|ii)?|collègue(s)?|colega(s)?|kollege(n)?|mentor(ship|ing)?|teammate(s)?|peer(s)?|certification|certifications|credential|credentials|alma\s*mater|masterclass|google\s*cloud|genai\s*leader|bigquery|project|projects|proiect(e)?|projet(s)?|proyecto(s)?|projekt(e)?|client|clients|cliente(s)?|kunden|studi|étud|educa|education|degree|degrees|certifica|competen|limbi|langue(s)?|idioma(s)?|sprache(n)?|cariera|carrière|carrera|karriere|experien|experience|expertise|expert|profession|work|role|niche|location|located|live|living|based|locui[\p{L}]*|wohnen|habiter|speak|speaking|talk|talks|presentation|keynote|podcast|articol(e)?|article(s)?|artículo(s)?|publication|publications|director|directeur|direktor|result(s)?|outcome(s)?|metric(s)?|contact|connect|social|bio|biography|background|overview)\b/iu;
     const nonLatinScriptRef = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p{Script=Hangul}|\p{Script=Cyrillic}|\p{Script=Arabic}|\p{Script=Greek}|\p{Script=Devanagari}/u;
 
     if (directRef.test(q) || portfolioDomainRef.test(q) || nonLatinScriptRef.test(q)) {
@@ -1356,7 +1366,7 @@
 
     if (prev && (directRef.test(prev) || portfolioDomainRef.test(prev) || nonLatinScriptRef.test(prev))) {
       const wordCount = q.split(/\s+/).length;
-      const followUpRef = /\b(project|client|skill|degree|education|university|school|language|location|live|based|speak|talk|podcast|article|publication|contact|connect|linkedin|github|work|role|experience|result|outcome|metric|more|else|about\s+that|about\s+it|they|them|their)\b/i;
+      const followUpRef = /\b(project|client|colleague|peer|teammate|mentor|skill|degree|education|university|school|language|location|live|based|speak|talk|podcast|article|publication|contact|connect|linkedin|github|work|role|experience|result|outcome|metric|more|else|about\s+that|about\s+it|they|them|their)\b/i;
       if (wordCount <= 15 || followUpRef.test(q)) {
         return true;
       }
@@ -2118,7 +2128,14 @@
         try {
           const parsed = new URL(anchor.href, window.location.href);
           if (parsed.pathname === window.location.pathname && parsed.hash) {
-            const targetEl = document.querySelector(parsed.hash);
+            if (parsed.hash === '#colleague-testimonials') {
+              const colleagueTab = document.getElementById('colleagueTab');
+              if (colleagueTab) colleagueTab.click();
+            } else if (parsed.hash === '#testimonials') {
+              const clientTab = document.getElementById('clientTab');
+              if (clientTab) clientTab.click();
+            }
+            const targetEl = document.querySelector(parsed.hash === '#colleague-testimonials' ? '#testimonials' : parsed.hash);
             if (targetEl) {
               if (isAskBarOpen) {
                 toggleAskBar(false);
