@@ -1215,6 +1215,10 @@ body.ask-overlay-open .nlweb-launcher {
     margin-top: 10px;
   }
 
+  .ask-suggestions .ask-chip:nth-child(n+2) {
+    display: none;
+  }
+
   .ask-chip {
     padding: 7px 13px;
     font-size: 12px;
