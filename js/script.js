@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (testimonialsActiveHeading) {
         testimonialsActiveHeading.textContent = isColleague
-          ? 'Feedback from Colleagues'
+          ? 'Colleagues'
           : 'Client Testimonials';
       }
 
