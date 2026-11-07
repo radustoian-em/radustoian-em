@@ -1,6 +1,3 @@
-// NOTE: This root copy of script.js is maintained for backward compatibility with cached clients.
-// Scheduled for deletion after 1st December 2026. The primary script is at /js/script.js.
-
 document.addEventListener('DOMContentLoaded', () => {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -44,11 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 3. Desktop-only 3D Glass Tilt & Sheen (Cached rect on mouseenter, throttled via rAF, zero reflow on load)
+  // Track scroll/slider layout invalidation epoch (O(1) on scroll, zero forced reflow)
+  let layoutEpoch = 0;
+  window.addEventListener('scroll', () => {
+    layoutEpoch++;
+  }, { passive: true });
+
+  // 3. Desktop-only 3D Glass Tilt & Sheen (Cached rect invalidated on scroll/slide, throttled via rAF)
   if (isFinePointer && !prefersReducedMotion) {
     const cards = document.querySelectorAll('.card-3d, .panel');
     cards.forEach(card => {
       let rect = null;
+      let rectEpoch = -1;
       let isTicking = false;
       let mouseX = 0;
       let mouseY = 0;
@@ -56,17 +60,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
       card.addEventListener('mouseenter', () => {
         rect = card.getBoundingClientRect();
+        rectEpoch = layoutEpoch;
       }, { passive: true });
 
       card.addEventListener('mousemove', (e) => {
-        if (!rect) rect = card.getBoundingClientRect();
+        if (card.closest('.is-dragging')) return;
+        if (!rect || rectEpoch !== layoutEpoch) {
+          rect = card.getBoundingClientRect();
+          rectEpoch = layoutEpoch;
+        }
         mouseX = e.clientX - rect.left;
         mouseY = e.clientY - rect.top;
 
         if (!isTicking) {
           isTicking = true;
           requestAnimationFrame(() => {
-            if (rect && rect.width && rect.height) {
+            if (rect && rect.width && rect.height && !card.closest('.is-dragging')) {
               const xPercent = (mouseX / rect.width) * 100;
               const yPercent = (mouseY / rect.height) * 100;
               card.style.setProperty('--mouse-x', `${xPercent.toFixed(1)}%`);
@@ -210,13 +219,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (footer) observer.observe(footer);
   }
 
-  // 6. Flattened Responsive Slider (Pixel-accurate card steps, zero reflow on load)
+  // 6. Flattened Responsive Slider (Pixel-accurate card steps, drag + horizontal wheel/trackpad support)
   function setupSlider(trackId, prevBtnId, nextBtnId) {
     const track = document.getElementById(trackId);
     const prevBtn = document.getElementById(prevBtnId);
     const nextBtn = document.getElementById(nextBtnId);
     if (!track || !prevBtn || !nextBtn) return;
 
+    const viewport = track.parentElement;
     let currentIndex = 0;
     const items = track.children; 
     const totalItems = items.length;
@@ -231,28 +241,32 @@ document.addEventListener('DOMContentLoaded', () => {
       return window.matchMedia('(min-width: 641px)').matches ? 2 : 1;
     }
 
+    function getMaxIndex() {
+      return Math.max(0, totalItems - getItemsPerView());
+    }
+
     function getStep() {
       if (items.length > 1 && items[0] && items[1]) {
         const step = items[1].offsetLeft - items[0].offsetLeft;
         if (step > 0) return step;
       }
       const itemsPerView = getItemsPerView();
-      const vw = track.parentElement ? track.parentElement.clientWidth : track.clientWidth;
+      const vw = viewport ? viewport.clientWidth : track.clientWidth;
       return itemsPerView === 1 ? (vw + 20) : ((vw + 20) / 2);
     }
 
     function updateSlider(animate = true) {
-      const itemsPerView = getItemsPerView();
-      const maxIndex = Math.max(0, totalItems - itemsPerView);
+      const maxIndex = getMaxIndex();
       currentIndex = Math.min(Math.max(0, currentIndex), maxIndex);
+      layoutEpoch++;
 
-      track.style.transition = animate ? 'transform 0.45s var(--ease)' : 'none';
+      track.style.transition = animate ? 'transform 0.35s var(--ease)' : 'none';
 
       if (currentIndex === 0) {
-        track.style.transform = 'translateX(0px)';
+        track.style.transform = 'translate3d(0px, 0, 0)';
       } else {
         const step = getStep();
-        track.style.transform = `translateX(-${currentIndex * step}px)`;
+        track.style.transform = `translate3d(-${currentIndex * step}px, 0, 0)`;
       }
 
       prevBtn.disabled = currentIndex === 0;
@@ -264,17 +278,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function dragStart(e) {
+      if (e.type === 'mousedown' && e.button !== 0) return;
       isDragging = true;
       isDraggingAction = false;
       startX = getPositionX(e);
       draggedX = 0;
       track.style.transition = 'none'; 
       track.style.cursor = 'grabbing';
+      track.classList.add('is-dragging');
 
       window.addEventListener('mousemove', dragMove, { passive: true });
       window.addEventListener('mouseup', dragEnd);
       window.addEventListener('touchmove', dragMove, { passive: true });
       window.addEventListener('touchend', dragEnd);
+      window.addEventListener('touchcancel', dragEnd);
+      window.addEventListener('blur', dragEnd);
     }
 
     function dragMove(e) {
@@ -286,8 +304,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!rAFId) {
         rAFId = requestAnimationFrame(() => {
           const step = getStep();
+          const maxIndex = getMaxIndex();
           const baseOffset = currentIndex * step;
-          track.style.transform = `translateX(-${baseOffset - draggedX}px)`;
+          let effectiveDrag = draggedX;
+          if ((currentIndex === 0 && draggedX > 0) || (currentIndex >= maxIndex && draggedX < 0)) {
+            effectiveDrag = draggedX * 0.25;
+          }
+          track.style.transform = `translate3d(-${baseOffset - effectiveDrag}px, 0, 0)`;
           rAFId = null;
         });
       }
@@ -301,15 +324,22 @@ document.addEventListener('DOMContentLoaded', () => {
         rAFId = null;
       }
       track.style.cursor = 'grab';
+      track.classList.remove('is-dragging');
 
       window.removeEventListener('mousemove', dragMove);
       window.removeEventListener('mouseup', dragEnd);
       window.removeEventListener('touchmove', dragMove);
       window.removeEventListener('touchend', dragEnd);
+      window.removeEventListener('touchcancel', dragEnd);
+      window.removeEventListener('blur', dragEnd);
 
       const threshold = 40;
-      if (draggedX < -threshold) currentIndex++;
-      else if (draggedX > threshold) currentIndex--;
+      if (Math.abs(draggedX) > threshold) {
+        const step = getStep();
+        const cardsMoved = Math.max(1, Math.round(Math.abs(draggedX) / step));
+        if (draggedX < -threshold) currentIndex += cardsMoved;
+        else if (draggedX > threshold) currentIndex -= cardsMoved;
+      }
       
       updateSlider(true);
     }
@@ -327,6 +357,41 @@ document.addEventListener('DOMContentLoaded', () => {
     track.style.cursor = 'grab';
     track.addEventListener('mousedown', dragStart);
     track.addEventListener('touchstart', dragStart, { passive: true });
+    track.addEventListener('dragstart', e => e.preventDefault());
+
+    if (viewport) {
+      let wheelAccum = 0;
+      let wheelCooldown = false;
+      let wheelResetTimer = null;
+
+      viewport.addEventListener('wheel', (e) => {
+        const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+        const isShiftWheel = e.shiftKey && Math.abs(e.deltaY) > 0;
+        if (!isHorizontal && !isShiftWheel) return;
+
+        const delta = isHorizontal ? e.deltaX : e.deltaY;
+        const maxIndex = getMaxIndex();
+        if ((delta < 0 && currentIndex <= 0) || (delta > 0 && currentIndex >= maxIndex)) {
+          return;
+        }
+
+        e.preventDefault();
+        clearTimeout(wheelResetTimer);
+        wheelResetTimer = setTimeout(() => { wheelAccum = 0; }, 150);
+
+        if (wheelCooldown) return;
+        wheelAccum += delta;
+
+        if (Math.abs(wheelAccum) > 30) {
+          if (wheelAccum > 0) currentIndex++;
+          else currentIndex--;
+          wheelAccum = 0;
+          wheelCooldown = true;
+          updateSlider(true);
+          setTimeout(() => { wheelCooldown = false; }, 220);
+        }
+      }, { passive: false });
+    }
 
     track.addEventListener('click', (e) => {
       if (isDraggingAction) {
@@ -334,10 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
       }
     }, true);
-
-    track.querySelectorAll('img').forEach(img => {
-      img.addEventListener('dragstart', e => e.preventDefault());
-    });
 
     let resizeTimeout;
     window.addEventListener('resize', () => {
