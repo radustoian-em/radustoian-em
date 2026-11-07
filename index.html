@@ -54,10 +54,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=3.4">
+<link rel="stylesheet" href="styles.css?v=3.5">
 <link rel="stylesheet" href="chat-widget.css?v=3.7" media="print" onload="this.media='all'" id="nlwebChatStylesLink">
 <noscript><link rel="stylesheet" href="chat-widget.css?v=3.7"></noscript>
-<script src="js/script.js?v=3.3" defer></script>
+<script src="js/script.js?v=3.5" defer></script>
 <script src="js/webmcp.js" defer></script>
 <script src="js/chat-widget.js?v=4.2" defer></script>
 </head>
@@ -250,26 +250,34 @@
     <section id="expertise">
       <div class="panel">
         <h2 class="section-title">Areas of expertise</h2>
-        <div class="expertise-grid">
-          <div class="expertise-card card-3d">
-            <div class="expertise-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-bulb"></use></svg></div>
-            <h3>Pioneering the Agentic AI era</h3>
-            <p>I don&rsquo;t just explore AI, I build the tools to manage it. I conceptualised and launched the AI Brand Health Audit, a solution to the &lsquo;black box&rsquo; problem of Generative AI, letting organisations measure, benchmark, and control their brand narrative in LLMs.</p>
+        <div class="slider-wrapper" data-carousel data-carousel-mode="mobile-only" data-carousel-id="expertise">
+          <div class="slider-viewport" id="expertiseViewport" role="region" aria-roledescription="carousel" aria-label="Areas of expertise">
+            <div class="slider-track expertise-grid" id="expertiseTrack">
+              <div class="expertise-card card-3d" role="group" aria-roledescription="slide" aria-label="1 of 4">
+                <div class="expertise-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-bulb"></use></svg></div>
+                <h3>Pioneering the Agentic AI era</h3>
+                <p>I don&rsquo;t just explore AI, I build the tools to manage it. I conceptualised and launched the AI Brand Health Audit, a solution to the &lsquo;black box&rsquo; problem of Generative AI, letting organisations measure, benchmark, and control their brand narrative in LLMs.</p>
+              </div>
+              <div class="expertise-card card-3d" role="group" aria-roledescription="slide" aria-label="2 of 4">
+                <div class="expertise-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-seo"></use></svg></div>
+                <h3>Talent attraction strategies</h3>
+                <p>Building data-driven talent attraction strategies that combine employer brand, search, Google for Jobs, AI, social, and paid marketing to reach and engage the right candidates at the right time.</p>
+              </div>
+              <div class="expertise-card card-3d" role="group" aria-roledescription="slide" aria-label="3 of 4">
+                <div class="expertise-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-desktop"></use></svg></div>
+                <h3>Next-gen careers sites</h3>
+                <p>Leading the deployment of innovative, smart careers sites, advanced job detail pages and automated Job Hubs that personalise the candidate journey and capture long-tail search traffic.</p>
+              </div>
+              <div class="expertise-card card-3d" role="group" aria-roledescription="slide" aria-label="4 of 4">
+                <div class="expertise-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-users"></use></svg></div>
+                <h3>Mentorship &amp; industry advocacy</h3>
+                <p>Training and upskilling the next generation of digital leaders, and elevating industry standards through public speaking and knowledge sharing, including masterclasses at BrightonSEO.</p>
+              </div>
+            </div>
           </div>
-          <div class="expertise-card card-3d">
-            <div class="expertise-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-seo"></use></svg></div>
-            <h3>Talent attraction strategies</h3>
-            <p>Building data-driven talent attraction strategies that combine employer brand, search, Google for Jobs, AI, social, and paid marketing to reach and engage the right candidates at the right time.</p>
-          </div>
-          <div class="expertise-card card-3d">
-            <div class="expertise-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-desktop"></use></svg></div>
-            <h3>Next-gen careers sites</h3>
-            <p>Leading the deployment of innovative, smart careers sites, advanced job detail pages and automated Job Hubs that personalise the candidate journey and capture long-tail search traffic.</p>
-          </div>
-          <div class="expertise-card card-3d">
-            <div class="expertise-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-users"></use></svg></div>
-            <h3>Mentorship &amp; industry advocacy</h3>
-            <p>Training and upskilling the next generation of digital leaders, and elevating industry standards through public speaking and knowledge sharing, including masterclasses at BrightonSEO.</p>
+          <div class="slider-controls">
+            <button class="slider-btn" id="expertisePrev" data-carousel-prev aria-label="Previous expertise area" aria-controls="expertiseTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
+            <button class="slider-btn" id="expertiseNext" data-carousel-next aria-label="Next expertise area" aria-controls="expertiseTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
           </div>
         </div>
         <div class="skill-tags">
@@ -284,42 +292,50 @@
     <section id="insights">
       <div class="panel">
         <h2 class="section-title">Publications &amp; Insights</h2>
-        <div class="talk-list">
-          <div class="talk-item card-3d">
-            <div class="talk-format">
-              <img src="/organic-first-approach.png" width="130" height="74" alt="TA Strategy Thumbnail" class="talk-thumb" loading="lazy" decoding="async"><span>TA Strategy</span>
-            </div>
-            <div>
-              <h3><a href="https://radustoian.substack.com/p/the-organic-first-approach-to-talent" target="_blank" rel="noopener">The Organic First Approach to Talent Attraction</a></h3>
-              <p>SEO, Google for Jobs, AI visibility, and organic social media lead the way, with paid marketing efficiently filling any remaining gaps in your strategy.</p>
-              <div class="talk-links">
-                <a href="https://radustoian.substack.com/p/the-organic-first-approach-to-talent" target="_blank" rel="noopener" class="article-link"><span class="link-text">Read Article</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
+        <div class="slider-wrapper" data-carousel data-carousel-mode="mobile-only" data-carousel-id="insights">
+          <div class="slider-viewport" id="insightsViewport" role="region" aria-roledescription="carousel" aria-label="Publications and Insights">
+            <div class="slider-track talk-list" id="insightsTrack">
+              <div class="talk-item card-3d" role="group" aria-roledescription="slide" aria-label="1 of 3">
+                <div class="talk-format">
+                  <img src="/organic-first-approach.png" width="130" height="74" alt="TA Strategy Thumbnail" class="talk-thumb" loading="lazy" decoding="async"><span>TA Strategy</span>
+                </div>
+                <div>
+                  <h3><a href="https://radustoian.substack.com/p/the-organic-first-approach-to-talent" target="_blank" rel="noopener">The Organic First Approach to Talent Attraction</a></h3>
+                  <p>SEO, Google for Jobs, AI visibility, and organic social media lead the way, with paid marketing efficiently filling any remaining gaps in your strategy.</p>
+                  <div class="talk-links">
+                    <a href="https://radustoian.substack.com/p/the-organic-first-approach-to-talent" target="_blank" rel="noopener" class="article-link"><span class="link-text">Read Article</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
+                  </div>
+                </div>
+              </div>
+              <div class="talk-item card-3d" role="group" aria-roledescription="slide" aria-label="2 of 3">
+                <div class="talk-format">
+                  <img src="/ai-optimisation.png" width="130" height="74" alt="AI Optimisation Thumbnail" class="talk-thumb" loading="lazy" decoding="async"><span>AI Optimisation</span>
+                </div>
+                <div>
+                  <h3><a href="https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/" target="_blank" rel="noopener">Optimising for AI Isn't About Abandoning SEO</a></h3>
+                  <p>Discover why preparing for the Agentic AI era is an evolution of your existing search engine optimization efforts, not a complete replacement.</p>
+                  <div class="talk-links">
+                    <a href="https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/" target="_blank" rel="noopener" class="article-link"><span class="link-text">Read Article</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
+                  </div>
+                </div>
+              </div>
+              <div class="talk-item card-3d" role="group" aria-roledescription="slide" aria-label="3 of 3">
+                <div class="talk-format">
+                  <img src="/ai-employer-brand.png" width="130" height="74" alt="Employer Branding Thumbnail" class="talk-thumb" loading="lazy" decoding="async"><span>Employer Branding</span>
+                </div>
+                <div>
+                  <h3><a href="https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/" target="_blank" rel="noopener">AI is the new Gateway to your Employer Brand</a></h3>
+                  <p>Candidates are no longer starting their journey by visiting careers websites. Instead, they are forming their first impression of an employer through a conversation with AI.</p>
+                  <div class="talk-links">
+                    <a href="https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/" target="_blank" rel="noopener" class="article-link"><span class="link-text">Read Article</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="talk-item card-3d">
-            <div class="talk-format">
-              <img src="/ai-optimisation.png" width="130" height="74" alt="AI Optimisation Thumbnail" class="talk-thumb" loading="lazy" decoding="async"><span>AI Optimisation</span>
-            </div>
-            <div>
-              <h3><a href="https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/" target="_blank" rel="noopener">Optimising for AI Isn't About Abandoning SEO</a></h3>
-              <p>Discover why preparing for the Agentic AI era is an evolution of your existing search engine optimization efforts, not a complete replacement.</p>
-              <div class="talk-links">
-                <a href="https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/" target="_blank" rel="noopener" class="article-link"><span class="link-text">Read Article</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
-              </div>
-            </div>
-          </div>
-          <div class="talk-item card-3d">
-            <div class="talk-format">
-              <img src="/ai-employer-brand.png" width="130" height="74" alt="Employer Branding Thumbnail" class="talk-thumb" loading="lazy" decoding="async"><span>Employer Branding</span>
-            </div>
-            <div>
-              <h3><a href="https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/" target="_blank" rel="noopener">AI is the new Gateway to your Employer Brand</a></h3>
-              <p>Candidates are no longer starting their journey by visiting careers websites. Instead, they are forming their first impression of an employer through a conversation with AI.</p>
-              <div class="talk-links">
-                <a href="https://www.linkedin.com/pulse/ai-new-gateway-your-employer-brand-radu-stoian-pms4e/" target="_blank" rel="noopener" class="article-link"><span class="link-text">Read Article</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
-              </div>
-            </div>
+          <div class="slider-controls">
+            <button class="slider-btn" id="insightsPrev" data-carousel-prev aria-label="Previous publication" aria-controls="insightsTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
+            <button class="slider-btn" id="insightsNext" data-carousel-next aria-label="Next publication" aria-controls="insightsTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
           </div>
         </div>
         <div><br><p class="testimonial-note">See all articles on <a href="https://www.linkedin.com/in/radustoian/recent-activity/articles/" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">LinkedIn</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a> or <a href="https://radustoian.substack.com/" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">Substack</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a></p></div>
@@ -331,7 +347,7 @@
         <h2 class="section-title">Projects &amp; clients</h2>
         <p class="lede">I&rsquo;ve had the privilege of working with major brands developing digital strategies, running AI &amp; SEO campaigns, and implementing complex Google for Jobs and Source-to-Hire analytics solutions.</p>
         
-        <div class="slider-wrapper">
+        <div class="slider-wrapper" data-carousel data-carousel-mode="always" data-carousel-id="projects">
           <div class="slider-viewport" id="expViewport" role="region" aria-roledescription="carousel" aria-label="Projects and Client Case Studies">
             <div class="slider-track" id="expTrack">
               <div class="case-card card-3d" role="group" aria-roledescription="slide" aria-label="1 of 4">
@@ -399,8 +415,8 @@
             </div>
           </div>
           <div class="slider-controls">
-            <button class="slider-btn" id="expPrev" aria-label="Previous case studies" aria-controls="expTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
-            <button class="slider-btn" id="expNext" aria-label="Next case studies" aria-controls="expTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
+            <button class="slider-btn" id="expPrev" data-carousel-prev aria-label="Previous case studies" aria-controls="expTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
+            <button class="slider-btn" id="expNext" data-carousel-next aria-label="Next case studies" aria-controls="expTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
           </div>
         </div>
       </div>
@@ -426,7 +442,7 @@
         </div>
         
         <div class="testimonials-tabpanel is-active" id="clientTestimonialsPanel" role="tabpanel" aria-labelledby="clientTab">
-        <div class="slider-wrapper">
+        <div class="slider-wrapper" data-carousel data-carousel-mode="always" data-carousel-id="testimonials">
           <div class="slider-viewport" id="testViewport" role="region" aria-roledescription="carousel" aria-label="Client Testimonials">
             <div class="slider-track" id="testTrack">
               <div class="testimonial-card card-3d" role="group" aria-roledescription="slide" aria-label="1 of 8">
@@ -504,14 +520,14 @@
           </div>
           <div class="slider-controls" style="align-items: center;">
             <p class="testimonial-note">See all recommendations on <a href="https://www.linkedin.com/in/radustoian/details/recommendations/" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">LinkedIn</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a> or view the <a href="https://radustoian.substack.com/p/radu-stoian-technical-director-at-f99" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">Substack AI analysis</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a></p>
-            <button class="slider-btn" style="flex-shrink: 0;" id="testPrev" aria-label="Previous testimonials" aria-controls="testTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
-            <button class="slider-btn" style="flex-shrink: 0;" id="testNext" aria-label="Next testimonials" aria-controls="testTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
+            <button class="slider-btn" style="flex-shrink: 0;" id="testPrev" data-carousel-prev aria-label="Previous testimonials" aria-controls="testTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
+            <button class="slider-btn" style="flex-shrink: 0;" id="testNext" data-carousel-next aria-label="Next testimonials" aria-controls="testTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
           </div>
         </div>
         </div>
 
         <div class="testimonials-tabpanel" id="colleagueTestimonialsPanel" role="tabpanel" aria-labelledby="colleagueTab" hidden>
-          <div class="slider-wrapper">
+          <div class="slider-wrapper" data-carousel data-carousel-mode="always" data-carousel-id="colleagueTestimonials">
             <div class="slider-viewport" id="colleagueViewport" role="region" aria-roledescription="carousel" aria-label="Feedback from Colleagues">
               <div class="slider-track" id="colleagueTrack">
                 <div class="testimonial-card card-3d" role="group" aria-roledescription="slide" aria-label="1 of 6">
@@ -577,8 +593,8 @@
             </div>
             <div class="slider-controls" style="align-items: center;">
               <p class="testimonial-note">See all recommendations on <a href="https://www.linkedin.com/in/radustoian/details/recommendations/" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">LinkedIn</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a> or view the <a href="https://radustoian.substack.com/p/radu-stoian-technical-director-at-f99" target="_blank" rel="noopener" class="em-link testimonial-link"><span class="link-text">Substack AI analysis</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a></p>
-              <button class="slider-btn" style="flex-shrink: 0;" id="colleaguePrev" aria-label="Previous colleague feedback" aria-controls="colleagueTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
-              <button class="slider-btn" style="flex-shrink: 0;" id="colleagueNext" aria-label="Next colleague feedback" aria-controls="colleagueTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
+              <button class="slider-btn" style="flex-shrink: 0;" id="colleaguePrev" data-carousel-prev aria-label="Previous colleague feedback" aria-controls="colleagueTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
+              <button class="slider-btn" style="flex-shrink: 0;" id="colleagueNext" data-carousel-next aria-label="Next colleague feedback" aria-controls="colleagueTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
             </div>
           </div>
         </div>
@@ -588,46 +604,54 @@
     <section id="speaking">
       <div class="panel">
         <h2 class="section-title">Speaking &amp; industry engagement</h2>
-        <div class="talk-list">
-          <div class="talk-item card-3d">
-            <div class="talk-format">Masterclass</div>
-            <div>
-              <h3><a href="https://brightonseo.com/events/october-2024/talks/masterclass-implementation-of-schemas-via-gtm" target="_blank" rel="noopener">Implementation of Schemas via GTM</a></h3>
-              <p>A BrightonSEO masterclass on technical SEO and digital marketing, focused on deploying structured data through container setups.</p>
-              <div class="talk-links">
-                <a href="https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm" target="_blank" rel="noopener" class="article-link"><span class="link-text">View speaker deck</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
+        <div class="slider-wrapper" data-carousel data-carousel-mode="mobile-only" data-carousel-id="speaking">
+          <div class="slider-viewport" id="speakingViewport" role="region" aria-roledescription="carousel" aria-label="Speaking and industry engagement">
+            <div class="slider-track talk-list" id="speakingTrack">
+              <div class="talk-item card-3d" role="group" aria-roledescription="slide" aria-label="1 of 4">
+                <div class="talk-format">Masterclass</div>
+                <div>
+                  <h3><a href="https://brightonseo.com/events/october-2024/talks/masterclass-implementation-of-schemas-via-gtm" target="_blank" rel="noopener">Implementation of Schemas via GTM</a></h3>
+                  <p>A BrightonSEO masterclass on technical SEO and digital marketing, focused on deploying structured data through container setups.</p>
+                  <div class="talk-links">
+                    <a href="https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm" target="_blank" rel="noopener" class="article-link"><span class="link-text">View speaker deck</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
+                  </div>
+                </div>
+              </div>
+              <div class="talk-item card-3d" role="group" aria-roledescription="slide" aria-label="2 of 4">
+                <div class="talk-format">Podcast guest</div>
+                <div>
+                  <h3><a href="https://www.linkedin.com/events/breakingnews-massivechangestogo7074030922244771840/" target="_blank" rel="noopener">Massive Changes to Google Job Search Results</a></h3>
+                  <p>Featured guest speaker covering the changing landscape of Google for Jobs and how employers must adapt their SEO strategies.</p>
+                  <div class="talk-links">
+                    <a href="https://www.youtube.com/watch?v=Mz3QAj39FFk" target="_blank" rel="noopener" class="article-link"><span class="link-text">Watch on YouTube</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
+                  </div>
+                </div>
+              </div>
+              <div class="talk-item card-3d" role="group" aria-roledescription="slide" aria-label="3 of 4">
+                <div class="talk-format">Podcast episode</div>
+                <div>
+                  <h3><a href="https://www.linkedin.com/events/7400522688898830336/" target="_blank" rel="noopener">2026 HR Tech Predictions &mdash; AI, Programmatic, Job Boards</a></h3>
+                  <p>Expert panel speaker covering Google for Jobs, technical SEO, and AIO (Artificial Intelligence Optimisation) trends within the HR Tech space.</p>
+                  <div class="talk-links">
+                    <a href="https://www.youtube.com/watch?v=EO225qsp8ao" target="_blank" rel="noopener" class="article-link"><span class="link-text">Watch on YouTube</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
+                  </div>
+                </div>
+              </div>
+              <div class="talk-item card-3d" role="group" aria-roledescription="slide" aria-label="4 of 4">
+                <div class="talk-format">Technical Contribution</div>
+                <div>
+                  <h3><a href="https://www.linkedin.com/posts/radustoian_ojcp-jobposting-ojcp-activity-7489300566662361088-42f0/" target="_blank" rel="noopener">Contributed to the Open Job Context Protocol (OJCP) Standard</a></h3>
+                  <p>Submitted technical proposals to standardise the url and official_job_url schema fields, ensuring AI agents can accurately parse and route job postings within the MCP framework.</p>
+                  <div class="talk-links">
+                    <a href="https://github.com/ojcp-org/ojcp/blob/main/docs/rfcs/0002-official-job-url.md" target="_blank" rel="noopener" class="article-link"><span class="link-text">View the accepted standard</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="talk-item card-3d">
-            <div class="talk-format">Podcast guest</div>
-            <div>
-              <h3><a href="https://www.linkedin.com/events/breakingnews-massivechangestogo7074030922244771840/" target="_blank" rel="noopener">Massive Changes to Google Job Search Results</a></h3>
-              <p>Featured guest speaker covering the changing landscape of Google for Jobs and how employers must adapt their SEO strategies.</p>
-              <div class="talk-links">
-                <a href="https://www.youtube.com/watch?v=Mz3QAj39FFk" target="_blank" rel="noopener" class="article-link"><span class="link-text">Watch on YouTube</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
-              </div>
-            </div>
-          </div>
-          <div class="talk-item card-3d">
-            <div class="talk-format">Podcast episode</div>
-            <div>
-              <h3><a href="https://www.linkedin.com/events/7400522688898830336/" target="_blank" rel="noopener">2026 HR Tech Predictions &mdash; AI, Programmatic, Job Boards</a></h3>
-              <p>Expert panel speaker covering Google for Jobs, technical SEO, and AIO (Artificial Intelligence Optimisation) trends within the HR Tech space.</p>
-              <div class="talk-links">
-                <a href="https://www.youtube.com/watch?v=EO225qsp8ao" target="_blank" rel="noopener" class="article-link"><span class="link-text">Watch on YouTube</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
-              </div>
-            </div>
-          </div>
-          <div class="talk-item card-3d">
-            <div class="talk-format">Technical Contribution</div>
-            <div>
-              <h3><a href="https://www.linkedin.com/posts/radustoian_ojcp-jobposting-ojcp-activity-7489300566662361088-42f0/" target="_blank" rel="noopener">Contributed to the Open Job Context Protocol (OJCP) Standard</a></h3>
-              <p>Submitted technical proposals to standardise the url and official_job_url schema fields, ensuring AI agents can accurately parse and route job postings within the MCP framework.</p>
-              <div class="talk-links">
-                <a href="https://github.com/ojcp-org/ojcp/blob/main/docs/rfcs/0002-official-job-url.md" target="_blank" rel="noopener" class="article-link"><span class="link-text">View the accepted standard</span><svg class="em-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-arrow"></use></svg></a>
-              </div>
-            </div>
+          <div class="slider-controls">
+            <button class="slider-btn" id="speakingPrev" data-carousel-prev aria-label="Previous speaking engagement" aria-controls="speakingTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-prev"></use></svg></button>
+            <button class="slider-btn" id="speakingNext" data-carousel-next aria-label="Next speaking engagement" aria-controls="speakingTrack"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-next"></use></svg></button>
           </div>
         </div>
       </div>
