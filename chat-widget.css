@@ -1177,17 +1177,25 @@ body.ask-overlay-open .nlweb-launcher {
 }
 
 .ask-answer-footer {
-  display: none;
+  display: block;
   padding: 12px 20px 12px;
   background: rgba(18, 8, 32, 0.85);
   border-top: 1px solid var(--nlweb-border);
   border-radius: 0 0 var(--radius-lg, 12px) var(--radius-lg, 12px);
   flex-shrink: 0;
+}
+
+.ask-answer-footer #askFollowupForm {
+  display: none;
+}
+
+.ask-answer-panel.has-answer .ask-answer-footer #askFollowupForm {
+  display: flex;
   animation: nlweb-fade-in 0.25s ease-out;
 }
 
-.ask-answer-panel.has-answer .ask-answer-footer {
-  display: block;
+.ask-answer-panel:not(.has-answer) .ask-answer-footer .nlweb-footer-sub {
+  margin-top: 0;
 }
 
 @media (max-width: 640px) {
