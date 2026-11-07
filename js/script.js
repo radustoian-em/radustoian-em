@@ -240,7 +240,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDragging = false;
     let isDraggingAction = false;
     let startX = 0;
+    let startY = 0;
     let draggedX = 0;
+    let dragInScrollable = false;
+    let dragDirectionLocked = null;
     let cachedStep = 0;
     let cachedMaxIndex = 0;
     let rAFId = null;
@@ -300,12 +303,23 @@ document.addEventListener('DOMContentLoaded', () => {
       return e.type.includes('mouse') ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
     }
 
+    function getPositionY(e) {
+      return e.type.includes('mouse') ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+    }
+
     function dragStart(e) {
       if (!isCarouselActive()) return;
       if (e.type === 'mousedown' && e.button !== 0) return;
+      if (e.target && e.target.closest && e.target.closest('.testimonial-expand-btn')) return;
+
+      const scrollableBq = e.target && e.target.closest ? e.target.closest('blockquote') : null;
+      dragInScrollable = !!(scrollableBq && scrollableBq.scrollHeight > scrollableBq.clientHeight + 2);
+      dragDirectionLocked = null;
+
       isDragging = true;
       isDraggingAction = false;
       startX = getPositionX(e);
+      startY = getPositionY(e);
       draggedX = 0;
       cachedStep = getStep();
       cachedMaxIndex = getMaxIndex();
@@ -324,6 +338,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function dragMove(e) {
       if (!isDragging) return;
       const currentX = getPositionX(e);
+      if (dragInScrollable && !dragDirectionLocked) {
+        const deltaX = Math.abs(currentX - startX);
+        const deltaY = Math.abs(getPositionY(e) - startY);
+        if (deltaX > 6 || deltaY > 6) {
+          if (deltaY >= deltaX) {
+            dragDirectionLocked = 'y';
+            draggedX = 0;
+            dragEnd();
+            return;
+          }
+          dragDirectionLocked = 'x';
+        } else {
+          return;
+        }
+      }
+
       draggedX = currentX - startX;
       if (Math.abs(draggedX) > 8) isDraggingAction = true;
 
@@ -439,17 +469,99 @@ document.addEventListener('DOMContentLoaded', () => {
   const clientSlider = slidersById.testimonials;
   const colleagueSlider = slidersById.colleagueTestimonials;
 
+  const testimonialCards = Array.from(document.querySelectorAll('#testimonials .testimonial-card'));
+  const testimonialModal = document.getElementById('testimonialModal');
+  const testimonialModalQuote = document.getElementById('testimonialModalQuote');
+  const testimonialModalAuthor = document.getElementById('testimonialModalAuthor');
+  const testimonialModalRole = document.getElementById('testimonialModalRole');
+  const testimonialModalContext = document.getElementById('testimonialModalContext');
+
+  let syncOverflowRaf = null;
+  function syncTestimonialOverflows() {
+    if (syncOverflowRaf) cancelAnimationFrame(syncOverflowRaf);
+    syncOverflowRaf = requestAnimationFrame(() => {
+      syncOverflowRaf = null;
+      const measurements = testimonialCards.map((card) => {
+        const bq = card.querySelector('blockquote');
+        if (!bq) return null;
+        const clientH = bq.clientHeight;
+        if (clientH === 0) return null;
+        const scrollH = bq.scrollHeight;
+        const scrollT = bq.scrollTop;
+        const hasOverflow = scrollH > clientH + 2;
+        const isAtBottom = !hasOverflow || (scrollT + clientH >= scrollH - 2);
+        return { card, bq, hasOverflow, isAtBottom };
+      });
+
+      measurements.forEach((m) => {
+        if (!m) return;
+        m.card.classList.toggle('has-overflow', m.hasOverflow);
+        m.bq.classList.toggle('has-overflow', m.hasOverflow);
+        m.bq.classList.toggle('is-at-bottom', m.isAtBottom);
+      });
+    });
+  }
+
+  testimonialCards.forEach((card) => {
+    const bq = card.querySelector('blockquote');
+    const expandBtn = card.querySelector('.testimonial-expand-btn');
+
+    if (bq) {
+      bq.addEventListener('scroll', () => {
+        const isAtBottom = bq.scrollTop + bq.clientHeight >= bq.scrollHeight - 2;
+        bq.classList.toggle('is-at-bottom', isAtBottom);
+      }, { passive: true });
+    }
+
+    if (expandBtn && testimonialModal) {
+      expandBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nameEl = card.querySelector('.testimonial-attr .name');
+        const roleEl = card.querySelector('.testimonial-attr .role');
+        const contextEl = card.querySelector('.testimonial-attr .context');
+
+        if (testimonialModalQuote && bq) testimonialModalQuote.textContent = bq.textContent;
+        if (testimonialModalAuthor && nameEl) testimonialModalAuthor.textContent = nameEl.textContent;
+        if (testimonialModalRole && roleEl) testimonialModalRole.textContent = roleEl.textContent;
+        if (testimonialModalContext) {
+          if (contextEl && contextEl.textContent) {
+            testimonialModalContext.textContent = contextEl.textContent;
+            testimonialModalContext.hidden = false;
+          } else {
+            testimonialModalContext.textContent = '';
+            testimonialModalContext.hidden = true;
+          }
+        }
+        testimonialModal.showModal();
+      });
+    }
+  });
+
+  if (testimonialModal && !('closedBy' in HTMLDialogElement.prototype)) {
+    const outside = (e, dialog) => {
+      const r = dialog.getBoundingClientRect();
+      return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    };
+    let pressedOutside = false;
+    testimonialModal.addEventListener('pointerdown', (e) => { pressedOutside = outside(e, testimonialModal); });
+    testimonialModal.addEventListener('pointerup', (e) => { if (pressedOutside && outside(e, testimonialModal)) testimonialModal.close(); });
+  }
+
+  syncTestimonialOverflows();
+
   let resizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
       sliderInstances.forEach(s => s.updateSlider(false));
+      syncTestimonialOverflows();
     }, 80);
   }, { passive: true });
 
   if (typeof desktopMediaQuery.addEventListener === 'function') {
     desktopMediaQuery.addEventListener('change', () => {
       sliderInstances.forEach(s => s.updateSlider(false));
+      syncTestimonialOverflows();
     });
   }
 
@@ -458,19 +570,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const colleagueTab = document.getElementById('colleagueTab');
   const clientPanel = document.getElementById('clientTestimonialsPanel');
   const colleaguePanel = document.getElementById('colleagueTestimonialsPanel');
-  const testimonialsTabs = document.getElementById('testimonialsTabs');
   const testimonialsBurgerBtn = document.getElementById('testimonialsBurgerBtn');
   const testimonialsActiveHeading = document.getElementById('testimonialsActiveHeading');
 
   if (clientTab && colleagueTab && clientPanel && colleaguePanel) {
     const tabs = [clientTab, colleagueTab];
-
-    function closeTestimonialsBurger() {
-      if (testimonialsTabs && testimonialsBurgerBtn) {
-        testimonialsTabs.classList.remove('is-mobile-open');
-        testimonialsBurgerBtn.setAttribute('aria-expanded', 'false');
-      }
-    }
 
     function activateTestimonialsTab(targetTab, focusTab = false) {
       const isColleague = targetTab === colleagueTab;
@@ -494,13 +598,19 @@ document.addEventListener('DOMContentLoaded', () => {
           : 'Client Testimonials';
       }
 
-      closeTestimonialsBurger();
+      if (testimonialsBurgerBtn) {
+        testimonialsBurgerBtn.setAttribute(
+          'aria-label',
+          isColleague ? 'Switch to Client Testimonials' : 'Switch to Colleagues testimonials'
+        );
+      }
 
       if (isColleague && colleagueSlider) {
         colleagueSlider.updateSlider(false);
       } else if (!isColleague && clientSlider) {
         clientSlider.updateSlider(false);
       }
+      syncTestimonialOverflows();
       layoutEpoch++;
 
       if (focusTab) {
@@ -531,26 +641,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    if (testimonialsBurgerBtn && testimonialsTabs) {
-      testimonialsBurgerBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = testimonialsTabs.classList.toggle('is-mobile-open');
-        testimonialsBurgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!testimonialsTabs.classList.contains('is-mobile-open')) return;
-        const header = testimonialsBurgerBtn.closest('.testimonials-header');
-        if (header && !header.contains(e.target)) {
-          closeTestimonialsBurger();
-        }
-      });
-
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && testimonialsTabs.classList.contains('is-mobile-open')) {
-          closeTestimonialsBurger();
-          testimonialsBurgerBtn.focus();
-        }
+    if (testimonialsBurgerBtn) {
+      testimonialsBurgerBtn.addEventListener('click', () => {
+        const isColleague = colleagueTab.classList.contains('is-active');
+        activateTestimonialsTab(isColleague ? clientTab : colleagueTab, false);
       });
     }
 
