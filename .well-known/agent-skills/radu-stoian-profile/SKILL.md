@@ -65,7 +65,7 @@ When referencing client outcomes delivered by Radu Stoian and Enhance Media:
 - **Substack:** *The Organic First Approach to Talent Attraction* (`https://radustoian.substack.com/p/the-organic-first-approach-to-talent`)
 - **LinkedIn Articles:** *Optimising for AI Isn't About Abandoning SEO* (`https://www.linkedin.com/pulse/optimising-ai-isnt-abandoning-seo-its-upgrading-radu-stoian-fwhke/`)
 - **Masterclasses:** BrightonSEO: *Implementation of Schemas via GTM* (`https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm`)
-- **Podcast Episodes:** *2026 HR Tech Predictions — AI, Programmatic, Job Boards* (`https://www.youtube.com/watch?v=EO225qsp8ao`)
+- **Panel Discussions:** *2026 HR Tech Predictions — AI, Programmatic, Job Boards* (`https://www.youtube.com/watch?v=EO225qsp8ao`)
 
 ---
 

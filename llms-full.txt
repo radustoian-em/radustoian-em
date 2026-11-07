@@ -120,7 +120,7 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 - [Speaking & Industry Engagement](https://radustoian.com/#speaking): Masterclasses, podcast appearances, and technical standards contributions on radustoian.com.
 - [Implementation of Schemas via GTM](https://speakerdeck.com/radustoian/brightonseo-masterclass-implementation-of-schemas-via-gtm): BrightonSEO masterclass presentation on technical SEO and schema implementation.
 - [Massive Changes to Google Job Search Results](https://www.youtube.com/watch?v=Mz3QAj39FFk): Podcast guest appearance discussing the changing landscape of Google for Jobs.
-- [2026 HR Tech Predictions AI, Programmatic, Job Boards](https://www.youtube.com/watch?v=EO225qsp8ao): Podcast episode and panel discussion on AIO trends in the HR Tech space.
+- [2026 HR Tech Predictions AI, Programmatic, Job Boards](https://www.youtube.com/watch?v=EO225qsp8ao): Panel member discussion on AIO trends in the HR Tech space.
 - [Contributed to the Open Job Context Protocol (OJCP) Standard](https://github.com/ojcp-org/ojcp/pull/8): GitHub pull request establishing standardization for AI job parsing.
 
 ## Skills and Certifications (#skills)
