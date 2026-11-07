@@ -20,17 +20,17 @@
   // Ensure chat stylesheet is activated non-render-blocking
   function ensureChatStyles() {
     const preloadLink = document.getElementById('nlwebChatStylesLink');
-    if (preloadLink && preloadLink.rel !== 'stylesheet') {
-      preloadLink.rel = 'stylesheet';
+    if (preloadLink) {
+      if (preloadLink.rel !== 'stylesheet') preloadLink.rel = 'stylesheet';
+      if (preloadLink.media && preloadLink.media !== 'all') preloadLink.media = 'all';
     } else if (!document.querySelector('link[href*="chat-widget.css"]')) {
       const link = document.createElement('link');
       link.id = 'nlwebChatStylesLink';
       link.rel = 'stylesheet';
-      link.href = '/chat-widget.css?v=3.6';
+      link.href = '/chat-widget.css?v=3.7';
       document.head.appendChild(link);
     }
   }
-  ensureChatStyles();
 
   // Prevent multiple initializations
   if (document.getElementById('nlwebChatDialog')) return;
@@ -653,7 +653,7 @@
       <header class="nlweb-header">
         <div class="nlweb-header-profile">
           <div class="nlweb-avatar-wrap">
-            <img src="/radu-stoian-enhance-media.webp" alt="Radu Stoian" class="nlweb-avatar" onerror="this.src='/radu-stoian-enhance-media.jpg'">
+            <img src="/radu-stoian-enhance-media.webp" width="36" height="36" decoding="async" alt="Radu Stoian" class="nlweb-avatar" onerror="this.src='/radu-stoian-enhance-media.jpg'">
             <span class="nlweb-status-dot" title="Online via NLWeb"></span>
           </div>
           <div class="nlweb-header-info">
@@ -2139,8 +2139,9 @@
     }
   }
 
-  // Startup initialization on DOM ready
+  // Startup initialization on DOM ready (deferred to after initial paint to avoid forced reflows)
   function start() {
+    ensureChatStyles();
     loadHistory();
     const dom = createWidgetDOM();
     initListeners(dom);
@@ -2190,10 +2191,18 @@
     };
   }
 
+  function scheduleStart() {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(start, { timeout: 300 });
+    } else {
+      setTimeout(start, 1);
+    }
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start);
+    document.addEventListener('DOMContentLoaded', scheduleStart);
   } else {
-    start();
+    scheduleStart();
   }
 
 })();

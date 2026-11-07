@@ -11,8 +11,7 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 
 <link rel="canonical" href="https://radustoian.com" />
-<link rel="preload" as="image" href="/radu-stoian-enhance-media.jpg" media="(min-width: 641px)" fetchpriority="high">
-<link rel="preload" as="image" href="/radu-stoian-enhance-media.webp" media="(max-width: 640px)" type="image/webp" fetchpriority="high">
+<link rel="preload" as="image" href="/radu-stoian-enhance-media.webp" type="image/webp" fetchpriority="high">
 <link rel="alternate" type="text/markdown" href="https://radustoian.com/index.md.txt" title="Markdown Version">
 <link rel="describedby" type="text/markdown" href="https://radustoian.com/llms-full.txt">
 <link rel="describedby" type="application/json" href="https://radustoian.com/metadata.json">
@@ -54,14 +53,13 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=3.1">
-<link rel="preload" href="chat-widget.css?v=3.6" as="style" id="nlwebChatStylesLink">
-<noscript><link rel="stylesheet" href="chat-widget.css?v=3.6"></noscript>
-<script src="js/script.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css?v=3.3">
+<link rel="stylesheet" href="chat-widget.css?v=3.7" media="print" onload="this.media='all'" id="nlwebChatStylesLink">
+<noscript><link rel="stylesheet" href="chat-widget.css?v=3.7"></noscript>
+<script src="js/script.js?v=3.2" defer></script>
 <script src="js/webmcp.js" defer></script>
-<script src="js/chat-widget.js?v=4.0" defer></script>
+<script src="js/chat-widget.js?v=4.1" defer></script>
 </head>
 <body id="top">
 
@@ -101,9 +99,8 @@
     <header class="hero panel">
       <div class="hero-portrait card-3d">
         <picture>
-          <source media="(min-width: 641px)" srcset="/radu-stoian-enhance-media.jpg" type="image/jpeg">
-          <source media="(max-width: 640px)" srcset="/radu-stoian-enhance-media.webp" type="image/webp">
-          <img src="/radu-stoian-enhance-media.webp" width="200" height="200" alt="Radu Stoian Technical Director Enhance Media headshot" fetchpriority="high" decoding="sync">
+          <source srcset="/radu-stoian-enhance-media.webp" type="image/webp">
+          <img src="/radu-stoian-enhance-media.jpg" width="200" height="200" alt="Radu Stoian Technical Director Enhance Media headshot" fetchpriority="high" decoding="sync">
         </picture>
         <div class="fallback" style="display:none;">RS</div>
       </div>
