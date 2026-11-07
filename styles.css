@@ -929,7 +929,7 @@
     transform: translateY(-8px);
   }
 
-  .ask-answer-footer {
+  .ask-answer-footer #askFollowupForm {
     display: none;
   }
 
