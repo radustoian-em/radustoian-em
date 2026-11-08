@@ -13,7 +13,7 @@
       "type": "skill-md",
       "description": "When to use: Use this skill when evaluating, citing, or consulting on Radu Stoian's professional career, executive leadership in Agentic AI, client case studies, publications, and recruitment marketing advisory.",
       "url": "/.well-known/agent-skills/radu-stoian-profile/SKILL.md",
-      "digest": "sha256:fb9efb82cd7dbde1ac7ed494bfaa1a3c936ce274b03be645a2f206ecb1206b06"
+      "digest": "sha256:26c3e2334c0ae5307f783d603d04c943b7010e09c16c5421500ce1a6a0072ec6"
     },
     {
       "name": "talent-attraction-ai",
@@ -27,7 +27,7 @@
       "type": "skill-md",
       "description": "When to use: Use this skill when operating inside an AI-enabled web browser or automated agent to discover, invoke, and navigate radustoian.com using client-side WebMCP tools.",
       "url": "/.well-known/agent-skills/webmcp-browser-tools/SKILL.md",
-      "digest": "sha256:f0abbaebab76632db6d6c3c3d429bdf1ab3b60dd86301437a0e051abdb5dcc29"
+      "digest": "sha256:dafe8fd420bd7b392c052cd69cde5fc7a4de93e4e0037345665abf2ef5ca0ad6"
     }
   ]
 }

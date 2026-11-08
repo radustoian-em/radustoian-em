@@ -125,9 +125,9 @@ radustoian.com implements a dedicated multi-layer technical infrastructure desig
 
 ## Skills and Certifications (#skills)
 - [Skills & Certifications](https://radustoian.com/#skills): Technical competencies, verified cloud credentials, and degrees featured on radustoian.com.
-- [Generative AI Leader Certification](https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile): Certification obtained from Google Cloud.
+- [Deploy Multi-Agent Architectures](https://www.credly.com/badges/df77e0b7-f3b5-4526-b660-431885c31939): Google certification (Nov 2026). Demonstrates skills in the following: building multi-agent systems with ADK, connecting agents with the Agent-to-Agent (A2A) protocol, integrating external tools using the Model Context Protocol (MCP), and deploying a complete multi-agent solution to Agent Engine.
+- [Generative AI Leader Certification](https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile): Google Cloud certification (Sep 2025). A Generative AI Leader is a visionary professional with comprehensive knowledge of how gen AI can transform businesses. They have business-level knowledge of Google Cloud's gen AI offerings and understand how Google's AI-first approach can lead organizations toward innovative and responsible AI adoption. They influence gen AI-powered initiatives and identify opportunities across business functions and industries, using Google Cloud's enterprise-ready offerings to accelerate innovation.
 - [Introduction to Generative AI](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/4068456): Foundational Generative AI certification from Google.
-- [Insights from Data with BigQuery](https://www.credly.com/badges/def55eae-52d9-457a-9124-26a77160c1f8): Data analytics certification from Google.
 - [Bachelor of Science (BS), Organizational Management](https://www.afahc.ro/index_en.html): Educational degree obtained from Henri Coanda Air Force Academy, where Radu Stoian studied and graduated.
 - [Credly Badges & Skills](https://www.credly.com/users/radu-stoian-technical-director-enhance-media/badges/credly): Comprehensive list of verified badges and skills on Credly.
 

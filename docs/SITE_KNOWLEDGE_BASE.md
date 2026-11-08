@@ -252,7 +252,7 @@ The site implements the emerging [WebMCP specification](https://webmachinelearni
 | `getContactLinks` | Get contact & profile links | None (`{}`) | Extracts deduplicated social and profile links (LinkedIn, X, Substack, GitHub). |
 | `listPublications` | List publications & Substack articles | `platform` (optional enum: `all`, `substack`, `linkedin`) | Extracts main publications (titles, topics, summaries, URLs) and specifically identifies all direct links to Radu's articles on Substack. |
 | `listSpeakingEngagements` | List speaking & industry engagements | `format` (optional string filter) | Returns conference masterclasses (BrightonSEO), podcast appearances, expert panels, and open standards contributions (OJCP) with event links and media resources (YouTube, Speaker Deck, GitHub). |
-| `listCertificatesAndSkills` | List certificates, skills & profile links | None (`{}`) | Returns professional certificates (Google Cloud GenAI Leader, Intro to GenAI, BigQuery), skill tags, and verified external profile links to all skills and certifications on LinkedIn, Credly, and Google Skills. |
+| `listCertificatesAndSkills` | List certificates, skills & profile links | None (`{}`) | Returns professional certificates (Deploy Multi-Agent Architectures, Google Cloud GenAI Leader, Intro to GenAI), skill tags, and verified external profile links to all skills and certifications on LinkedIn, Credly, and Google Skills. |
 | `askChatbot` | Ask Chatbot | `question` (optional string) | Opens the interactive AI chatbot box and focuses the chat input ready for the user to type their question about Radu Stoian. |
 
 > [!NOTE]
@@ -329,14 +329,14 @@ The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/c
       "type": "skill-md",
       "description": "When to use: Use this skill when querying the live JSON-RPC 2.0 Streamable HTTP MCP server at radustoian.com/mcp for dynamic question answering, knowledge base section retrieval, and external link investigation.",
       "url": "/.well-known/agent-skills/mcp-server-tools/SKILL.md",
-      "digest": "sha256:004748f3bb5b028fdc6d5083c5cf7f9d18e7944ae734f66c90339b8a2b1ca950"
+      "digest": "sha256:361864166a0e2a5292a601dabfd2c9401ff536f37a2ce5e093bfba9d62965821"
     },
     {
       "name": "radu-stoian-profile",
       "type": "skill-md",
       "description": "When to use: Use this skill when evaluating, citing, or consulting on Radu Stoian's professional career, executive leadership in Agentic AI, client case studies, publications, and recruitment marketing advisory.",
       "url": "/.well-known/agent-skills/radu-stoian-profile/SKILL.md",
-      "digest": "sha256:74019d0813384d4300b02af66cb794064c19e80fccc738984ff745862487f051"
+      "digest": "sha256:26c3e2334c0ae5307f783d603d04c943b7010e09c16c5421500ce1a6a0072ec6"
     },
     {
       "name": "talent-attraction-ai",
@@ -350,7 +350,7 @@ The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/c
       "type": "skill-md",
       "description": "When to use: Use this skill when operating inside an AI-enabled web browser or automated agent to discover, invoke, and navigate radustoian.com using client-side WebMCP tools.",
       "url": "/.well-known/agent-skills/webmcp-browser-tools/SKILL.md",
-      "digest": "sha256:f0abbaebab76632db6d6c3c3d429bdf1ab3b60dd86301437a0e051abdb5dcc29"
+      "digest": "sha256:dafe8fd420bd7b392c052cd69cde5fc7a4de93e4e0037345665abf2ef5ca0ad6"
     }
   ]
 }

@@ -74,10 +74,21 @@
     "hasCredential": [
       {
         "@type": "EducationalOccupationalCredential",
+        "name": "Deploy Multi-Agent Architectures",
+        "url": "https://www.credly.com/badges/df77e0b7-f3b5-4526-b660-431885c31939",
+        "credentialCategory": "Certification",
+        "description": "Demonstrates skills in the following: building multi-agent systems with ADK, connecting agents with the Agent-to-Agent (A2A) protocol, integrating external tools using the Model Context Protocol (MCP), and deploying a complete multi-agent solution to Agent Engine.",
+        "recognizedBy": {
+          "@type": "Organization",
+          "name": "Google"
+        }
+      },
+      {
+        "@type": "EducationalOccupationalCredential",
         "name": "Google Cloud Generative AI Leader",
         "url": "https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile",
         "credentialCategory": "Certification",
-        "description": "A first-of-its-kind credential designed specifically for visionary professionals leading generative AI initiatives.",
+        "description": "A Generative AI Leader is a visionary professional with comprehensive knowledge of how gen AI can transform businesses. They have business-level knowledge of Google Cloud's gen AI offerings and understand how Google's AI-first approach can lead organizations toward innovative and responsible AI adoption. They influence gen AI-powered initiatives and identify opportunities across business functions and industries, using Google Cloud's enterprise-ready offerings to accelerate innovation.",
         "recognizedBy": {
           "@type": "Organization",
           "name": "Google Cloud"

@@ -175,9 +175,9 @@ I’ve had the privilege of working with major brands developing digital strateg
 
 ## Skills & Certifications
 
+- **[Deploy Multi-Agent Architectures](https://www.credly.com/badges/df77e0b7-f3b5-4526-b660-431885c31939)** — Google (Nov 2026)
 - **[Generative AI Leader Certification](https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile)** — Google (Sep 2025)
 - **[Introduction to Generative AI](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9/badges/4068456)** — Google (Jun 2023)
-- **[Insights from Data with BigQuery](https://www.credly.com/badges/def55eae-52d9-457a-9124-26a77160c1f8)** — Google (Apr 2021)
 
 **Competencies:** AI Optimisation | Technical SEO | Google for Jobs | GEO / AEO | Web Development | Google Cloud | BigQuery | Source-to-Hire Analytics  
 More details on [LinkedIn](https://www.linkedin.com/in/radustoian/details/skills/), [Credly](https://www.credly.com/users/radu-stoian-technical-director-enhance-media/badges/credly) or [Google Skills](https://www.skills.google/public_profiles/0bafa027-1308-4e0e-acee-d3989a39c4c9).
@@ -291,10 +291,21 @@ It acts as a central hub for Radu’s digital presence, supported by a [dedicate
         "hasCredential": [
           {
             "@type": "EducationalOccupationalCredential",
+            "name": "Deploy Multi-Agent Architectures",
+            "url": "https://www.credly.com/badges/df77e0b7-f3b5-4526-b660-431885c31939",
+            "credentialCategory": "Certification",
+            "description": "Demonstrates skills in the following: building multi-agent systems with ADK, connecting agents with the Agent-to-Agent (A2A) protocol, integrating external tools using the Model Context Protocol (MCP), and deploying a complete multi-agent solution to Agent Engine.",
+            "recognizedBy": {
+              "@type": "Organization",
+              "name": "Google"
+            }
+          },
+          {
+            "@type": "EducationalOccupationalCredential",
             "name": "Google Cloud Generative AI Leader",
             "url": "https://www.credly.com/badges/1c68eb06-8e06-4535-bf1e-aa6596f02a98/linked_in_profile",
             "credentialCategory": "Certification",
-            "description": "A first-of-its-kind credential designed specifically for visionary professionals leading generative AI initiatives.",
+            "description": "A Generative AI Leader is a visionary professional with comprehensive knowledge of how gen AI can transform businesses. They have business-level knowledge of Google Cloud's gen AI offerings and understand how Google's AI-first approach can lead organizations toward innovative and responsible AI adoption. They influence gen AI-powered initiatives and identify opportunities across business functions and industries, using Google Cloud's enterprise-ready offerings to accelerate innovation.",
             "recognizedBy": {
               "@type": "Organization",
               "name": "Google Cloud"
