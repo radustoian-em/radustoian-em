@@ -855,14 +855,14 @@
 
   .ask-input-form {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 12px;
     width: 100%;
     background: var(--sheen, none), linear-gradient(135deg, rgba(28, 13, 48, 0.9) 0%, rgba(12, 4, 22, 0.8) 100%);
     border: 1px solid rgba(216, 180, 254, 0.32);
     border-top-color: rgba(255, 255, 255, 0.28);
     border-left-color: rgba(255, 255, 255, 0.18);
-    border-radius: 9999px;
+    border-radius: 28px;
     padding: 8px 10px 8px 20px;
     box-shadow: var(--bevel-hi, inset 0 1px 0 rgba(255, 255, 255, 0.18)),
                 var(--bevel-lo, inset 0 -4px 10px rgba(0, 0, 0, 0.5)),
@@ -887,6 +887,7 @@
   .ask-input-icon {
     width: 18px;
     height: 18px;
+    margin-bottom: 11px;
     color: #c084fc;
     display: inline-flex;
     align-items: center;
@@ -909,8 +910,12 @@
     color: #f8fafc;
     font-family: var(--font-body);
     font-size: 14.5px;
-    line-height: 1.4;
-    padding: 8px 0;
+    line-height: 20px;
+    padding: 10px 0;
+    resize: none;
+    max-height: 120px;
+    overflow-y: hidden;
+    display: block;
   }
 
   .ask-input:disabled {
@@ -921,6 +926,9 @@
   .ask-input::placeholder {
     color: #94a3b8;
     opacity: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .ask-send-btn {
@@ -1050,16 +1058,23 @@
   @media (max-width: 640px) {
     .ask-section {
       margin-bottom: 20px;
+      scroll-margin-top: max(16px, env(safe-area-inset-top, 0px));
     }
 
     .ask-input-form {
+      border-radius: 24px;
       padding: 6px 8px 6px 14px;
       gap: 8px;
     }
 
+    .ask-input-icon {
+      margin-bottom: 9px;
+    }
+
     .ask-input {
       font-size: 16px;
-      padding: 6px 0;
+      line-height: 22px;
+      padding: 7px 0;
     }
 
     .ask-send-btn {
