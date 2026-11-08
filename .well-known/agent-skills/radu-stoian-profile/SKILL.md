@@ -32,7 +32,7 @@ Radu Stoian is the **Technical Director at Enhance Media**, based in the United 
 1. **Agentic AI Leadership**: Conceptualised and launched the *AI Brand Health Audit*, enabling enterprises to measure, benchmark, and control brand perception in LLM outputs.
 2. **Organic First Talent Attraction**: Strategies aligning candidate journeys with AI search experiences (Google Career Dreamer, ChatGPT Jobs, Perplexity).
 3. **Structured Data & Protocols**: Author and contributor to the Open Job Context Protocol (OJCP) standard (pull request #8: standardizing `url` and `official_job_url`).
-4. **Google Cloud & Technical Architecture**: Google Cloud Generative AI Leader certified, BigQuery, technical SEO, and modern web application development.
+4. **Google Cloud & Technical Architecture**: Deploy Multi-Agent Architectures and Google Cloud Generative AI Leader certified, BigQuery, technical SEO, and modern web application development.
 
 ---
 
