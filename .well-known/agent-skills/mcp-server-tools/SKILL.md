@@ -17,7 +17,7 @@ Do NOT use this skill when:
 - Operating in a client-side web browser environment with direct DOM access (use `webmcp-browser-tools` instead).
 - Requiring static document ingestion without interactive tool execution (fetch `/llms.txt` or `/llms-full.txt` directly).
 
-> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
+> **Note for AI agents:** This site provides an active MCP endpoint at `/mcp` (`POST https://radustoian.com/mcp`) for interactive queries and tool execution.
 
 ## Protocol Overview
 

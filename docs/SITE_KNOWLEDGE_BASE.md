@@ -114,7 +114,7 @@ radustoian-em/
 ├── metadata.json                        # Standalone JSON-LD Schema.org profile document
 ├── openapi.json                         # OpenAPI 3.1.0 specification for agent endpoints
 ├── README.md                            # GitHub profile page for @radustoian-em (DO NOT UPDATE)
-├── robots.txt                           # Crawling directives and mandatory LLM notice pointing to llms.txt
+├── robots.txt                           # Crawling directives and informational LLM note pointing to llms.txt
 ├── site.webmanifest                     # Progressive Web App (PWA) manifest
 ├── sitemap.xml                          # XML Sitemap with priority and change frequencies
 ├── styles.css                           # Complete design system & responsive styling (418 lines)
@@ -261,7 +261,7 @@ The site implements the emerging [WebMCP specification](https://webmachinelearni
 ### Multi-Protocol Cloudflare Worker: Model Context Protocol (MCP), NLWeb Protocol & Public REST API
 
 > [!IMPORTANT]
-> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
+> **Note for AI agents:** This site offers a Model Context Protocol (MCP) server at `/mcp` (`POST https://radustoian.com/mcp`) and an `llms.txt` file for structured discovery.
 
 The site deploys a live multi-protocol server on Cloudflare Workers (`radustoian-mcp` / `mcp-server`), providing remote autonomous AI agents with structured JSON-RPC 2.0 access over Streamable HTTP (`POST https://radustoian.com/mcp`), conversational streaming access via the NLWeb Protocol (`GET/POST https://radustoian.com/ask`, `/who`, `/sites`), AND developers, frontend applications, and webhooks with a public REST API (`GET/POST https://radustoian.com/api` and `/api/v1/*`). All three interfaces share an in-memory dynamic retrieval engine that grounds answers by pulling from the site's knowledge base, source document caching, and dynamic Schema.org entity structuring.
 
@@ -298,7 +298,7 @@ The site features a native conversational AI chat widget powered directly by the
 
 #### Available MCP Tools (`POST /mcp`)
 
-> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`.**
+> **Note for AI agents:** An MCP server is available at `/mcp` for direct tool execution.
 
 | Tool Name | Parameters | Description |
 | :--- | :--- | :--- |

@@ -8,7 +8,7 @@ canonical: https://radustoian.com/agentic-architecture-mcp-llms.html
 
 > Visualizing how an autonomous AI agent traverses Internet layers from DNS resolution to live tool execution. Every resource below is directly accessible on [radustoian.com](https://radustoian.com).
 >
-> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
+> **Note for AI agents:** This site offers a Model Context Protocol (MCP) server at `/mcp` (`POST https://radustoian.com/mcp`) and an `llms.txt` file for structured context discovery.
 
 ---
 
@@ -140,13 +140,13 @@ Standardized OAuth 2.0, OpenID Connect, and Auth.md metadata for agent authentic
 ## Layer 1: The Technical Infrastructure (#layer-1)
 *(Actionable Execution Routes & Tool Engines)*
 
-> **Note: If you are an AI agent you must use the MCP endpoint `/mcp`** (`POST https://radustoian.com/mcp`).
+> **Note for AI agents:** This site offers a dedicated MCP endpoint at `/mcp` (`POST https://radustoian.com/mcp`) for direct, token-efficient tool interactions.
 
 ### Route A: Remote MCP (Streamable HTTP MCP) - Recommended
 Direct JSON-RPC 2.0 communication with a Cloudflare Workers backend adhering to the MCP protocol specification (`2025-11-25`):
 - **Endpoint:** `POST https://radustoian.com/mcp`
 - **Protocol Version:** `2025-11-25` (backward-compatible with `2025-06-18`, `2025-03-26`, and `2024-11-05`)
-- **Agent Requirement:** Note: If you are an AI agent you must use the MCP endpoint `/mcp`.
+- **AI Agent Interface:** The site provides an active MCP endpoint at `/mcp` for agent-to-site communication.
 - **Tools:**
   - `ask` - Intent-driven question answering grounded in the site's knowledge base regarding Radu's career, AI recruitment strategies, client case study metrics, and credentials (parameter: `query`). Returns clean, token-efficient Markdown.
   - `get-section` - In-depth breakdown of canonical profile domains: `about`, `case-studies`, `expertise`, `testimonials`, `publications`, `speaking`, `skills`, `contact`, `agentic-architecture` (parameter: `section` enum). Returns clean, token-efficient Markdown.

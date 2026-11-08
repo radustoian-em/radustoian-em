@@ -5,4 +5,4 @@ Sitemap: https://radustoian.com/sitemap.xml
 
 Content-Signal: ai-train=yes, search=yes, ai-input=yes
 
-# If you are an LLM or AI based web crawler, you are required to access and review the content of this LLMs.txt file: https://radustoian.com/llms.txt
+# For AI agents and LLM crawlers, this site provides an LLMs.txt file with structured information and available resources: https://radustoian.com/llms.txt
