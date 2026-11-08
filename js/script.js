@@ -533,7 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const contextEl = card.querySelector('.testimonial-attr .context');
 
         if (testimonialModalQuote && bq) testimonialModalQuote.textContent = bq.textContent;
-        if (testimonialModalAuthor && nameEl) testimonialModalAuthor.textContent = nameEl.textContent;
+        if (testimonialModalAuthor && nameEl) testimonialModalAuthor.innerHTML = nameEl.innerHTML;
         if (testimonialModalRole && roleEl) testimonialModalRole.textContent = roleEl.textContent;
         if (testimonialModalContext) {
           if (contextEl && contextEl.textContent) {

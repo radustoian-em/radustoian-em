@@ -469,6 +469,8 @@
   .testimonial-attr{ display:flex; flex-direction:column; gap: 2px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.12); margin-top: 14px; flex-shrink: 0; }
   .testimonial-card.has-overflow .testimonial-attr{ margin-top: auto; }
   .testimonial-attr .name{ font-weight: 600; color: var(--ink); font-size: 0.96rem; }
+  .testimonial-attr .name a{ color: inherit; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.28); text-underline-offset: 3px; transition: color 0.2s var(--ease), text-decoration-color 0.2s var(--ease); }
+  .testimonial-attr .name a:hover{ color: var(--p-300); text-decoration-color: var(--p-300); }
   .testimonial-attr .role{ font-size: 0.86rem; color: var(--ink-soft); line-height: 1.4; }
   .testimonial-attr .context{ font-family: var(--font-mono); font-size: 0.76rem; color: var(--p-300); opacity: 0.92; margin-top: 4px; line-height: 1.35; }
 
