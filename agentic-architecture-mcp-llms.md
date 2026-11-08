@@ -76,7 +76,7 @@ Initial HTTP handshake returns headers pointing to agent entry points and declar
 - `rel="describedby"`: [`/metadata.json`](https://radustoian.com/metadata.json) (Schema.org JSON-LD)
 - `rel="service"`: [`/mcp`](https://radustoian.com/mcp) (Streamable HTTP MCP endpoint)
 - `rel="service"`: [`/ask`](https://radustoian.com/ask) (NLWeb Conversational Stream)
-- `rel="mcp-server-card"`: [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) (MCP Server Card)
+- `rel="mcp-server-card"`: [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) and [`/.well-known/mcp.json`](https://radustoian.com/.well-known/mcp.json) (MCP Server Card)
 - `rel="poppy"`: [`/.well-known/poppy.json`](https://radustoian.com/.well-known/poppy.json) (Personal Agent Protocol Manifest)
 - `rel="ard"`: [`/.well-known/ard.json`](https://radustoian.com/.well-known/ard.json) (Agent Resource Discovery)
 - **Content Negotiation:** `Vary: Accept` (`Accept: text/markdown`)
@@ -88,6 +88,7 @@ Standardized `/.well-known/` paths where agents reliably inspect manifests and c
 - [`/.well-known/poppy.json`](https://radustoian.com/.well-known/poppy.json) - Personal Agent Protocol (Poppy v0.1) Manifest & Personal Agent Card
 - [`/.well-known/agent-card.json`](https://radustoian.com/.well-known/agent-card.json) - Agent Card (A2A Protocol v1.0)
 - [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) - MCP Server Card (v2.0)
+- [`/.well-known/mcp.json`](https://radustoian.com/.well-known/mcp.json) - MCP Server Card / Discovery (v2.0)
 - [`/.well-known/ard.json`](https://radustoian.com/.well-known/ard.json) - Agent Resource Discovery (ARD v1.0)
 - [`/.well-known/ai-catalog.json`](https://radustoian.com/.well-known/ai-catalog.json) - AI Catalog
 - [`/.well-known/api-catalog`](https://radustoian.com/.well-known/api-catalog) - RFC 9264 API Linkset
@@ -123,7 +124,7 @@ Detailed domain instructions covering MCP server connection, career verification
 ### 04. Personal & Agentic Cards
 Standardized metadata declarations for interoperability across personal agent protocols and agent frameworks:
 - [`poppy.json`](https://radustoian.com/.well-known/poppy.json) - Personal Agent Protocol (Poppy v0.1) discovery manifest, direct scopes, and OAuth issuer binding.
-- [`server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) - MCP Server Card (v2.0) declaring tools and JSON schemas.
+- [`server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) & [`mcp.json`](https://radustoian.com/.well-known/mcp.json) - MCP Server Card (v2.0) declaring tools and JSON schemas.
 - [`agent-card.json`](https://radustoian.com/.well-known/agent-card.json) - Agent-to-Agent (A2A) protocol specification.
 
 ### 05. Authentication & Identity Discovery
@@ -216,7 +217,7 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 | 10 | [`/.well-known/ai-catalog.json`](https://radustoian.com/.well-known/ai-catalog.json) | AI Catalog catalog |
 | 11 | [`/.well-known/api-catalog`](https://radustoian.com/.well-known/api-catalog) | RFC 9264 Linkset API Catalog |
 | 12 | [`/.well-known/poppy.json`](https://radustoian.com/.well-known/poppy.json) | Personal Agent Protocol (Poppy v0.1) manifest / Personal Agent Card |
-| 13 | [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) | MCP Server Card (v2.0) |
+| 13 | [`/.well-known/mcp/server-card.json`](https://radustoian.com/.well-known/mcp/server-card.json) & [`/.well-known/mcp.json`](https://radustoian.com/.well-known/mcp.json) | MCP Server Card (v2.0) |
 | 14 | [`/.well-known/agent-card.json`](https://radustoian.com/.well-known/agent-card.json) | Agent Card (A2A Protocol v1.0) |
 | 15 | [`/.well-known/oauth-authorization-server`](https://radustoian.com/.well-known/oauth-authorization-server) | RFC 8414 OAuth 2.0 Authorization Server metadata |
 | 16 | [`/.well-known/openid-configuration`](https://radustoian.com/.well-known/openid-configuration) | OpenID Connect Discovery 1.0 metadata |

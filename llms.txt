@@ -30,6 +30,7 @@
 - [Personal Agent Protocol Manifest](https://radustoian.com/.well-known/poppy.json): Personal Agent Protocol (Poppy) draft 0.1 discovery manifest for autonomous agent discovery and OAuth issuer binding.
 - [Agent Resource Discovery Manifest](https://radustoian.com/.well-known/ard.json): Machine-readable ARD v1.0 catalog indexing WebMCP tools, markdown alternates, and knowledge graph schemas.
 - [MCP Server Card](https://radustoian.com/.well-known/mcp/server-card.json): Model Context Protocol Server Card v2.0 defining server capabilities, tools, and execution metadata.
+- [MCP Server Card (Standard Alias)](https://radustoian.com/.well-known/mcp.json): Model Context Protocol Server Card v2.0 defining server capabilities, tools, and execution metadata (standard root alias).
 - [MCP Server Specification](https://radustoian.com/.well-known/mcp/server.json): Official MCP server definition schema v2025-12-11 specifying tool schemas and protocol capabilities.
 - [Agent-to-Agent Card](https://radustoian.com/.well-known/agent-card.json): Agent-to-Agent (A2A) protocol card describing agent capabilities and metadata.
 - [AI Catalog](https://radustoian.com/.well-known/ai-catalog.json): Machine-readable catalog providing AIR URN entries, descriptions, and representative queries for AI discovery.

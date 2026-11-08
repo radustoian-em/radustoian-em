@@ -1,0 +1,236 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/server-card/v1.json",
+  "name": "Radu Stoian MCP",
+  "title": "Radu Stoian MCP",
+  "displayName": "Radu Stoian MCP",
+  "slug": "radustoian-mcp",
+  "version": "2.4.1",
+  "protocolVersion": "2025-11-25",
+  "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, section retrieval, and external investigation links grounded in the site's knowledge base, plus client-side WebMCP tools.",
+  "websiteUrl": "https://radustoian.com",
+  "endpoint": "https://radustoian.com/mcp",
+  "icon": "https://radustoian.com/favicon-32x32.png",
+  "iconUrl": "https://radustoian.com/favicon-32x32.png",
+  "logo_url": "https://radustoian.com/favicon-32x32.png",
+  "icons": [
+    {
+      "src": "https://radustoian.com/favicon-32x32.png",
+      "mimeType": "image/png",
+      "sizes": ["32x32"]
+    },
+    {
+      "src": "https://radustoian.com/favicon-16x16.png",
+      "mimeType": "image/png",
+      "sizes": ["16x16"]
+    },
+    {
+      "src": "https://radustoian.com/apple-touch-icon.png",
+      "mimeType": "image/png",
+      "sizes": ["180x180"]
+    },
+    {
+      "src": "https://radustoian.com/android-chrome-192x192.png",
+      "mimeType": "image/png",
+      "sizes": ["192x192"]
+    },
+    {
+      "src": "https://radustoian.com/android-chrome-512x512.png",
+      "mimeType": "image/png",
+      "sizes": ["512x512"]
+    }
+  ],
+  "creator": "Radu Stoian",
+  "author": {
+    "name": "Radu Stoian",
+    "role": "Technical Director at Enhance Media",
+    "url": "https://radustoian.com"
+  },
+  "vendor": {
+    "name": "Radu Stoian",
+    "organization": "Enhance Media",
+    "url": "https://radustoian.com"
+  },
+  "serverInfo": {
+    "name": "Radu Stoian MCP",
+    "title": "Radu Stoian MCP",
+    "displayName": "Radu Stoian MCP",
+    "slug": "radustoian-mcp",
+    "version": "2.4.1",
+    "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, profile section retrieval, and verified external investigation links.",
+    "websiteUrl": "https://radustoian.com",
+    "icon": "https://radustoian.com/favicon-32x32.png",
+    "iconUrl": "https://radustoian.com/favicon-32x32.png",
+    "logo_url": "https://radustoian.com/favicon-32x32.png",
+    "icons": [
+      {
+        "src": "https://radustoian.com/favicon-32x32.png",
+        "mimeType": "image/png",
+        "sizes": ["32x32"]
+      },
+      {
+        "src": "https://radustoian.com/favicon-16x16.png",
+        "mimeType": "image/png",
+        "sizes": ["16x16"]
+      },
+      {
+        "src": "https://radustoian.com/apple-touch-icon.png",
+        "mimeType": "image/png",
+        "sizes": ["180x180"]
+      },
+      {
+        "src": "https://radustoian.com/android-chrome-192x192.png",
+        "mimeType": "image/png",
+        "sizes": ["192x192"]
+      },
+      {
+        "src": "https://radustoian.com/android-chrome-512x512.png",
+        "mimeType": "image/png",
+        "sizes": ["512x512"]
+      }
+    ],
+    "creator": "Radu Stoian",
+    "author": {
+      "name": "Radu Stoian",
+      "role": "Technical Director at Enhance Media",
+      "url": "https://radustoian.com"
+    },
+    "vendor": {
+      "name": "Radu Stoian",
+      "organization": "Enhance Media",
+      "url": "https://radustoian.com"
+    },
+    "_meta": {
+      "name": "Radu Stoian MCP",
+      "title": "Radu Stoian MCP",
+      "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, profile section retrieval, and verified external investigation links.",
+      "creator": "Radu Stoian",
+      "author": {
+        "name": "Radu Stoian",
+        "role": "Technical Director at Enhance Media",
+        "url": "https://radustoian.com"
+      },
+      "websiteUrl": "https://radustoian.com",
+      "icon": "https://radustoian.com/favicon-32x32.png"
+    }
+  },
+  "transports": [
+    {
+      "type": "streamable-http",
+      "endpoint": "https://radustoian.com/mcp",
+      "protocol": "jsonrpc-2.0"
+    },
+    {
+      "type": "webmcp",
+      "endpoint": "https://radustoian.com/js/webmcp.js"
+    }
+  ],
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    }
+  },
+  "tools": [
+    {
+      "name": "ask",
+      "title": "Ask Radu Stoian",
+      "description": "Use this tool when the user wants to answer specific questions about Radu Stoian's professional background, executive leadership as Technical Director at Enhance Media, AI recruitment & talent acquisition strategies, client case study metrics (e.g., John Lewis Partnership, Virgin Atlantic, University of Surrey), technical architecture, speaking engagements, or verified credentials.",
+      "readOnly": true,
+      "icons": [
+        {
+          "src": "https://radustoian.com/favicon-32x32.png",
+          "mimeType": "image/png",
+          "sizes": ["32x32"]
+        }
+      ],
+      "annotations": {
+        "title": "Ask Radu Stoian",
+        "readOnlyHint": true,
+        "readOnly": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The user's natural language question or topic to look up about Radu Stoian (e.g. 'What did Radu achieve for his clients?', 'Who is Radu Stoian?', 'What certifications does he hold?')."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "get-section",
+      "title": "Get Profile Section",
+      "description": "Use this tool when the user wants an in-depth, complete breakdown of a specific profile domain—such as full client case studies, comprehensive career history, areas of expertise, client testimonials, published articles, speaking engagements, certifications, or agentic AI architecture.",
+      "readOnly": true,
+      "icons": [
+        {
+          "src": "https://radustoian.com/favicon-32x32.png",
+          "mimeType": "image/png",
+          "sizes": ["32x32"]
+        }
+      ],
+      "annotations": {
+        "title": "Get Profile Section",
+        "readOnlyHint": true,
+        "readOnly": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "type": "string",
+            "enum": [
+              "about",
+              "case-studies",
+              "expertise",
+              "testimonials",
+              "publications",
+              "speaking",
+              "skills",
+              "contact",
+              "agentic-architecture"
+            ],
+            "description": "The canonical profile section to retrieve: 'about' (career history & biography), 'case-studies' (client projects & verified conversion metrics), 'expertise' (core AI & recruitment specialisms), 'testimonials' (client endorsements & reviews), 'publications' (Substack articles & insights), 'speaking' (conferences, BrightonSEO & OJCP talks), 'skills' (certifications, badges & education), 'contact' (public profiles & social links), or 'agentic-architecture' (multi-layer AI discovery infrastructure)."
+          }
+        },
+        "required": [
+          "section"
+        ]
+      }
+    },
+    {
+      "name": "get-investigation-links",
+      "title": "Get Investigation Links",
+      "description": "Use this tool when the user wants verified external citations, official profile URLs, or primary source links for Radu Stoian across LinkedIn, GitHub, Substack, SpeakerDeck, Credly, Google Cloud Skills Boost, and the Google Knowledge Graph.",
+      "readOnly": true,
+      "icons": [
+        {
+          "src": "https://radustoian.com/favicon-32x32.png",
+          "mimeType": "image/png",
+          "sizes": ["32x32"]
+        }
+      ],
+      "annotations": {
+        "title": "Get Investigation Links",
+        "readOnlyHint": true,
+        "readOnly": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}
