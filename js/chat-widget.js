@@ -44,6 +44,54 @@
   // Storage key for session persistence
   const STORAGE_KEY = 'nlweb_chat_history_v2';
 
+  // Responsive placeholder copy & auto-height helpers for Horizontal Ask Bar
+  const ASK_PLACEHOLDER_DESKTOP = 'Ask about my experience, skills or case studies...';
+  const ASK_PLACEHOLDER_MOBILE = 'Ask about my experience ...';
+  const askMobileQuery = typeof window.matchMedia === 'function' ? window.matchMedia('(max-width: 640px)') : null;
+
+  function updateAskBarPlaceholder() {
+    const askInput = document.getElementById('askTextInput');
+    if (!askInput) return;
+    const isMobile = askMobileQuery ? askMobileQuery.matches : window.innerWidth <= 640;
+    const targetPlaceholder = isMobile ? ASK_PLACEHOLDER_MOBILE : ASK_PLACEHOLDER_DESKTOP;
+    if (askInput.placeholder !== targetPlaceholder) {
+      askInput.placeholder = targetPlaceholder;
+    }
+    if (askInput.getAttribute('aria-label') !== targetPlaceholder) {
+      askInput.setAttribute('aria-label', targetPlaceholder);
+    }
+  }
+
+  function resetAskInputHeight(askInput) {
+    if (!askInput) return;
+    askInput.style.height = '';
+    askInput.style.overflowY = 'hidden';
+  }
+
+  function autoExpandAskInput(askInput) {
+    if (!askInput) return;
+    if (!askInput.value) {
+      resetAskInputHeight(askInput);
+      return;
+    }
+    askInput.style.height = 'auto';
+    const scrollH = askInput.scrollHeight;
+    const minH = askMobileQuery && askMobileQuery.matches ? 36 : 40;
+    const nextHeight = Math.min(Math.max(scrollH, minH), 120);
+    askInput.style.height = `${nextHeight}px`;
+    askInput.style.overflowY = scrollH > 120 ? 'auto' : 'hidden';
+  }
+
+  // Apply responsive placeholder immediately before idle callback to prevent mobile text flash
+  updateAskBarPlaceholder();
+  if (askMobileQuery) {
+    if (typeof askMobileQuery.addEventListener === 'function') {
+      askMobileQuery.addEventListener('change', updateAskBarPlaceholder);
+    } else if (typeof askMobileQuery.addListener === 'function') {
+      askMobileQuery.addListener(updateAskBarPlaceholder);
+    }
+  }
+
   // Safety & Anti-Abuse Configuration
   const MAX_INPUT_CHARS = 300;
   const MAX_SESSION_QUESTIONS = 10;
@@ -905,6 +953,49 @@
     askSection.style.setProperty('--about-cover-height', `${finalHeight}px`);
   }
 
+  let scrollAskBarRafId = 0;
+  let scrollAskBarTimerId = null;
+
+  // Align the horizontal ask bar to the top of the viewport without forced synchronous reflow
+  function scrollAskBarToTop(instant = false) {
+    if (scrollAskBarRafId) {
+      cancelAnimationFrame(scrollAskBarRafId);
+    }
+    scrollAskBarRafId = requestAnimationFrame(() => {
+      scrollAskBarRafId = 0;
+      const askSection = document.getElementById('ask-bar');
+      if (!askSection || !isAskBarOpen) return;
+      const isMobile = askMobileQuery ? askMobileQuery.matches : window.innerWidth <= 640;
+      const targetMargin = isMobile ? 16 : 32;
+      const rect = askSection.getBoundingClientRect();
+      if (Math.abs(rect.top - targetMargin) > 4) {
+        const prefersReducedMotion = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        askSection.scrollIntoView({
+          behavior: (instant || prefersReducedMotion) ? 'auto' : 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  }
+
+  function alignAskBarOnInteraction() {
+    if (!isAskBarOpen) {
+      toggleAskBar(true);
+    } else {
+      scrollAskBarToTop(false);
+    }
+    const isMobileOrTouch = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 640px), (pointer: coarse)').matches;
+    if (isMobileOrTouch) {
+      if (scrollAskBarTimerId) clearTimeout(scrollAskBarTimerId);
+      scrollAskBarTimerId = setTimeout(() => {
+        scrollAskBarTimerId = null;
+        if (isAskBarOpen) {
+          scrollAskBarToTop(false);
+        }
+      }, 250);
+    }
+  }
+
   // Open / Close Horizontal Ask Bar Overlay & Answer Box
   function toggleAskBar(openState) {
     const askSection = document.getElementById('ask-bar');
@@ -934,11 +1025,16 @@
         renderMessages();
       }
 
-      const rect = askSection.getBoundingClientRect();
-      if (rect.top < 16 || rect.top > window.innerHeight * 0.45) {
-        askSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      scrollAskBarToTop(false);
     } else {
+      if (scrollAskBarRafId) {
+        cancelAnimationFrame(scrollAskBarRafId);
+        scrollAskBarRafId = 0;
+      }
+      if (scrollAskBarTimerId) {
+        clearTimeout(scrollAskBarTimerId);
+        scrollAskBarTimerId = null;
+      }
       document.body.classList.remove('ask-overlay-open');
       askSection.classList.remove('is-active');
       answerPanel.setAttribute('aria-hidden', 'true');
@@ -1816,6 +1912,7 @@
     }
 
     askInput.value = '';
+    resetAskInputHeight(askInput);
     if (askSendBtn) askSendBtn.disabled = true;
 
     await submitQuestionText(text);
@@ -1870,6 +1967,7 @@
 
     if (askInput) {
       askInput.value = '';
+      resetAskInputHeight(askInput);
       askInput.disabled = false;
     }
     if (askFollowupInput) {
@@ -1979,28 +2077,32 @@
 
     // Horizontal Ask Bar Listeners
     if (askSection && askInput) {
+      updateAskBarPlaceholder();
+
       askInput.addEventListener('focus', () => {
-        if (!isAskBarOpen) {
-          toggleAskBar(true);
-        }
+        alignAskBarOnInteraction();
       });
 
       askInput.addEventListener('click', () => {
-        if (!isAskBarOpen) {
-          toggleAskBar(true);
-        }
+        alignAskBarOnInteraction();
       });
 
       askInput.addEventListener('input', () => {
+        autoExpandAskInput(askInput);
         updateSendBtnState();
+      });
+
+      askInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          handleAskBarSubmit();
+        }
       });
 
       if (askForm) {
         askForm.addEventListener('submit', handleAskBarSubmit);
         askForm.addEventListener('click', () => {
-          if (!isAskBarOpen) {
-            toggleAskBar(true);
-          }
+          alignAskBarOnInteraction();
           if (hasCompletedAnswer() && askFollowupInput) {
             const isMobileOrTouch = window.matchMedia('(max-width: 640px), (pointer: coarse)').matches;
             if (!isMobileOrTouch) {

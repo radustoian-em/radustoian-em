@@ -922,14 +922,14 @@ body.ask-overlay-open .nlweb-launcher {
 
 .ask-input-form {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 12px;
   width: 100%;
   background: var(--sheen, none), linear-gradient(135deg, rgba(26, 12, 45, 0.82) 0%, rgba(12, 4, 22, 0.68) 100%);
   border: 1px solid var(--nlweb-border-hi);
   border-top-color: rgba(255, 255, 255, 0.28);
   border-left-color: rgba(255, 255, 255, 0.18);
-  border-radius: 9999px;
+  border-radius: 28px;
   padding: 8px 10px 8px 20px;
   backdrop-filter: blur(28px) saturate(200%);
   -webkit-backdrop-filter: blur(28px) saturate(200%);
@@ -956,6 +956,7 @@ body.ask-overlay-open .nlweb-launcher {
 .ask-input-icon {
   width: 18px;
   height: 18px;
+  margin-bottom: 11px;
   color: #c084fc;
   display: inline-flex;
   align-items: center;
@@ -978,8 +979,12 @@ body.ask-overlay-open .nlweb-launcher {
   color: var(--nlweb-text);
   font-family: var(--nlweb-font-sans);
   font-size: 14.5px;
-  line-height: 1.4;
-  padding: 8px 0;
+  line-height: 20px;
+  padding: 10px 0;
+  resize: none;
+  max-height: 120px;
+  overflow-y: hidden;
+  display: block;
 }
 
 .ask-input:disabled {
@@ -990,6 +995,9 @@ body.ask-overlay-open .nlweb-launcher {
 .ask-input::placeholder {
   color: var(--nlweb-text-muted);
   opacity: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ask-send-btn {
@@ -1201,16 +1209,23 @@ body.ask-overlay-open .nlweb-launcher {
 @media (max-width: 640px) {
   .ask-section {
     margin-bottom: 20px;
+    scroll-margin-top: max(16px, env(safe-area-inset-top, 0px));
   }
 
   .ask-input-form {
+    border-radius: 24px;
     padding: 6px 8px 6px 14px;
     gap: 8px;
   }
 
+  .ask-input-icon {
+    margin-bottom: 9px;
+  }
+
   .ask-input {
     font-size: 16px; /* Prevents iOS auto-zoom on focus */
-    padding: 6px 0;
+    line-height: 22px;
+    padding: 7px 0;
   }
 
   .ask-send-btn {
