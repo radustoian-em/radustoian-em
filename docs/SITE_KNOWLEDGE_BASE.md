@@ -91,6 +91,7 @@ radustoian-em/
 │   ├── jwks.json                         # RFC 7517 JSON Web Key Set specification
 │   ├── mcp/
 │   │   └── server-card.json              # MCP server card specification for WebMCP
+│   ├── mcp.json                          # MCP server card specification (standard root alias)
 │   ├── oauth-authorization-server        # RFC 8414 OAuth 2.0 Authorization Server metadata
 │   ├── oauth-protected-resource          # RFC 9728 OAuth Protected Resource Metadata
 │   ├── openid-configuration              # OpenID Connect Discovery 1.0 metadata
@@ -232,6 +233,7 @@ In [`index.html`](file:///home/radu/antigravity/radu/index.html), explicit machi
 <link rel="ai-catalog" type="application/json" href="https://radustoian.com/.well-known/ai-catalog.json">
 <link rel="api-catalog" type="application/linkset+json" href="https://radustoian.com/.well-known/api-catalog">
 <link rel="mcp-server-card" type="application/json" href="https://radustoian.com/.well-known/mcp/server-card.json">
+<link rel="mcp-server-card" type="application/json" href="https://radustoian.com/.well-known/mcp.json">
 ```
 
 ### Open Job Context Protocol (OJCP) Context
@@ -360,8 +362,8 @@ The site adheres to the [Agent Skills Discovery RFC v0.2.0](https://github.com/c
 ### Agentic AI Discovery Architecture Map (`agentic-architecture-mcp-llms.html`)
 The site provides a dedicated, interactive architecture map visualizing the complete discovery and execution lifecycle for autonomous AI agents on `radustoian.com`:
 - **Interactive Infographic:** [`agentic-architecture-mcp-llms.html`](file:///home/radu/antigravity/radu/agentic-architecture-mcp-llms.html) visually details the multi-layer pipeline:
-  - *Layer 3 (Discovery & Signalling):* DNS resolution (DNS-AID / RFC 9460 SVCB Type 65 & TXT on agentic subdomains `_index`, `_a2a`, and `_mcp`), HTTP transport header pointers (RFC 8288 Link headers including `rel="poppy"`), and RFC 8615 well-known catalogs (`poppy.json`, `agent-card.json`, `mcp/server-card.json`, `ard.json`, `ai-catalog.json`, `api-catalog`, `agent-skills/index.json`, `oauth-authorization-server`, `openid-configuration`, `oauth-protected-resource`, `jwks.json`).
-  - *Layer 2 (Documentation):* `llms.txt`, `llms-full.txt`, ARD manifest, all 4 specialized `SKILL.md` domain skill manifests, Personal & Agentic Cards (`poppy.json`, `server-card.json`, `agent-card.json`), and Authentication & Identity Discovery (`auth.md`, OAuth 2.0, OpenID Connect).
+  - *Layer 3 (Discovery & Signalling):* DNS resolution (DNS-AID / RFC 9460 SVCB Type 65 & TXT on agentic subdomains `_index`, `_a2a`, and `_mcp`), HTTP transport header pointers (RFC 8288 Link headers including `rel="poppy"`), and RFC 8615 well-known catalogs (`poppy.json`, `agent-card.json`, `mcp/server-card.json`, `mcp.json`, `ard.json`, `ai-catalog.json`, `api-catalog`, `agent-skills/index.json`, `oauth-authorization-server`, `openid-configuration`, `oauth-protected-resource`, `jwks.json`).
+  - *Layer 2 (Documentation):* `llms.txt`, `llms-full.txt`, ARD manifest, all 4 specialized `SKILL.md` domain skill manifests, Personal & Agentic Cards (`poppy.json`, `server-card.json` / `mcp.json`, `agent-card.json`), and Authentication & Identity Discovery (`auth.md`, OAuth 2.0, OpenID Connect).
   - *Layer 1 (Technical Infrastructure):* Dual-Protocol Cloudflare Worker (Remote Streamable HTTP MCP & Public REST API at `/api`), Content Negotiation (`Accept: text/markdown`), Browser WebMCP tools (`js/webmcp.js`), and Schema.org JSON-LD knowledge graph.
 - **Machine-Readable Markdown:** Mirrored in pure ASCII Markdown at [`agentic-architecture-mcp-llms.md`](file:///home/radu/antigravity/radu/agentic-architecture-mcp-llms.md) and served edge-side with custom AI caching and canonical Link headers at [`agentic-architecture-mcp-llms.md.txt`](file:///home/radu/antigravity/radu/agentic-architecture-mcp-llms.md.txt).
 

@@ -25,6 +25,10 @@
         {
           "href": "https://radustoian.com/.well-known/mcp/server-card.json",
           "type": "application/mcp-server-card+json"
+        },
+        {
+          "href": "https://radustoian.com/.well-known/mcp.json",
+          "type": "application/mcp-server-card+json"
         }
       ]
     },

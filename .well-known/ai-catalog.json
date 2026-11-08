@@ -35,6 +35,17 @@
       ]
     },
     {
+      "identifier": "urn:air:radustoian.com:manifest:mcp-card",
+      "displayName": "Model Context Protocol Server Card",
+      "type": "application/mcp-server-card+json",
+      "url": "https://radustoian.com/.well-known/mcp.json",
+      "representativeQueries": [
+        "Model Context Protocol server card definition for radustoian.com",
+        "Inspect MCP server capabilities and tool declarations",
+        "MCP server tools schema and execution metadata"
+      ]
+    },
+    {
       "identifier": "urn:air:radustoian.com:skills:agent-skills-index",
       "displayName": "Agent Skills Discovery Index",
       "type": "application/ai-registry+json",
