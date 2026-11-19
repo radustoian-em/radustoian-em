@@ -222,6 +222,8 @@ It acts as a central hub for Radu’s digital presence, supported by a [dedicate
       "mainEntity": {
         "@type": "Person",
         "name": "Radu Stoian",
+        "givenName": "Radu",
+        "familyName": "Stoian",
         "@id": "https://radustoian.com/#person",
         "image": "https://radustoian.com/radu-stoian-enhance-media.jpg",
         "url": "https://radustoian.com",

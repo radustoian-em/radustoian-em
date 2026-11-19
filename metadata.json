@@ -5,6 +5,8 @@
   "mainEntity": {
     "@type": "Person",
     "name": "Radu Stoian",
+    "givenName": "Radu",
+    "familyName": "Stoian",
     "@id": "https://radustoian.com/#person",
     "image": "https://radustoian.com/radu-stoian-enhance-media.jpg",
     "url": "https://radustoian.com",
