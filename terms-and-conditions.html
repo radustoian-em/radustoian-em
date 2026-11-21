@@ -18,14 +18,10 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=3.1">
-<link rel="preload" href="chat-widget.css?v=3.6" as="style" id="nlwebChatStylesLink">
-<noscript><link rel="stylesheet" href="chat-widget.css?v=3.6"></noscript>
-<script src="js/script.js" defer></script>
-<script src="js/webmcp.js" defer></script>
-<script src="js/chat-widget.js?v=4.0" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css?v=5.0">
+<script src="/js/script.js?v=5.0" defer></script>
+<script src="/js/chat-widget.js?v=5.0" defer fetchpriority="low"></script>
 </head>
 <body id="top">
 
@@ -36,7 +32,8 @@
 
 <div class="app-layout">
   <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><use href="icons.svg#icon-menu"></use></svg>
+    <svg class="nav-icon-menu" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><use href="icons.svg#icon-menu"></use></svg>
+    <svg class="nav-icon-close" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><use href="icons.svg#icon-close"></use></svg>
   </button>
   <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
   

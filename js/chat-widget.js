@@ -1,53 +1,18 @@
 /**
- * NLWeb Conversational AI Chat Widget for radustoian.com
- * Protocol: NLWeb v0.1 (/ask endpoint handled by Cloudflare Worker mcp-server + Gemini)
- * 
- * Features:
- * - Server-side Gemini 3.5 Flash Lite synthesis via the Cloudflare Worker (/ask)
- * - Zero client-side API keys or credentials
- * - Direct grounding against live NLWeb dynamic retrieval engine
- * - Real-time Server-Sent Events (SSE) streaming with non-streaming JSON fallback
- * - Multi-turn conversational context decontextualization (via `prev` parameter)
- * - Grounded Schema.org citation chips and link rendering
- * - Client & server-side safety guardrails and 10-question session limit
- * - Dark glassmorphic UI matching site aesthetic
- * - Full a11y keyboard controls, ARIA attributes, and session persistence
+ * Lightweight lazy bootstrapper for NLWeb Chat & Horizontal Ask Bar
+ * Keeps ~90 KB chat engine + chat-widget.min.css off the initial critical path.
  */
-
-(function initNLWebChatWidget() {
+(() => {
   'use strict';
 
-  // Ensure chat stylesheet is activated non-render-blocking
-  function ensureChatStyles() {
-    const preloadLink = document.getElementById('nlwebChatStylesLink');
-    if (preloadLink) {
-      if (preloadLink.rel !== 'stylesheet') preloadLink.rel = 'stylesheet';
-      if (preloadLink.media && preloadLink.media !== 'all') preloadLink.media = 'all';
-    } else if (!document.querySelector('link[href*="chat-widget.css"]')) {
-      const link = document.createElement('link');
-      link.id = 'nlwebChatStylesLink';
-      link.rel = 'stylesheet';
-      link.href = '/chat-widget.css?v=3.7';
-      document.head.appendChild(link);
-    }
-  }
-
-  // Prevent multiple initializations
-  if (document.getElementById('nlwebChatDialog')) return;
-
-  // Resolve endpoint dynamically (works on radustoian.com, preview URLs, and localhost)
-  // The Cloudflare Worker (mcp-server) handles both NLWeb retrieval and Gemini API synthesis server-side.
-  const isProduction = window.location.hostname === 'radustoian.com' || window.location.hostname === 'www.radustoian.com';
-  const NLWEB_BASE_URL = isProduction ? '' : 'https://radustoian.com';
-  const ASK_ENDPOINT = `${NLWEB_BASE_URL}/ask`;
-
-  // Storage key for session persistence
-  const STORAGE_KEY = 'nlweb_chat_history_v2';
-
-  // Responsive placeholder copy & auto-height helpers for Horizontal Ask Bar
+  const SPARKLE_ICON =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>';
   const ASK_PLACEHOLDER_DESKTOP = 'Ask about my experience, skills or case studies...';
   const ASK_PLACEHOLDER_MOBILE = 'Ask about my experience ...';
-  const askMobileQuery = typeof window.matchMedia === 'function' ? window.matchMedia('(max-width: 640px)') : null;
+  const CHAT_CSS_HREF = '/chat-widget.css?v=5.0';
+
+  const askMobileQuery =
+    typeof window.matchMedia === 'function' ? window.matchMedia('(max-width: 640px)') : null;
 
   function updateAskBarPlaceholder() {
     const askInput = document.getElementById('askTextInput');
@@ -62,14 +27,41 @@
     }
   }
 
+/**
+ * NLWeb Conversational AI Chat Engine for radustoian.com (Lazy-Loaded ESM)
+ * Protocol: NLWeb v0.1 (/ask endpoint handled by Cloudflare Worker mcp-server + Gemini)
+ */
+
+let cachedApi = null;
+
+function initChatEngine() {
+  if (cachedApi && document.getElementById('nlwebChatDialog')) {
+    return cachedApi;
+  }
+
+  const isProduction =
+    window.location.hostname === 'radustoian.com' ||
+    window.location.hostname === 'www.radustoian.com';
+  const NLWEB_BASE_URL = isProduction ? '' : 'https://radustoian.com';
+  const ASK_ENDPOINT = `${NLWEB_BASE_URL}/ask`;
+  const STORAGE_KEY = 'nlweb_chat_history_v2';
+
+  const supportsFieldSizing =
+    typeof CSS !== 'undefined' &&
+    typeof CSS.supports === 'function' &&
+    CSS.supports('field-sizing', 'content');
+
+  const askMobileQuery =
+    typeof window.matchMedia === 'function' ? window.matchMedia('(max-width: 640px)') : null;
+
   function resetAskInputHeight(askInput) {
-    if (!askInput) return;
+    if (!askInput || supportsFieldSizing) return;
     askInput.style.height = '';
     askInput.style.overflowY = 'hidden';
   }
 
   function autoExpandAskInput(askInput) {
-    if (!askInput) return;
+    if (!askInput || supportsFieldSizing) return;
     if (!askInput.value) {
       resetAskInputHeight(askInput);
       return;
@@ -82,31 +74,21 @@
     askInput.style.overflowY = scrollH > 120 ? 'auto' : 'hidden';
   }
 
-  // Apply responsive placeholder immediately before idle callback to prevent mobile text flash
-  updateAskBarPlaceholder();
-  if (askMobileQuery) {
-    if (typeof askMobileQuery.addEventListener === 'function') {
-      askMobileQuery.addEventListener('change', updateAskBarPlaceholder);
-    } else if (typeof askMobileQuery.addListener === 'function') {
-      askMobileQuery.addListener(updateAskBarPlaceholder);
-    }
-  }
-
   // Safety & Anti-Abuse Configuration
   const MAX_INPUT_CHARS = 300;
   const MAX_SESSION_QUESTIONS = 10;
   const COOLDOWN_MS = 2500;
   const SESSION_QUERY_COUNT_KEY = 'nlweb_query_count_v1';
   const PERSISTENT_QUOTA_KEY = 'nlweb_query_quota_v2';
-  const QUOTA_WINDOW_MS = 24 * 60 * 60 * 1000; // 24-hour rolling window across tabs
-  const LIMIT_REACHED_MESSAGE = "You've reached the free limit of 10 questions about Radu. If you're interested to find out more reach out on LinkedIn https://www.linkedin.com/in/radustoian";
+  const QUOTA_WINDOW_MS = 24 * 60 * 60 * 1000;
+  const LIMIT_REACHED_MESSAGE =
+    "You've reached the free limit of 10 questions about Radu. If you're interested to find out more reach out on LinkedIn https://www.linkedin.com/in/radustoian";
   let lastSubmitTime = 0;
 
   // Typewriter Speed Configuration: 5 words per second (200ms per word)
   const WORDS_PER_SECOND = 5;
   const WORD_TICK_MS = 1000 / WORDS_PER_SECOND;
 
-  // Persistent + session query counter helpers
   function getSessionQueryCount() {
     let sessionCount = 0;
     let persistentCount = 0;
@@ -114,19 +96,19 @@
 
     try {
       sessionCount = parseInt(sessionStorage.getItem(SESSION_QUERY_COUNT_KEY) || '0', 10) || 0;
-    } catch (e) {}
+    } catch {}
 
     try {
       const raw = localStorage.getItem(PERSISTENT_QUOTA_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed.windowStart === 'number' && (now - parsed.windowStart < QUOTA_WINDOW_MS)) {
+        if (parsed && typeof parsed.windowStart === 'number' && now - parsed.windowStart < QUOTA_WINDOW_MS) {
           persistentCount = parseInt(parsed.count || '0', 10) || 0;
         } else {
           localStorage.removeItem(PERSISTENT_QUOTA_KEY);
         }
       }
-    } catch (e) {}
+    } catch {}
 
     return Math.max(sessionCount, persistentCount);
   }
@@ -137,24 +119,23 @@
 
     try {
       sessionStorage.setItem(SESSION_QUERY_COUNT_KEY, count.toString());
-    } catch (e) {}
+    } catch {}
 
     try {
       let windowStart = now;
       const raw = localStorage.getItem(PERSISTENT_QUOTA_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed.windowStart === 'number' && (now - parsed.windowStart < QUOTA_WINDOW_MS)) {
+        if (parsed && typeof parsed.windowStart === 'number' && now - parsed.windowStart < QUOTA_WINDOW_MS) {
           windowStart = parsed.windowStart;
         }
       }
       localStorage.setItem(PERSISTENT_QUOTA_KEY, JSON.stringify({ count, windowStart }));
-    } catch (e) {}
+    } catch {}
 
     return count;
   }
 
-  // Icons SVG definitions
   const ICONS = {
     sparkle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>`,
     send: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`,
@@ -169,7 +150,6 @@
     restore: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="10" y1="14" x2="3" y2="21"></line></svg>`
   };
 
-  // State
   let isOpen = false;
   let isAskBarOpen = false;
   let isMaximized = false;
@@ -179,59 +159,74 @@
   let activeAbortController = null;
   let prevQuery = '';
   let messages = [];
+  let messagesVersion = 0;
+  let lastRenderedVersion = -1;
+  let lastRenderedGenerating = null;
 
-  // Helper: Check if the user has already asked at least one question in this conversation
+  const domRefs = {
+    launcher: null,
+    dialog: null,
+    messagesEl: null,
+    nlwebInput: null,
+    nlwebSendBtn: null,
+    maxBtn: null,
+    resetBtn: null,
+    closeBtn: null,
+    nlwebForm: null,
+    askSection: null,
+    askForm: null,
+    askInput: null,
+    askSendBtn: null,
+    askPanel: null,
+    askAnswerBody: null,
+    askFollowupForm: null,
+    askFollowupInput: null,
+    askFollowupSendBtn: null,
+    askResetBtn: null,
+    askCloseBtn: null,
+    askBackdrop: null,
+    askSuggestions: null,
+    askChips: []
+  };
+
   function hasUserQuestions() {
     return messages.some((m) => m && m.role === 'user');
   }
 
-  // Helper: Check if at least one agent answer (after the initial welcome item) has been provided
   function hasCompletedAnswer() {
     return messages.some((m, idx) => m && m.role === 'agent' && idx > 0);
   }
 
-  // Helper: Update Send Button & Ask Input States
   function updateSendBtnState() {
-    const input = document.getElementById('nlwebTextInput');
-    const sendBtn = document.getElementById('nlwebSendBtn');
-    if (input && sendBtn) {
-      sendBtn.disabled = !input.value.trim() || isGenerating || isStreaming;
+    if (domRefs.nlwebInput && domRefs.nlwebSendBtn) {
+      domRefs.nlwebSendBtn.disabled = !domRefs.nlwebInput.value.trim() || isGenerating || isStreaming;
     }
 
     const firstQuestionAsked = hasUserQuestions();
     const answerReady = hasCompletedAnswer();
 
-    const askForm = document.getElementById('askInputForm');
-    const askInput = document.getElementById('askTextInput');
-    const askSendBtn = document.getElementById('askSendBtn');
-    if (askForm) {
-      askForm.classList.toggle('is-locked', firstQuestionAsked);
+    if (domRefs.askForm) {
+      domRefs.askForm.classList.toggle('is-locked', firstQuestionAsked);
     }
-    if (askInput) {
-      askInput.disabled = firstQuestionAsked;
+    if (domRefs.askInput) {
+      domRefs.askInput.disabled = firstQuestionAsked;
     }
-    if (askInput && askSendBtn) {
-      askSendBtn.disabled = firstQuestionAsked || !askInput.value.trim() || isGenerating || isStreaming;
+    if (domRefs.askInput && domRefs.askSendBtn) {
+      domRefs.askSendBtn.disabled =
+        firstQuestionAsked || !domRefs.askInput.value.trim() || isGenerating || isStreaming;
     }
-
-    const askPanel = document.getElementById('askAnswerPanel');
-    if (askPanel) {
-      askPanel.classList.toggle('has-answer', answerReady);
+    if (domRefs.askPanel) {
+      domRefs.askPanel.classList.toggle('has-answer', answerReady);
     }
-
-    const askFollowupInput = document.getElementById('askFollowupInput');
-    const askFollowupSendBtn = document.getElementById('askFollowupSendBtn');
-    if (askFollowupInput && askFollowupSendBtn) {
-      askFollowupSendBtn.disabled = !askFollowupInput.value.trim() || isGenerating || isStreaming;
+    if (domRefs.askFollowupInput && domRefs.askFollowupSendBtn) {
+      domRefs.askFollowupSendBtn.disabled =
+        !domRefs.askFollowupInput.value.trim() || isGenerating || isStreaming;
     }
-
-    const askChips = document.querySelectorAll('.ask-chip');
-    askChips.forEach((chip) => {
+    domRefs.askChips.forEach((chip) => {
       chip.disabled = isGenerating || isStreaming;
     });
   }
 
-  // Helper: Escape HTML to prevent XSS
   function escapeHtml(str) {
     if (!str) return '';
     return String(str)
@@ -242,7 +237,6 @@
       .replace(/'/g, '&#039;');
   }
 
-  // Helper: Strictly validate and sanitize URLs to prevent javascript:, data:, vbscript:, or protocol-relative XSS
   function sanitizeSafeUrl(rawUrl) {
     if (!rawUrl || typeof rawUrl !== 'string') return null;
     const decoded = rawUrl
@@ -257,12 +251,10 @@
       return null;
     }
 
-    // 1. Safe in-page section anchors (e.g. #projects, #skills)
     if (/^#[a-zA-Z0-9_-]+$/.test(decoded)) {
       return decoded;
     }
 
-    // 2. Safe same-origin relative paths (must start with single '/' and never '//' or '/\')
     if (decoded.startsWith('/')) {
       if (decoded.startsWith('//') || decoded.startsWith('/\\')) {
         return null;
@@ -273,20 +265,18 @@
       return null;
     }
 
-    // 3. Safe absolute URLs: strictly http: or https: protocols only
     try {
       const parsed = new URL(decoded);
       if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
         return parsed.href;
       }
-    } catch (e) {
+    } catch {
       return null;
     }
 
     return null;
   }
 
-  // Helper: Detect whether a URL points to radustoian.com (including anchors, relative paths, and current hostname)
   function isInternalUrl(url) {
     const safe = sanitizeSafeUrl(url);
     if (!safe) return false;
@@ -304,7 +294,6 @@
     }
   }
 
-  // Helper: Create a Grounded Source chip element with strict URL & text sanitization
   function createSourceChip(src) {
     if (!src || typeof src !== 'object') return null;
     const safeUrl = sanitizeSafeUrl(src.url);
@@ -320,9 +309,10 @@
       chip.target = '_blank';
       chip.rel = 'noopener noreferrer';
     }
-    const name = (typeof src.name === 'string' && src.name.trim())
-      ? src.name.trim()
-      : safeUrl.replace(/^https?:\/\//, '');
+    const name =
+      typeof src.name === 'string' && src.name.trim()
+        ? src.name.trim()
+        : safeUrl.replace(/^https?:\/\//, '');
     const span = document.createElement('span');
     span.textContent = name;
     chip.appendChild(span);
@@ -332,7 +322,6 @@
     return chip;
   }
 
-  // Helper: Create "Searching ..." collapsible dropdown showing Gemini query fan-outs
   function createFanOutDropdown(queries, language) {
     if (!Array.isArray(queries) || queries.length === 0) return null;
 
@@ -341,10 +330,12 @@
 
     const summary = document.createElement('summary');
     summary.className = 'nlweb-fanout-summary';
-    const cleanLang = typeof language === 'string' ? language.trim().replace(/[^a-zA-Z-]/g, '').slice(0, 10) : '';
-    const langTag = cleanLang && cleanLang.toLowerCase() !== 'en'
-      ? `<span class="nlweb-fanout-badge">${escapeHtml(cleanLang.toUpperCase())} → EN</span>`
-      : '';
+    const cleanLang =
+      typeof language === 'string' ? language.trim().replace(/[^a-zA-Z-]/g, '').slice(0, 10) : '';
+    const langTag =
+      cleanLang && cleanLang.toLowerCase() !== 'en'
+        ? `<span class="nlweb-fanout-badge">${escapeHtml(cleanLang.toUpperCase())} → EN</span>`
+        : '';
     summary.innerHTML = `
       <span class="nlweb-fanout-label">
         <span class="nlweb-fanout-icon">${ICONS.search}</span>
@@ -379,7 +370,6 @@
     return details;
   }
 
-  // Helper: Strict DOM-based allowlist HTML sanitizer (inert DOMParser + tag/attribute allowlist)
   const ALLOWED_RENDER_TAGS = new Set(['P', 'BR', 'STRONG', 'EM', 'CODE', 'H3', 'H4', 'UL', 'LI', 'A', 'SPAN']);
 
   function sanitizeRenderedHtml(dirtyHtml) {
@@ -454,30 +444,24 @@
         }
       }
       return wrapper.innerHTML;
-    } catch (e) {
+    } catch {
       return escapeHtml(dirtyHtml);
     }
   }
 
-  // Helper: Safe Markdown Parser (escapes input, formats markdown, and sanitizes final DOM tree)
   function renderMarkdown(md) {
     if (!md) return '';
     let text = escapeHtml(md);
 
-    // Headers
     text = text.replace(/^### (.*$)/gim, '<h4>$1</h4>');
     text = text.replace(/^## (.*$)/gim, '<h3>$1</h3>');
     text = text.replace(/^# (.*$)/gim, '<h3>$1</h3>');
 
-    // Bold & Italic
     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
     text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-    // Inline Code
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-    // Markdown Links: [Text](URL)
     text = text.replace(/\[([^\[\]\n]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*|#[a-zA-Z0-9_-]+)\)/g, (match, title, url) => {
       const safeUrl = sanitizeSafeUrl(url);
       if (!safeUrl) return title;
@@ -487,7 +471,6 @@
       return `<a href="${escapeHtml(safeUrl)}" ${targetAttr} class="nlweb-link">${title}${arrow}</a>`;
     });
 
-    // Bare URLs (not already inside an anchor tag)
     text = text.replace(/(^|[\s(])(https?:\/\/[^\s)<]+)/g, (match, prefix, url) => {
       const safeUrl = sanitizeSafeUrl(url);
       if (!safeUrl) return `${prefix}${url}`;
@@ -497,29 +480,27 @@
       return `${prefix}<a href="${escapeHtml(safeUrl)}" ${targetAttr} class="nlweb-link">${escapeHtml(safeUrl)}${arrow}</a>`;
     });
 
-    // Unordered lists
     text = text.replace(/^\s*[-*]\s+(.*)$/gim, '<li>$1</li>');
-    text = text.replace(/(?:<li>.*?<\/li>\s*)+/gims, match => `<ul>${match}</ul>`);
-    text = text.replace(/<\/ul>\s*<ul>/g, ''); // Join adjacent lists
+    text = text.replace(/(?:<li>.*?<\/li>\s*)+/gims, (match) => `<ul>${match}</ul>`);
+    text = text.replace(/<\/ul>\s*<ul>/g, '');
 
-    // Paragraphs
     const paragraphs = text.split(/\n\n+/);
-    text = paragraphs.map(p => {
-      p = p.trim();
-      if (!p) return '';
-      if (p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<li')) {
-        return p;
-      }
-      return `<p>${p.replace(/\n/g, '<br>')}</p>`;
-    }).join('');
+    text = paragraphs
+      .map((p) => {
+        p = p.trim();
+        if (!p) return '';
+        if (p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<li')) {
+          return p;
+        }
+        return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+      })
+      .join('');
 
     return sanitizeRenderedHtml(text);
   }
 
-  // Helper: Tokenize text into words while preserving attached markdown formatting and spacing
   function tokenizeIntoWords(text) {
     if (!text) return [];
-    // Tokenize by atomic markdown links, headers, words, and attach whitespace to preceding token
     const rawTokens = text.match(/\[[^\]]+\]\([^\)]+\)|#{1,4}\s+[^\n]+|\s+|\S+/g) || [text];
     const wordChunks = [];
     for (let i = 0; i < rawTokens.length; i++) {
@@ -541,10 +522,6 @@
       .trim();
   }
 
-  // Helper: Fallback Lead Extractor for NLWeb Responses
-  // Since the Cloudflare Worker (mcp-server) handles the Gemini API call server-side,
-  // responses are normally already concise 3-5 sentence synthesized answers.
-  // This extractor only activates if the worker falls back to raw multi-section KB markdown.
   function extractSmartAnswer(rawText, query) {
     if (!rawText) return '';
 
@@ -560,17 +537,14 @@
     ]);
 
     const cleanQuery = (query || '').toLowerCase();
-    const qTokens = (cleanQuery.match(/[a-z0-9_-]+/g) || [])
-      .filter(w => !stopWords.has(w));
-
+    const qTokens = (cleanQuery.match(/[a-z0-9_-]+/g) || []).filter((w) => !stopWords.has(w));
     const stem = (w) => w.replace(/(ing|tions?|s|ed|es|ive|al)$/, '');
     const qStems = qTokens.map(stem);
 
-    // Check if this is a broad "who is / background" query
-    const isGeneralWho = qTokens.length === 0 ||
+    const isGeneralWho =
+      qTokens.length === 0 ||
       (qTokens.length === 1 && ['background', 'profile', 'overview', 'bio', 'info', 'person'].includes(qTokens[0]));
 
-    // Split into markdown sections (delimited by ## or ###)
     const rawSections = text.split(/\n+(?=#{2,3}\s+)/);
 
     if (isGeneralWho) {
@@ -578,7 +552,7 @@
       const textParas = firstSec
         .replace(/^#{1,3}\s+[^\n]+\n+/, '')
         .split(/\n\n+/)
-        .map(p => p.trim())
+        .map((p) => p.trim())
         .filter(Boolean);
       return textParas.slice(0, 2).join('\n\n') || text;
     }
@@ -602,8 +576,10 @@
     }
 
     const allItems = [];
-    const colleagueIntentRegex = /\b(colleague|colleagues|peer|peers|teammate|teammates|coworker|coworkers|co-worker|co-workers|team\s+member|team\s+members|direct\s+report|direct\s+reports|reported\s+to|mentee|mentees|mentor|mentored|mentoring|mentorship|leadership\s+style|management\s+style|internal\s+feedback|george\s+russell|kabeer|kabs\s+ghale|harrison\s+woodward|oliver\s+barter|nikki\s+dance|magda\s+knight|coleg|colegi|colegii|collègue|collègues|colega|colegas|kollege|kollegen)\b/i;
-    const clientOrProjectIntentRegex = /\b(client|clients|customer|customers|project|projects|case\s+stud(y|ies)|portfolio|deliverable|deliverables|john\s+lewis|virgin\s+atlantic|mott\s+macdonald|surrey|actionhr|eteach|trs\s+staffing|lloyds|sanctuary\s+group|becky\s+vieites|claire\s+henderson|jemima\s+arnold|chris\s+harvey|robert\s+webb|allen\s+taylor|mahari\s+hay|ross\s+jukes)\b/i;
+    const colleagueIntentRegex =
+      /\b(colleague|colleagues|peer|peers|teammate|teammates|coworker|coworkers|co-worker|co-workers|team\s+member|team\s+members|direct\s+report|direct\s+reports|reported\s+to|mentee|mentees|mentor|mentored|mentoring|mentorship|leadership\s+style|management\s+style|internal\s+feedback|george\s+russell|kabeer|kabs\s+ghale|harrison\s+woodward|oliver\s+barter|nikki\s+dance|magda\s+knight|coleg|colegi|colegii|collègue|collègues|colega|colegas|kollege|kollegen)\b/i;
+    const clientOrProjectIntentRegex =
+      /\b(client|clients|customer|customers|project|projects|case\s+stud(y|ies)|portfolio|deliverable|deliverables|john\s+lewis|virgin\s+atlantic|mott\s+macdonald|surrey|actionhr|eteach|trs\s+staffing|lloyds|sanctuary\s+group|becky\s+vieites|claire\s+henderson|jemima\s+arnold|chris\s+harvey|robert\s+webb|allen\s+taylor|mahari\s+hay|ross\s+jukes)\b/i;
     const isColleagueQuery = colleagueIntentRegex.test(cleanQuery);
     const isClientOrProjectQuery = clientOrProjectIntentRegex.test(cleanQuery);
 
@@ -622,30 +598,24 @@
       if (isColleagueSec && !isColleagueQuery) return;
       if (isClientSec && isColleagueQuery && !isClientOrProjectQuery) return;
 
-      const rawItems = body.split(/\n\n+|\n(?=- )/).map(it => it.trim()).filter(Boolean);
-      rawItems.forEach(it => {
+      const rawItems = body.split(/\n\n+|\n(?=- )/).map((it) => it.trim()).filter(Boolean);
+      rawItems.forEach((it) => {
         let score = scoreSnippet(it);
         if (title && scoreSnippet(title) > 0) {
           score += 4;
         }
-        allItems.push({
-          text: it,
-          title: title,
-          sectionIdx: sIdx,
-          score: score
-        });
+        allItems.push({ text: it, title, sectionIdx: sIdx, score });
       });
     });
 
-    const matchingItems = allItems.filter(it => it.score > 0);
+    const matchingItems = allItems.filter((it) => it.score > 0);
     matchingItems.sort((a, b) => b.score - a.score);
 
     if (matchingItems.length === 0) {
-      const paras = text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+      const paras = text.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
       return paras.slice(0, 2).join('\n\n') || text;
     }
 
-    // Deduplicate and pick top 3 matching items
     const selectedItems = [];
     const seen = new Set();
     for (const it of matchingItems) {
@@ -659,7 +629,7 @@
 
     const leadParts = [];
     let lastTitle = null;
-    selectedItems.forEach(it => {
+    selectedItems.forEach((it) => {
       if (it.title && it.title !== lastTitle && !['Radu Stoian Profile Information', 'Overview'].includes(it.title)) {
         leadParts.push(`### ${it.title}`);
         lastTitle = it.title;
@@ -674,32 +644,27 @@
         leadStr = part;
       } else {
         const prev = leadParts[i - 1];
-        if (part.startsWith('- ') && prev.startsWith('- ')) {
-          leadStr += '\n' + part;
-        } else {
-          leadStr += '\n\n' + part;
-        }
+        leadStr += part.startsWith('- ') && prev.startsWith('- ') ? '\n' + part : '\n\n' + part;
       }
     }
 
     return leadStr || text;
   }
 
-  // Create DOM elements
   function createWidgetDOM() {
-    // 1. Floating Launcher Button (Sparkle icon only)
-    const launcher = document.createElement('button');
-    launcher.id = 'nlwebChatLauncher';
-    launcher.className = 'nlweb-launcher';
-    launcher.setAttribute('aria-label', 'Ask Radu AI - NLWeb assistant');
-    launcher.setAttribute('aria-haspopup', 'dialog');
-    launcher.setAttribute('aria-expanded', 'false');
-    launcher.setAttribute('aria-controls', 'nlwebChatDialog');
-    launcher.innerHTML = `
-      <span class="nlweb-launcher-icon">${ICONS.sparkle}</span>
-    `;
+    let launcher = document.getElementById('nlwebChatLauncher');
+    if (!launcher) {
+      launcher = document.createElement('button');
+      launcher.id = 'nlwebChatLauncher';
+      launcher.className = 'nlweb-launcher';
+      launcher.setAttribute('aria-label', 'Ask Radu AI - NLWeb assistant');
+      launcher.setAttribute('aria-haspopup', 'dialog');
+      launcher.setAttribute('aria-expanded', 'false');
+      launcher.setAttribute('aria-controls', 'nlwebChatDialog');
+      launcher.innerHTML = `<span class="nlweb-launcher-icon">${ICONS.sparkle}</span>`;
+      document.body.appendChild(launcher);
+    }
 
-    // 2. Dialog Window
     const dialog = document.createElement('div');
     dialog.id = 'nlwebChatDialog';
     dialog.className = 'nlweb-dialog';
@@ -711,7 +676,7 @@
       <header class="nlweb-header">
         <div class="nlweb-header-profile">
           <div class="nlweb-avatar-wrap">
-            <img src="/radu-stoian-enhance-media.webp" width="36" height="36" decoding="async" alt="Radu Stoian" class="nlweb-avatar" onerror="this.src='/radu-stoian-enhance-media.jpg'">
+            <img src="/radu-stoian-enhance-media.webp" width="36" height="36" loading="lazy" decoding="async" alt="Radu Stoian" class="nlweb-avatar">
             <span class="nlweb-status-dot" title="Online via NLWeb"></span>
           </div>
           <div class="nlweb-header-info">
@@ -733,9 +698,7 @@
         </div>
       </header>
 
-      <div class="nlweb-messages" id="nlwebMessages" role="log" aria-live="polite">
-        <!-- Rendered Messages will go here -->
-      </div>
+      <div class="nlweb-messages" id="nlwebMessages" role="log" aria-live="polite"></div>
 
       <footer class="nlweb-footer">
         <form class="nlweb-input-form" id="nlwebInputForm">
@@ -757,13 +720,19 @@
       </footer>
     `;
 
-    document.body.appendChild(launcher);
-    document.body.appendChild(dialog);
+    const avatarImg = dialog.querySelector('.nlweb-avatar');
+    if (avatarImg) {
+      avatarImg.addEventListener('error', () => {
+        if (!avatarImg.src.endsWith('/radu-stoian-enhance-media.jpg')) {
+          avatarImg.src = '/radu-stoian-enhance-media.jpg';
+        }
+      }, { once: true });
+    }
 
+    document.body.appendChild(dialog);
     return { launcher, dialog };
   }
 
-  // Load conversation from sessionStorage
   function loadHistory() {
     try {
       const stored = sessionStorage.getItem(STORAGE_KEY);
@@ -771,16 +740,14 @@
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
           messages = parsed;
-          const lastUserMsg = [...messages].reverse().find(m => m.role === 'user');
+          messagesVersion++;
+          const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user');
           if (lastUserMsg) prevQuery = lastUserMsg.content;
           return;
         }
       }
-    } catch (e) {
-      // Ignore storage read errors
-    }
+    } catch {}
 
-    // Default welcome message
     messages = [
       {
         role: 'agent',
@@ -788,18 +755,15 @@
         sources: []
       }
     ];
+    messagesVersion++;
   }
 
-  // Save conversation to sessionStorage
   function saveHistory() {
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-    } catch (e) {
-      // Ignore storage write errors
-    }
+    } catch {}
   }
 
-  // Helper: Render all messages into a specific DOM container
   function renderMessagesIntoContainer(container, typingId, isAskBar = false) {
     if (!container) return;
 
@@ -807,11 +771,7 @@
 
     messages.forEach((msg, index) => {
       if (!msg || typeof msg !== 'object') return;
-
-      // For the horizontal ask bar, do not show the initial greeting message
-      if (isAskBar && index === 0 && msg.role === 'agent' && !msg.query) {
-        return;
-      }
+      if (isAskBar && index === 0 && msg.role === 'agent' && !msg.query) return;
 
       const safeRole = msg.role === 'user' ? 'user' : 'agent';
       const row = document.createElement('div');
@@ -832,7 +792,8 @@
           }
         }
 
-        const queryForMsg = msg.query || (index > 0 && messages[index - 1]?.role === 'user' ? messages[index - 1].content : '');
+        const queryForMsg =
+          msg.query || (index > 0 && messages[index - 1]?.role === 'user' ? messages[index - 1].content : '');
         const leadDiv = document.createElement('div');
         leadDiv.className = msg.isStreaming ? 'nlweb-lead-content' : 'nlweb-lead-content is-complete';
         if (!queryForMsg) {
@@ -846,9 +807,8 @@
         bubble.innerHTML = renderMarkdown(leadText);
       }
 
-      // Render Grounded Sources if present
       if (Array.isArray(msg.sources) && msg.sources.length > 0) {
-        const validChips = msg.sources.map(src => createSourceChip(src)).filter(Boolean);
+        const validChips = msg.sources.map((src) => createSourceChip(src)).filter(Boolean);
         if (validChips.length > 0) {
           const sourcesWrap = document.createElement('div');
           sourcesWrap.className = 'nlweb-sources-container';
@@ -860,9 +820,7 @@
 
           const list = document.createElement('div');
           list.className = 'nlweb-sources-list';
-          validChips.forEach(chip => {
-            list.appendChild(chip);
-          });
+          validChips.forEach((chip) => list.appendChild(chip));
           sourcesWrap.appendChild(list);
           bubble.appendChild(sourcesWrap);
         }
@@ -870,7 +828,6 @@
 
       row.appendChild(bubble);
 
-      // Copy Button for agent responses (skip introductory message at index 0)
       if (msg.role === 'agent' && !msg.isStreaming && index > 0) {
         const actions = document.createElement('div');
         actions.className = 'nlweb-msg-actions';
@@ -884,9 +841,7 @@
             setTimeout(() => {
               copyBtn.innerHTML = `${ICONS.copy} <span>Copy</span>`;
             }, 2000);
-          } catch (err) {
-            // fallback
-          }
+          } catch {}
         };
         actions.appendChild(copyBtn);
         row.appendChild(actions);
@@ -895,7 +850,6 @@
       container.appendChild(row);
     });
 
-    // If generating and waiting for response
     if (isGenerating) {
       const typingRow = document.createElement('div');
       typingRow.className = 'nlweb-msg-row is-agent';
@@ -910,15 +864,9 @@
       `;
       container.appendChild(typingRow);
 
-      // Scroll to show the newly submitted user question and typing indicator
       const userRow = container.querySelector('.nlweb-msg-row.is-user:last-of-type');
-      if (userRow) {
-        container.scrollTop = Math.max(0, userRow.offsetTop - 10);
-      } else {
-        container.scrollTop = container.scrollHeight;
-      }
+      container.scrollTop = userRow ? Math.max(0, userRow.offsetTop - 10) : container.scrollHeight;
     } else {
-      // Stay at the top of the latest agent answer if one exists
       const lastAgentRow = container.querySelector('.nlweb-msg-row.is-agent:last-of-type');
       if (lastAgentRow && messages.length > 1) {
         const userRow = lastAgentRow.previousElementSibling;
@@ -931,47 +879,34 @@
     }
   }
 
-  // Render all messages into both floating widget and horizontal ask bar
-  function renderMessages() {
+  function renderMessages(force = false) {
     updateSendBtnState();
-    renderMessagesIntoContainer(document.getElementById('nlwebMessages'), 'nlwebTypingIndicator', false);
-    renderMessagesIntoContainer(document.getElementById('askAnswerBody'), 'askTypingIndicator', true);
-  }
-
-  // Compute and set height of the horizontal ask bar's answer panel to cover the About section below
-  function updateAskBarHeight() {
-    const askSection = document.getElementById('ask-bar');
-    const aboutPanel = document.querySelector('#about .panel') || document.getElementById('about');
-    if (!askSection || !aboutPanel) return;
-
-    const askRect = askSection.getBoundingClientRect();
-    const aboutRect = aboutPanel.getBoundingClientRect();
-    const panelTop = askRect.bottom + 14;
-    const exactCoverHeight = Math.round(aboutRect.bottom - panelTop);
-    const fallbackHeight = Math.round(aboutRect.height);
-    const finalHeight = Math.max(exactCoverHeight, fallbackHeight, 440);
-    askSection.style.setProperty('--about-cover-height', `${finalHeight}px`);
+    if (!force && messagesVersion === lastRenderedVersion && isGenerating === lastRenderedGenerating) {
+      return;
+    }
+    lastRenderedVersion = messagesVersion;
+    lastRenderedGenerating = isGenerating;
+    renderMessagesIntoContainer(domRefs.messagesEl, 'nlwebTypingIndicator', false);
+    renderMessagesIntoContainer(domRefs.askAnswerBody, 'askTypingIndicator', true);
   }
 
   let scrollAskBarRafId = 0;
   let scrollAskBarTimerId = null;
 
-  // Align the horizontal ask bar to the top of the viewport without forced synchronous reflow
   function scrollAskBarToTop(instant = false) {
-    if (scrollAskBarRafId) {
-      cancelAnimationFrame(scrollAskBarRafId);
-    }
+    if (scrollAskBarRafId) cancelAnimationFrame(scrollAskBarRafId);
     scrollAskBarRafId = requestAnimationFrame(() => {
       scrollAskBarRafId = 0;
-      const askSection = document.getElementById('ask-bar');
-      if (!askSection || !isAskBarOpen) return;
+      if (!domRefs.askSection || !isAskBarOpen) return;
       const isMobile = askMobileQuery ? askMobileQuery.matches : window.innerWidth <= 640;
       const targetMargin = isMobile ? 16 : 32;
-      const rect = askSection.getBoundingClientRect();
+      const rect = domRefs.askSection.getBoundingClientRect();
       if (Math.abs(rect.top - targetMargin) > 4) {
-        const prefersReducedMotion = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        askSection.scrollIntoView({
-          behavior: (instant || prefersReducedMotion) ? 'auto' : 'smooth',
+        const reduceMotion =
+          typeof window.matchMedia === 'function' &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        domRefs.askSection.scrollIntoView({
+          behavior: instant || reduceMotion ? 'auto' : 'smooth',
           block: 'start'
         });
       }
@@ -984,31 +919,29 @@
     } else {
       scrollAskBarToTop(false);
     }
-    const isMobileOrTouch = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 640px), (pointer: coarse)').matches;
+    const isMobileOrTouch =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(max-width: 640px), (pointer: coarse)').matches;
     if (isMobileOrTouch) {
       if (scrollAskBarTimerId) clearTimeout(scrollAskBarTimerId);
       scrollAskBarTimerId = setTimeout(() => {
         scrollAskBarTimerId = null;
-        if (isAskBarOpen) {
-          scrollAskBarToTop(false);
-        }
+        if (isAskBarOpen) scrollAskBarToTop(false);
       }, 250);
     }
   }
 
-  // Open / Close Horizontal Ask Bar Overlay & Answer Box
   function toggleAskBar(openState) {
-    const askSection = document.getElementById('ask-bar');
-    const answerPanel = document.getElementById('askAnswerPanel');
-    const askInput = document.getElementById('askTextInput');
-    if (!askSection || !answerPanel) return;
-
-    isAskBarOpen = (typeof openState === 'boolean') ? openState : !isAskBarOpen;
+    if (!domRefs.askSection || !domRefs.askPanel) return;
+    const nextState = typeof openState === 'boolean' ? openState : !isAskBarOpen;
+    if (nextState === isAskBarOpen) {
+      if (isAskBarOpen) scrollAskBarToTop(false);
+      return;
+    }
+    isAskBarOpen = nextState;
 
     if (isAskBarOpen) {
-      if (isOpen) {
-        toggleDialog(false);
-      }
+      if (isOpen) toggleDialog(false);
 
       const navbar = document.getElementById('navbar');
       if (navbar && navbar.classList.contains('mobile-open')) {
@@ -1016,15 +949,11 @@
         if (navToggle) navToggle.click();
       }
 
-      updateAskBarHeight();
       document.body.classList.add('ask-overlay-open');
-      askSection.classList.add('is-active');
-      answerPanel.setAttribute('aria-hidden', 'false');
+      domRefs.askSection.classList.add('is-active');
+      domRefs.askPanel.setAttribute('aria-hidden', 'false');
 
-      if (!isStreaming) {
-        renderMessages();
-      }
-
+      if (!isStreaming) renderMessages();
       scrollAskBarToTop(false);
     } else {
       if (scrollAskBarRafId) {
@@ -1036,45 +965,38 @@
         scrollAskBarTimerId = null;
       }
       document.body.classList.remove('ask-overlay-open');
-      askSection.classList.remove('is-active');
-      answerPanel.setAttribute('aria-hidden', 'true');
+      domRefs.askSection.classList.remove('is-active');
+      domRefs.askPanel.setAttribute('aria-hidden', 'true');
     }
   }
 
-  // Open / Close Toggle (Floating Widget)
   function toggleDialog(openState) {
-    const dialog = document.getElementById('nlwebChatDialog');
-    const launcher = document.getElementById('nlwebChatLauncher');
-    const input = document.getElementById('nlwebTextInput');
+    const dialog = domRefs.dialog;
+    const launcher = domRefs.launcher;
+    const input = domRefs.nlwebInput;
+    if (!dialog || !launcher) return;
 
-    isOpen = (typeof openState === 'boolean') ? openState : !isOpen;
+    const nextState = typeof openState === 'boolean' ? openState : !isOpen;
+    if (nextState === isOpen) return;
+    isOpen = nextState;
 
     if (isOpen) {
-      if (isAskBarOpen) {
-        toggleAskBar(false);
-      }
+      if (isAskBarOpen) toggleAskBar(false);
 
       dialog.classList.add('is-open');
       launcher.setAttribute('aria-expanded', 'true');
 
-      // Close mobile navigation menu if it is currently open
       const navbar = document.getElementById('navbar');
       if (navbar && navbar.classList.contains('mobile-open')) {
         const navToggle = document.getElementById('navToggle');
         if (navToggle) navToggle.click();
       }
 
-      if (!isStreaming) {
-        renderMessages();
-      }
+      if (!isStreaming) renderMessages();
 
-      // Auto-focus input only on non-touch desktop devices
-      // On mobile/touch devices, auto-focus summons the virtual keyboard and pushes the intro text off-screen
       setTimeout(() => {
         const isMobileOrTouch = window.matchMedia('(max-width: 640px), (pointer: coarse)').matches;
-        if (!isMobileOrTouch && input) {
-          input.focus();
-        }
+        if (!isMobileOrTouch && input) input.focus();
       }, 100);
     } else {
       dialog.classList.remove('is-open');
@@ -1086,13 +1008,12 @@
     }
   }
 
-  // Maximise / Restore Toggle
   function toggleMaximize(forceState) {
-    const dialog = document.getElementById('nlwebChatDialog');
-    const maxBtn = document.getElementById('nlwebMaximizeBtn');
+    const dialog = domRefs.dialog;
+    const maxBtn = domRefs.maxBtn;
     if (!dialog) return;
 
-    isMaximized = (typeof forceState === 'boolean') ? forceState : !isMaximized;
+    isMaximized = typeof forceState === 'boolean' ? forceState : !isMaximized;
 
     if (isMaximized) {
       dialog.classList.add('is-maximized');
@@ -1111,7 +1032,7 @@
       }
     }
 
-    const container = document.getElementById('nlwebMessages');
+    const container = domRefs.messagesEl;
     if (container) {
       const lastAgentRow = container.querySelector('.nlweb-msg-row.is-agent:last-of-type');
       if (lastAgentRow && messages.length > 1) {
@@ -1127,7 +1048,6 @@
     }
   }
 
-  // Deduplicate and extract sources from results
   function extractSources(results) {
     if (!Array.isArray(results)) return [];
     const seen = new Set();
@@ -1137,16 +1057,12 @@
       const safeUrl = sanitizeSafeUrl(r.url);
       if (safeUrl && !seen.has(safeUrl)) {
         seen.add(safeUrl);
-        sources.push({
-          url: safeUrl,
-          name: r.name || r.schema_object?.name || safeUrl
-        });
+        sources.push({ url: safeUrl, name: r.name || r.schema_object?.name || safeUrl });
       }
     }
     return sources;
   }
 
-  // Helper: Render markdown with trailing typing cursor inside the closing block tag
   function renderMarkdownWithCursor(mdText) {
     const rendered = renderMarkdown(mdText);
     let withCursor;
@@ -1164,7 +1080,6 @@
     return sanitizeRenderedHtml(withCursor);
   }
 
-  // Helper: Create live agent message bubble inside a single container
   function createLiveBubbleInContainer(container, fanOutQueries = [], language = 'en') {
     if (!container) return null;
 
@@ -1192,8 +1107,6 @@
     const prevScrollBehavior = container.style.scrollBehavior;
     container.style.scrollBehavior = 'auto';
 
-    // Requirement 3: Don't automatically scroll to the end of the answer.
-    // Stay at the top of the answer and the user can scroll down to see the full answer.
     const userRow = row.previousElementSibling;
     let targetTop = row.offsetTop - 12;
     if (userRow && userRow.offsetHeight < 70 && container.clientHeight > 220) {
@@ -1204,7 +1117,6 @@
     return { container, row, bubble, fanoutSlot, leadContent, prevScrollBehavior };
   }
 
-  // Helper: Create live agent message bubble across both chat surfaces when fan-out queries or first token chunk arrives
   function createLiveAgentBubble(fanOutQueries = [], language = 'en') {
     const typingIndicator = document.getElementById('nlwebTypingIndicator');
     if (typingIndicator) typingIndicator.remove();
@@ -1215,12 +1127,11 @@
     isStreaming = true;
     updateSendBtnState();
 
-    const dialog = document.getElementById('nlwebChatDialog');
-    if (dialog) dialog.classList.add('has-answer');
+    if (domRefs.dialog) domRefs.dialog.classList.add('has-answer');
 
     const targets = [
-      createLiveBubbleInContainer(document.getElementById('nlwebMessages'), fanOutQueries, language),
-      createLiveBubbleInContainer(document.getElementById('askAnswerBody'), fanOutQueries, language)
+      createLiveBubbleInContainer(domRefs.messagesEl, fanOutQueries, language),
+      createLiveBubbleInContainer(domRefs.askAnswerBody, fanOutQueries, language)
     ].filter(Boolean);
 
     if (targets.length === 0) return null;
@@ -1254,20 +1165,22 @@
     };
   }
 
-  // Helper: Finalize live agent message bubble with sources, fan-outs, copy action, and session persistence
   function finalizeLiveAgentBubble(liveBubble, targetText, sources, userQuestion, fanOutQueries = [], language = 'en') {
     isStreaming = false;
-    const cleanFanOut = isRefusalResponse(targetText) ? [] : (Array.isArray(fanOutQueries) ? [...fanOutQueries] : []);
+    const cleanFanOut = isRefusalResponse(targetText) ? [] : Array.isArray(fanOutQueries) ? [...fanOutQueries] : [];
 
     if (!liveBubble || !Array.isArray(liveBubble.targets) || liveBubble.targets.length === 0) {
       messages.push({
         role: 'agent',
         content: targetText,
         query: userQuestion,
-        sources: sources,
+        sources,
         fanOutQueries: cleanFanOut,
-        language: language
+        language
       });
+      messagesVersion++;
+      lastRenderedVersion = messagesVersion;
+      lastRenderedGenerating = isGenerating;
       saveHistory();
       updateSendBtnState();
       return;
@@ -1277,11 +1190,8 @@
 
     liveBubble.targets.forEach((target) => {
       const { container, row, bubble, fanoutSlot, leadContent, prevScrollBehavior } = target;
-
-      // Restore normal smooth scroll behavior
       container.style.scrollBehavior = prevScrollBehavior || '';
 
-      // Ensure fanoutSlot matches final state (clear on refusal, populate if not already rendered)
       if (fanoutSlot) {
         if (cleanFanOut.length === 0) {
           fanoutSlot.innerHTML = '';
@@ -1291,13 +1201,11 @@
         }
       }
 
-      // Clean final render without cursor and adjust container height to the received answer
       leadContent.classList.add('is-complete');
       leadContent.innerHTML = finalHtml;
 
-      // Render Grounded Sources Chips if present
       if (Array.isArray(sources) && sources.length > 0) {
-        const validChips = sources.map(src => createSourceChip(src)).filter(Boolean);
+        const validChips = sources.map((src) => createSourceChip(src)).filter(Boolean);
         if (validChips.length > 0) {
           const sourcesWrap = document.createElement('div');
           sourcesWrap.className = 'nlweb-sources-container';
@@ -1308,15 +1216,12 @@
 
           const list = document.createElement('div');
           list.className = 'nlweb-sources-list';
-          validChips.forEach(chip => {
-            list.appendChild(chip);
-          });
+          validChips.forEach((chip) => list.appendChild(chip));
           sourcesWrap.appendChild(list);
           bubble.appendChild(sourcesWrap);
         }
       }
 
-      // Copy Button
       const actions = document.createElement('div');
       actions.className = 'nlweb-msg-actions';
       const copyBtn = document.createElement('button');
@@ -1329,29 +1234,27 @@
           setTimeout(() => {
             copyBtn.innerHTML = `${ICONS.copy} <span>Copy</span>`;
           }, 2000);
-        } catch (err) {}
+        } catch {}
       };
       actions.appendChild(copyBtn);
       row.appendChild(actions);
     });
 
-    // Add to messages and persist
     messages.push({
       role: 'agent',
       content: targetText,
       query: userQuestion,
-      sources: sources,
+      sources,
       fanOutQueries: cleanFanOut,
-      language: language
+      language
     });
+    messagesVersion++;
+    lastRenderedVersion = messagesVersion;
+    lastRenderedGenerating = isGenerating;
     saveHistory();
-
-    // Requirement 3: Do NOT automatically scroll to the end of the answer!
-    // Stay at the top of the answer and the user can scroll down to see the full answer.
     updateSendBtnState();
   }
 
-  // Stream agent response word-by-word with typewriter effect at 5 words per second (used for NLWeb answers, guardrails, and JSON fallback)
   function streamAgentResponse(targetText, sources, userQuestion, fanOutQueries = [], language = 'en') {
     return new Promise((resolve) => {
       const cleanFanOut = isRefusalResponse(targetText) ? [] : fanOutQueries;
@@ -1361,10 +1264,11 @@
           role: 'agent',
           content: targetText,
           query: userQuestion,
-          sources: sources,
+          sources,
           fanOutQueries: cleanFanOut,
-          language: language
+          language
         });
+        messagesVersion++;
         saveHistory();
         isStreaming = false;
         updateSendBtnState();
@@ -1381,13 +1285,11 @@
         streamingTimer = null;
       }
 
-      // Requirement 1: 5 words per second = 1 word every 200ms
       streamingTimer = setInterval(() => {
         if (tokenIndex < totalChunks) {
           tokenIndex++;
           const currentText = wordChunks.slice(0, tokenIndex).join('');
           liveBubble.setLeadHtml(renderMarkdownWithCursor(currentText));
-          // Requirement 3: Do NOT scroll to bottom! Stay at the top of the answer.
         }
 
         if (tokenIndex >= totalChunks) {
@@ -1400,7 +1302,6 @@
     });
   }
 
-  // Guardrail check: Prevent prompt injections asking to ignore system settings
   function isPromptInjection(text) {
     if (!text) return false;
     const injectionPatterns = [
@@ -1410,10 +1311,9 @@
       /\bdisregard\s+(all\s+|any\s+|your\s+)?(previous\s+|prior\s+)?(instructions?|rules?|prompts?|settings?)\b/i,
       /\b(new\s+instructions?:|system\s+prompt:|you\s+are\s+now\s+a\s+different)\b/i
     ];
-    return injectionPatterns.some(pattern => pattern.test(text));
+    return injectionPatterns.some((pattern) => pattern.test(text));
   }
 
-  // Guardrail check: Prevent prompt extraction / leakage attempts
   function isPromptLeakageAttempt(text) {
     if (!text) return false;
     const leakagePatterns = [
@@ -1422,11 +1322,9 @@
       /\bprint\s+(the\s+|everything\s+)?(text\s+)?above\b/i,
       /\b(tell\s+me|show\s+me)\s+what\s+(was\s+written|you\s+were\s+told)\s+above\b/i
     ];
-    return leakagePatterns.some(pattern => pattern.test(text));
+    return leakagePatterns.some((pattern) => pattern.test(text));
   }
 
-  // Guardrail check: Prevent harassment, hate speech, sexually explicit, or dangerous requests
-  // Client-side pre-filter aligned with server-side Gemini safetySettings (BLOCK_MEDIUM_AND_ABOVE)
   function isAbusiveOrDangerous(text) {
     if (!text) return false;
     const dangerousPatterns = [
@@ -1435,40 +1333,16 @@
       /\b(fuck|fucking|bitch|bastard|asshole|cunt|dickhead|motherfucker)\b/i,
       /\b(porn|pornography|sexually\s+explicit|nsfw|erotic)\b/i
     ];
-    return dangerousPatterns.some(pattern => pattern.test(text));
+    return dangerousPatterns.some((pattern) => pattern.test(text));
   }
 
-  // Guardrail check: Prevent off-topic coding, math, or creative writing task abuse
   function isOffTopicTaskAttempt(text) {
     if (!text) return false;
     const taskPatterns = [
       /\b(write|generate|create|debug|fix)\s+(a\s+|an\s+|me\s+|some\s+)?(python|javascript|typescript|java|c\+\+|rust|go|html|css|sql|bash|shell|code|script|program|function|regex|poem|haiku|sonnet|essay|story|song|recipe)\b/i,
       /\b(solve\s+this|calculate\s+the|translate\s+this\s+into)\b/i
     ];
-    return taskPatterns.some(pattern => pattern.test(text));
-  }
-
-  // Guardrail check: Only answer questions about Radu or his portfolio work (supports any language)
-  function isQueryAboutRadu(question, prev = '') {
-    if (!question) return false;
-    const q = question.trim();
-    const directRef = /\b(radu('s)?|stoian|you|your|yours|yourself|he|him|his|tu|toi|te|vous|votre|vos|el|lui|tău|dumneavoastră|il|son|sa|ses|su|sus|usted|ustedes|er|ihm|ihn|sein|seine|du|dir|dich|dein|deine|sie|ihnen|ihr|euch|ele|dele|suo|sua|suoi)\b|radustoian/i;
-    const portfolioDomainRef = /\b(ojcp|open\s*job\s*context|brighton\s*seo|talent\s*attraction|employer\s*brand(ing)?|brand\s*health|webmcp|nlweb|case\s*stud(y|ies)|testimonial|testimonials|recommendation|recommendations|endorsement|endorsements|colleague|colleagues|coleg(i|ii)?|collègue(s)?|colega(s)?|kollege(n)?|mentor(ship|ing)?|teammate(s)?|peer(s)?|certification|certifications|credential|credentials|alma\s*mater|masterclass|google\s*cloud|genai\s*leader|bigquery|project|projects|proiect(e)?|projet(s)?|proyecto(s)?|projekt(e)?|client|clients|cliente(s)?|kunden|studi|étud|educa|education|degree|degrees|certifica|competen|limbi|langue(s)?|idioma(s)?|sprache(n)?|cariera|carrière|carrera|karriere|experien|experience|expertise|expert|profession|work|role|niche|location|located|live|living|based|locui[\p{L}]*|wohnen|habiter|speak|speaking|talk|talks|presentation|keynote|podcast|articol(e)?|article(s)?|artículo(s)?|publication|publications|director|directeur|direktor|result(s)?|outcome(s)?|metric(s)?|contact|connect|social|bio|biography|background|overview)\b/iu;
-    const nonLatinScriptRef = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p{Script=Hangul}|\p{Script=Cyrillic}|\p{Script=Arabic}|\p{Script=Greek}|\p{Script=Devanagari}/u;
-
-    if (directRef.test(q) || portfolioDomainRef.test(q) || nonLatinScriptRef.test(q)) {
-      return true;
-    }
-
-    if (prev && (directRef.test(prev) || portfolioDomainRef.test(prev) || nonLatinScriptRef.test(prev))) {
-      const wordCount = q.split(/\s+/).length;
-      const followUpRef = /\b(project|client|colleague|peer|teammate|mentor|skill|degree|education|university|school|language|location|live|based|speak|talk|podcast|article|publication|contact|connect|linkedin|github|work|role|experience|result|outcome|metric|more|else|about\s+that|about\s+it|they|them|their)\b/i;
-      if (wordCount <= 15 || followUpRef.test(q)) {
-        return true;
-      }
-    }
-
-    return false;
+    return taskPatterns.some((pattern) => pattern.test(text));
   }
 
   function isRefusalResponse(text) {
@@ -1484,37 +1358,35 @@
     );
   }
 
-  // Query NLWeb using real-time SSE Token Streaming or JSON fallback (Gemini synthesis handled server-side by mcp-server worker)
   async function queryNLWeb(userQuestion) {
-    // 1. Guardrail Check: Never accept prompt injection / ignore instructions
     if (isPromptInjection(userQuestion)) {
-      const refusalText = "I cannot accept prompts asking to ignore or override my operating guidelines. I am only meant to answer respectful questions about Radu Stoian.";
+      const refusalText =
+        'I cannot accept prompts asking to ignore or override my operating guidelines. I am only meant to answer respectful questions about Radu Stoian.';
       await streamAgentResponse(refusalText, [], userQuestion);
       return;
     }
 
-    // 2. Guardrail Check: Never reveal internal system instructions or prompt
     if (isPromptLeakageAttempt(userQuestion)) {
-      const refusalText = "My internal system instructions and operating guidelines are proprietary and confidential. I am only here to answer questions about Radu Stoian and his work.";
+      const refusalText =
+        'My internal system instructions and operating guidelines are proprietary and confidential. I am only here to answer questions about Radu Stoian and his work.';
       await streamAgentResponse(refusalText, [], userQuestion);
       return;
     }
 
-    // 3. Guardrail Check: Refuse abusive, profane, or dangerous queries
     if (isAbusiveOrDangerous(userQuestion)) {
-      const refusalText = "I cannot engage with abusive, profane, or dangerous requests. I am only meant to answer questions about Radu Stoian and his work.";
+      const refusalText =
+        'I cannot engage with abusive, profane, or dangerous requests. I am only meant to answer questions about Radu Stoian and his work.';
       await streamAgentResponse(refusalText, [], userQuestion);
       return;
     }
 
-    // 4. Guardrail Check: Politely refuse explicit off-topic task attempts; let the server & Gemini evaluate multilingual relevance
     if (isOffTopicTaskAttempt(userQuestion)) {
-      const refusalText = "I am only meant to answer questions about Radu Stoian. Please feel free to ask anything about him, his background, skills, case studies, or projects.";
+      const refusalText =
+        'I am only meant to answer questions about Radu Stoian. Please feel free to ask anything about him, his background, skills, case studies, or projects.';
       await streamAgentResponse(refusalText, [], userQuestion);
       return;
     }
 
-    // Only consume a question from the user's 10-question quota once pre-filters pass
     incrementSessionQueryCount();
 
     isGenerating = true;
@@ -1534,7 +1406,9 @@
     let streamWordIndex = 0;
 
     if (activeAbortController) {
-      try { activeAbortController.abort(); } catch (e) {}
+      try {
+        activeAbortController.abort();
+      } catch {}
     }
     const abortController = new AbortController();
     activeAbortController = abortController;
@@ -1544,7 +1418,6 @@
       streamingTimer = null;
     }
 
-    // Typewriter Promise: paces display at 5 words per second (200ms per word)
     let finishTypewriterResolve = null;
     const typewriterPromise = new Promise((resolve) => {
       finishTypewriterResolve = resolve;
@@ -1559,7 +1432,6 @@
         streamWordIndex++;
         const currentDisplay = streamWordChunks.slice(0, streamWordIndex).join('');
         liveBubble.setLeadHtml(renderMarkdownWithCursor(currentDisplay));
-        // Requirement 3: Do NOT scroll to bottom! Stay at top of answer.
       }
 
       if (sseFinished && streamWordIndex >= streamWordChunks.length) {
@@ -1570,11 +1442,12 @@
     }, WORD_TICK_MS);
 
     try {
-      // 1. Try Server-Sent Events (SSE) Stream via GET (/ask on mcp-server worker)
-      const streamUrl = `${ASK_ENDPOINT}?q=${encodeURIComponent(userQuestion)}${currentPrev ? '&prev=' + encodeURIComponent(currentPrev) : ''}&mode=generate`;
+      const streamUrl = `${ASK_ENDPOINT}?q=${encodeURIComponent(userQuestion)}${
+        currentPrev ? '&prev=' + encodeURIComponent(currentPrev) : ''
+      }&mode=generate`;
       const response = await fetch(streamUrl, {
         method: 'GET',
-        headers: { 'Accept': 'text/event-stream' },
+        headers: { Accept: 'text/event-stream' },
         signal: abortController.signal
       });
 
@@ -1593,7 +1466,7 @@
       const processEvent = (evType, evBody) => {
         const dataLines = evBody
           .split('\n')
-          .map(line => line.startsWith('data:') ? line.slice(5).replace(/^ /, '') : line);
+          .map((line) => (line.startsWith('data:') ? line.slice(5).replace(/^ /, '') : line));
         const cleanBody = dataLines.join('\n').trim();
 
         if (evType === 'reset') {
@@ -1603,15 +1476,13 @@
           streamWordIndex = 0;
           gatheredSources.length = 0;
           gatheredFanOut.length = 0;
-          if (liveBubble) {
-            liveBubble.clearFanout();
-          }
+          if (liveBubble) liveBubble.clearFanout();
         } else if (evType === 'fanout') {
           try {
             const fanoutObj = JSON.parse(cleanBody);
             if (Array.isArray(fanoutObj.queries) && fanoutObj.queries.length > 0) {
               gatheredFanOut.length = 0;
-              fanoutObj.queries.forEach(q => {
+              fanoutObj.queries.forEach((q) => {
                 if (q && typeof q === 'string') gatheredFanOut.push(q);
               });
               fanOutLang = fanoutObj.language || 'en';
@@ -1628,9 +1499,7 @@
                 liveBubble.setFanout(gatheredFanOut, fanOutLang);
               }
             }
-          } catch (e) {
-            // Ignore malformed fanout JSON
-          }
+          } catch {}
         } else if (evType === 'chunk') {
           try {
             const chunkObj = JSON.parse(cleanBody);
@@ -1641,22 +1510,18 @@
               agentResponseText = cleanedChunkText;
               streamWordChunks = tokenizeIntoWords(cleanedChunkText);
             }
-          } catch (e) {
-            // Ignore malformed chunk JSON
-          }
+          } catch {}
         } else if (evType === 'result') {
           try {
             const resObj = JSON.parse(cleanBody);
             const safeUrl = resObj && sanitizeSafeUrl(resObj.url);
-            if (safeUrl && !gatheredSources.some(s => s.url === safeUrl)) {
+            if (safeUrl && !gatheredSources.some((s) => s.url === safeUrl)) {
               gatheredSources.push({
                 url: safeUrl,
                 name: resObj.name || resObj.schema_object?.name || safeUrl
               });
             }
-          } catch (e) {
-            // Ignore parse errors on single result
-          }
+          } catch {}
         } else if (evType === 'summary') {
           const cleanSummary = stripPromptXmlTags(cleanBody);
           if (cleanSummary) {
@@ -1664,9 +1529,7 @@
               streamWordIndex = 0;
               gatheredSources.length = 0;
               gatheredFanOut.length = 0;
-              if (liveBubble) {
-                liveBubble.clearFanout();
-              }
+              if (liveBubble) liveBubble.clearFanout();
             }
             agentResponseText = cleanSummary;
             streamWordChunks = tokenizeIntoWords(cleanSummary);
@@ -1693,10 +1556,8 @@
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         streamBuffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
 
-        // Extract completed SSE event blocks delimited by double newline '\n\n'
         let boundaryIdx;
         while ((boundaryIdx = streamBuffer.indexOf('\n\n')) !== -1) {
           const eventBlock = streamBuffer.slice(0, boundaryIdx);
@@ -1708,27 +1569,21 @@
       streamBuffer += decoder.decode().replace(/\r\n/g, '\n');
       if (streamBuffer.trim()) {
         const remainingBlocks = streamBuffer.split('\n\n');
-        for (const block of remainingBlocks) {
-          parseEventBlock(block);
-        }
+        for (const block of remainingBlocks) parseEventBlock(block);
       }
 
       if (!agentResponseText) {
-        // Fallback to pure JSON if stream didn't yield text
         throw new Error('Empty stream response, falling back to JSON');
       }
 
-      // The answer is synthesized by Gemini and grounded by the Cloudflare Worker (/ask)
       const targetText = extractSmartAnswer(agentResponseText, userQuestion) || agentResponseText;
       streamWordChunks = tokenizeIntoWords(targetText);
       sseFinished = true;
 
-      // Only update conversational context if the response was not a refusal
       if (!isRefusalResponse(targetText)) {
         prevQuery = userQuestion;
       }
 
-      // Wait until all words have finished displaying at 5 words per second
       await typewriterPromise;
 
       if (liveBubble) {
@@ -1737,43 +1592,31 @@
         await streamAgentResponse(targetText, gatheredSources, userQuestion, gatheredFanOut, fanOutLang);
       }
       streamedSuccessfully = true;
-
     } catch (streamError) {
       if (streamingTimer) {
         clearInterval(streamingTimer);
         streamingTimer = null;
       }
-      if (finishTypewriterResolve) {
-        finishTypewriterResolve();
-      }
-      if (streamError && streamError.name === 'AbortError') {
-        return;
-      }
+      if (finishTypewriterResolve) finishTypewriterResolve();
+      if (streamError && streamError.name === 'AbortError') return;
+
       console.warn('NLWeb SSE stream fallback triggered:', streamError);
 
-      // Remove partial live bubble if stream failed mid-flight before falling back to JSON
       if (liveBubble) {
         liveBubble.removeRows();
         liveBubble = null;
       }
 
       if (streamError && streamError.noRetry) {
-        messages.push({
-          role: 'agent',
-          content: LIMIT_REACHED_MESSAGE,
-          sources: []
-        });
+        messages.push({ role: 'agent', content: LIMIT_REACHED_MESSAGE, sources: [] });
+        messagesVersion++;
         return;
       }
 
       try {
-        // Fallback to JSON POST /ask (handled by mcp-server worker)
         const jsonRes = await fetch(ASK_ENDPOINT, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({
             query: userQuestion,
             prev: currentPrev,
@@ -1783,45 +1626,34 @@
           signal: abortController.signal
         });
 
-        if (!jsonRes.ok) {
-          throw new Error(`NLWeb returned HTTP ${jsonRes.status}`);
-        }
+        if (!jsonRes.ok) throw new Error(`NLWeb returned HTTP ${jsonRes.status}`);
 
         const data = await jsonRes.json();
-        const summary = data.summary || "I've retrieved information from radustoian.com, but no summary could be generated for this query.";
+        const summary =
+          data.summary || "I've retrieved information from radustoian.com, but no summary could be generated for this query.";
         const sources = extractSources(data.results);
         const fallbackFanOut = Array.isArray(data.search_queries) ? data.search_queries : [];
         const fallbackLang = data.language || 'en';
         if (fallbackFanOut.length > 0) {
-          console.info('[NLWeb Fan-Out]', {
-            query: userQuestion,
-            language: fallbackLang,
-            queries: fallbackFanOut
-          });
+          console.info('[NLWeb Fan-Out]', { query: userQuestion, language: fallbackLang, queries: fallbackFanOut });
         }
 
         const targetText = extractSmartAnswer(summary, userQuestion) || summary;
-        if (!isRefusalResponse(targetText)) {
-          prevQuery = userQuestion;
-        }
+        if (!isRefusalResponse(targetText)) prevQuery = userQuestion;
         await streamAgentResponse(targetText, sources, userQuestion, fallbackFanOut, fallbackLang);
         streamedSuccessfully = true;
-
       } catch (jsonError) {
-        if (jsonError && jsonError.name === 'AbortError') {
-          return;
-        }
+        if (jsonError && jsonError.name === 'AbortError') return;
         console.warn('NLWeb query failed:', jsonError);
         messages.push({
           role: 'agent',
           content: `I apologize, but I could not reach the server. Please check your connection or try again shortly.\n\n*(Error details: ${escapeHtml(jsonError.message)})*`,
           sources: []
         });
+        messagesVersion++;
       }
     } finally {
-      if (activeAbortController === abortController) {
-        activeAbortController = null;
-      }
+      if (activeAbortController === abortController) activeAbortController = null;
       isGenerating = false;
       isStreaming = false;
       updateSendBtnState();
@@ -1832,7 +1664,6 @@
     }
   }
 
-  // Shared Question Submission Handler (used by both floating widget and horizontal ask bar)
   async function submitQuestionText(rawText) {
     if (isGenerating || isStreaming) return;
 
@@ -1842,22 +1673,17 @@
     let text = (rawText || '').trim();
     if (!text) return;
 
-    // Enforce maximum input character limit
     if (text.length > MAX_INPUT_CHARS) {
       text = text.slice(0, MAX_INPUT_CHARS).trim();
     }
 
     updateSendBtnState();
 
-    // Add user message
-    messages.push({
-      role: 'user',
-      content: text
-    });
+    messages.push({ role: 'user', content: text });
+    messagesVersion++;
     saveHistory();
     renderMessages();
 
-    // Check Question Cap (Maximum 10 questions per session / 24h window)
     const sessionCount = getSessionQueryCount();
     if (sessionCount >= MAX_SESSION_QUESTIONS) {
       await streamAgentResponse(LIMIT_REACHED_MESSAGE, [], text);
@@ -1865,18 +1691,15 @@
     }
 
     lastSubmitTime = now;
-
-    // Query NLWeb (increments session count after client-side guardrails pass)
     await queryNLWeb(text);
   }
 
-  // Handle Floating Widget Form Submission
   async function handleSubmit(e) {
     if (e) e.preventDefault();
     if (isGenerating || isStreaming) return;
 
-    const input = document.getElementById('nlwebTextInput');
-    const sendBtn = document.getElementById('nlwebSendBtn');
+    const input = domRefs.nlwebInput;
+    const sendBtn = domRefs.nlwebSendBtn;
     if (!input) return;
 
     const text = input.value.trim();
@@ -1886,19 +1709,18 @@
     if (now - lastSubmitTime < COOLDOWN_MS) return;
 
     input.value = '';
-    input.style.height = 'auto';
+    if (!supportsFieldSizing) input.style.height = 'auto';
     if (sendBtn) sendBtn.disabled = true;
 
     await submitQuestionText(text);
   }
 
-  // Handle Horizontal Ask Bar Form Submission (First question only)
   async function handleAskBarSubmit(e) {
     if (e) e.preventDefault();
     if (isGenerating || isStreaming || hasUserQuestions()) return;
 
-    const askInput = document.getElementById('askTextInput');
-    const askSendBtn = document.getElementById('askSendBtn');
+    const askInput = domRefs.askInput;
+    const askSendBtn = domRefs.askSendBtn;
     if (!askInput) return;
 
     const text = askInput.value.trim();
@@ -1907,9 +1729,7 @@
     const now = Date.now();
     if (now - lastSubmitTime < COOLDOWN_MS) return;
 
-    if (!isAskBarOpen) {
-      toggleAskBar(true);
-    }
+    if (!isAskBarOpen) toggleAskBar(true);
 
     askInput.value = '';
     resetAskInputHeight(askInput);
@@ -1918,13 +1738,12 @@
     await submitQuestionText(text);
   }
 
-  // Handle Follow-up Ask Box Form Submission inside the Answer Panel
   async function handleAskFollowupSubmit(e) {
     if (e) e.preventDefault();
     if (isGenerating || isStreaming) return;
 
-    const followupInput = document.getElementById('askFollowupInput');
-    const followupSendBtn = document.getElementById('askFollowupSendBtn');
+    const followupInput = domRefs.askFollowupInput;
+    const followupSendBtn = domRefs.askFollowupSendBtn;
     if (!followupInput) return;
 
     const text = followupInput.value.trim();
@@ -1933,29 +1752,32 @@
     const now = Date.now();
     if (now - lastSubmitTime < COOLDOWN_MS) return;
 
-    if (!isAskBarOpen) {
-      toggleAskBar(true);
-    }
+    if (!isAskBarOpen) toggleAskBar(true);
 
     followupInput.value = '';
-    followupInput.style.height = 'auto';
+    if (!supportsFieldSizing) followupInput.style.height = 'auto';
     if (followupSendBtn) followupSendBtn.disabled = true;
 
     await submitQuestionText(text);
   }
 
-  // Reset Conversation smoothly without disruptive browser alert
   function handleReset(source = 'dialog') {
-    const resetBtn = document.getElementById('nlwebResetBtn');
-    const askResetBtn = document.getElementById('askResetBtn');
-    const container = document.getElementById('nlwebMessages');
-    const askContainer = document.getElementById('askAnswerBody');
-    const input = document.getElementById('nlwebTextInput');
-    const askInput = document.getElementById('askTextInput');
-    const askFollowupInput = document.getElementById('askFollowupInput');
+    const {
+      resetBtn,
+      askResetBtn,
+      messagesEl: container,
+      askAnswerBody: askContainer,
+      nlwebInput: input,
+      askInput,
+      askFollowupInput,
+      dialog: dialogEl,
+      askPanel: askPanelEl
+    } = domRefs;
 
     if (activeAbortController) {
-      try { activeAbortController.abort(); } catch (e) {}
+      try {
+        activeAbortController.abort();
+      } catch {}
       activeAbortController = null;
     }
     if (streamingTimer) {
@@ -1972,22 +1794,25 @@
     }
     if (askFollowupInput) {
       askFollowupInput.value = '';
-      askFollowupInput.style.height = 'auto';
+      if (!supportsFieldSizing) askFollowupInput.style.height = 'auto';
     }
 
-    // Trigger subtle rotation animation on the reset button(s)
-    [resetBtn, askResetBtn].forEach((btn) => {
-      if (btn) {
-        btn.classList.remove('is-spinning');
-        void btn.offsetWidth; // trigger reflow
-        btn.classList.add('is-spinning');
-        setTimeout(() => btn.classList.remove('is-spinning'), 500);
-      }
-    });
+    const reduceMotion =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduceMotion) {
+      [resetBtn, askResetBtn].forEach((btn) => {
+        const svg = btn?.querySelector('svg');
+        if (svg && typeof svg.animate === 'function') {
+          svg.animate([{ rotate: '0deg' }, { rotate: '-360deg' }], {
+            duration: 450,
+            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+          });
+        }
+      });
+    }
 
-    const dialogEl = document.getElementById('nlwebChatDialog');
     if (dialogEl) dialogEl.classList.remove('has-answer');
-    const askPanelEl = document.getElementById('askAnswerPanel');
     if (askPanelEl) askPanelEl.classList.remove('has-answer');
     if (isMaximized) toggleMaximize(false);
 
@@ -2002,7 +1827,7 @@
         sessionStorage.removeItem(STORAGE_KEY);
         prevQuery = '';
         loadHistory();
-        renderMessages();
+        renderMessages(true);
         activeContainers.forEach((c) => {
           c.classList.remove('is-resetting');
           c.style.scrollBehavior = '';
@@ -2018,74 +1843,59 @@
       sessionStorage.removeItem(STORAGE_KEY);
       prevQuery = '';
       loadHistory();
-      renderMessages();
+      renderMessages(true);
       updateSendBtnState();
     }
   }
 
-  // Initialize Event Listeners
-  function initListeners(dom) {
-    const { launcher, dialog } = dom;
-    const closeBtn = document.getElementById('nlwebCloseBtn');
-    const resetBtn = document.getElementById('nlwebResetBtn');
-    const maxBtn = document.getElementById('nlwebMaximizeBtn');
-    const form = document.getElementById('nlwebInputForm');
-    const input = document.getElementById('nlwebTextInput');
+  function initListeners() {
+    const {
+      launcher,
+      closeBtn,
+      resetBtn,
+      maxBtn,
+      nlwebForm: form,
+      nlwebInput: input,
+      askSection,
+      askForm,
+      askInput,
+      askFollowupForm,
+      askFollowupInput,
+      askResetBtn,
+      askCloseBtn,
+      askBackdrop,
+      askSuggestions,
+      askAnswerBody,
+      messagesEl
+    } = domRefs;
 
-    // Horizontal Ask Bar Elements
-    const askSection = document.getElementById('ask-bar');
-    const askForm = document.getElementById('askInputForm');
-    const askInput = document.getElementById('askTextInput');
-    const askFollowupForm = document.getElementById('askFollowupForm');
-    const askFollowupInput = document.getElementById('askFollowupInput');
-    const askResetBtn = document.getElementById('askResetBtn');
-    const askCloseBtn = document.getElementById('askCloseBtn');
-    const askBackdrop = document.getElementById('askBackdrop');
-    const askSuggestions = document.getElementById('askSuggestions');
-    const askAnswerBody = document.getElementById('askAnswerBody');
-
-    // Launcher click
     launcher.addEventListener('click', () => toggleDialog());
-
-    // Close button
     if (closeBtn) closeBtn.addEventListener('click', () => toggleDialog(false));
-
-    // Reset button
     if (resetBtn) resetBtn.addEventListener('click', () => handleReset('dialog'));
-
-    // Maximise / Restore button
     if (maxBtn) maxBtn.addEventListener('click', () => toggleMaximize());
-
-    // Form submit
     if (form) form.addEventListener('submit', handleSubmit);
 
-    // Input events (auto-expand, enable/disable send, Shift+Enter)
     if (input) {
       input.addEventListener('input', () => {
-        input.style.height = 'auto';
-        input.style.height = `${Math.min(Math.max(input.scrollHeight, 44), 120)}px`;
+        if (!supportsFieldSizing) {
+          input.style.height = 'auto';
+          input.style.height = `${Math.min(Math.max(input.scrollHeight, 44), 120)}px`;
+        }
         updateSendBtnState();
       });
 
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
+          if (e.isComposing || e.keyCode === 229) return;
           handleSubmit();
         }
       });
     }
 
-    // Horizontal Ask Bar Listeners
     if (askSection && askInput) {
-      updateAskBarPlaceholder();
-
-      askInput.addEventListener('focus', () => {
-        alignAskBarOnInteraction();
-      });
-
-      askInput.addEventListener('click', () => {
-        alignAskBarOnInteraction();
-      });
+      askInput.addEventListener('focus', () => alignAskBarOnInteraction());
+      askInput.addEventListener('click', () => alignAskBarOnInteraction());
 
       askInput.addEventListener('input', () => {
         autoExpandAskInput(askInput);
@@ -2095,6 +1905,7 @@
       askInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
+          if (e.isComposing || e.keyCode === 229) return;
           handleAskBarSubmit();
         }
       });
@@ -2105,52 +1916,47 @@
           alignAskBarOnInteraction();
           if (hasCompletedAnswer() && askFollowupInput) {
             const isMobileOrTouch = window.matchMedia('(max-width: 640px), (pointer: coarse)').matches;
-            if (!isMobileOrTouch) {
-              askFollowupInput.focus();
-            }
+            if (!isMobileOrTouch) askFollowupInput.focus();
           }
         });
       }
 
-      if (askFollowupForm) {
-        askFollowupForm.addEventListener('submit', handleAskFollowupSubmit);
-      }
+      if (askFollowupForm) askFollowupForm.addEventListener('submit', handleAskFollowupSubmit);
 
       if (askFollowupInput) {
         askFollowupInput.addEventListener('input', () => {
-          askFollowupInput.style.height = 'auto';
-          askFollowupInput.style.height = `${Math.min(Math.max(askFollowupInput.scrollHeight, 44), 120)}px`;
+          if (!supportsFieldSizing) {
+            askFollowupInput.style.height = 'auto';
+            askFollowupInput.style.height = `${Math.min(Math.max(askFollowupInput.scrollHeight, 44), 120)}px`;
+          }
           updateSendBtnState();
         });
 
         askFollowupInput.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
+            if (e.isComposing || e.keyCode === 229) return;
             handleAskFollowupSubmit();
           }
         });
       }
 
-      if (askResetBtn) {
-        askResetBtn.addEventListener('click', () => handleReset('ask'));
-      }
+      if (askResetBtn) askResetBtn.addEventListener('click', () => handleReset('ask'));
+      if (askCloseBtn) askCloseBtn.addEventListener('click', () => toggleAskBar(false));
+      if (askBackdrop) askBackdrop.addEventListener('click', () => toggleAskBar(false));
 
-      if (askCloseBtn) {
-        askCloseBtn.addEventListener('click', () => toggleAskBar(false));
-      }
-
-      if (askBackdrop) {
-        askBackdrop.addEventListener('click', () => toggleAskBar(false));
-      }
-
-      document.addEventListener('click', (e) => {
-        if (!isAskBarOpen) return;
-        if (askSection && !askSection.contains(e.target)) {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleAskBar(false);
-        }
-      }, true);
+      document.addEventListener(
+        'click',
+        (e) => {
+          if (!isAskBarOpen) return;
+          if (askSection && !askSection.contains(e.target)) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleAskBar(false);
+          }
+        },
+        true
+      );
 
       if (askSuggestions) {
         askSuggestions.addEventListener('click', (e) => {
@@ -2158,37 +1964,23 @@
           if (!chip || chip.disabled || isGenerating || isStreaming) return;
           const query = chip.getAttribute('data-query');
           if (!query) return;
-
-          if (!isAskBarOpen) {
-            toggleAskBar(true);
-          }
+          if (!isAskBarOpen) toggleAskBar(true);
           submitQuestionText(query);
         });
       }
-
-      window.addEventListener('resize', () => {
-        if (isAskBarOpen) {
-          updateAskBarHeight();
-        }
-      }, { passive: true });
     }
 
-    // Escape key closes dialog or horizontal ask bar overlay
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (isAskBarOpen) {
-          toggleAskBar(false);
-        } else if (isOpen) {
-          toggleDialog(false);
-        }
+        if (isAskBarOpen) toggleAskBar(false);
+        else if (isOpen) toggleDialog(false);
       }
     });
 
-    // VisualViewport listener: keep chat within viewport when virtual keyboard opens or screen resizes on mobile
     if (window.visualViewport) {
       const handleVisualViewportChange = () => {
         if (!isOpen || window.innerWidth > 640) return;
-        const dialog = document.getElementById('nlwebChatDialog');
+        const dialog = domRefs.dialog;
         if (!dialog) return;
 
         const vp = window.visualViewport;
@@ -2197,15 +1989,11 @@
           dialog.style.bottom = `${keyboardOffset}px`;
           const maxVpHeight = Math.min(vp.height, window.innerHeight * 0.9);
           dialog.style.maxHeight = `${maxVpHeight}px`;
-          if (isMaximized) {
-            dialog.style.height = `${vp.height}px`;
-          }
+          if (isMaximized) dialog.style.height = `${vp.height}px`;
         } else {
           dialog.style.bottom = '';
           dialog.style.maxHeight = '';
-          if (isMaximized) {
-            dialog.style.height = '';
-          }
+          if (isMaximized) dialog.style.height = '';
         }
       };
 
@@ -2213,17 +2001,15 @@
       window.visualViewport.addEventListener('scroll', handleVisualViewportChange);
     }
 
-    // Global click listener for elements with data-nlweb-trigger
     document.addEventListener('click', (e) => {
       const trigger = e.target.closest('[data-nlweb-trigger]');
       if (trigger) {
         e.preventDefault();
         const query = trigger.getAttribute('data-nlweb-query');
-        window.nlwebChat.open(query);
+        cachedApi.open(query);
       }
     });
 
-    // Anchor clicks within messages (smooth scrolling for internal hash links)
     const handleInternalAnchorClick = (e) => {
       const anchor = e.target.closest('a');
       if (anchor && isInternalUrl(anchor.getAttribute('href') || anchor.href)) {
@@ -2237,11 +2023,11 @@
               const clientTab = document.getElementById('clientTab');
               if (clientTab) clientTab.click();
             }
-            const targetEl = document.querySelector(parsed.hash === '#colleague-testimonials' ? '#testimonials' : parsed.hash);
+            const targetEl = document.querySelector(
+              parsed.hash === '#colleague-testimonials' ? '#testimonials' : parsed.hash
+            );
             if (targetEl) {
-              if (isAskBarOpen) {
-                toggleAskBar(false);
-              }
+              if (isAskBarOpen) toggleAskBar(false);
               targetEl.scrollIntoView({ behavior: 'smooth' });
             }
           }
@@ -2249,79 +2035,248 @@
       }
     };
 
-    const messagesContainer = document.getElementById('nlwebMessages');
-    if (messagesContainer) {
-      messagesContainer.addEventListener('click', handleInternalAnchorClick);
-    }
-    if (askAnswerBody) {
-      askAnswerBody.addEventListener('click', handleInternalAnchorClick);
-    }
+    if (messagesEl) messagesEl.addEventListener('click', handleInternalAnchorClick);
+    if (askAnswerBody) askAnswerBody.addEventListener('click', handleInternalAnchorClick);
   }
 
-  // Startup initialization on DOM ready (deferred to after initial paint to avoid forced reflows)
-  function start() {
-    ensureChatStyles();
-    loadHistory();
-    const dom = createWidgetDOM();
-    initListeners(dom);
-    renderMessages();
+  const dom = createWidgetDOM();
+  domRefs.launcher = dom.launcher;
+  domRefs.dialog = dom.dialog;
+  domRefs.messagesEl = document.getElementById('nlwebMessages');
+  domRefs.nlwebInput = document.getElementById('nlwebTextInput');
+  domRefs.nlwebSendBtn = document.getElementById('nlwebSendBtn');
+  domRefs.maxBtn = document.getElementById('nlwebMaximizeBtn');
+  domRefs.resetBtn = document.getElementById('nlwebResetBtn');
+  domRefs.closeBtn = document.getElementById('nlwebCloseBtn');
+  domRefs.nlwebForm = document.getElementById('nlwebInputForm');
 
-    // Public API
-    window.nlwebChat = {
-      open: (initialQuery) => {
-        toggleDialog(true);
-        if (initialQuery && typeof initialQuery === 'string' && !isGenerating && !isStreaming) {
-          submitQuestionText(initialQuery);
-        }
-      },
-      openAskBar: (initialQuery) => {
-        toggleAskBar(true);
-        if (initialQuery && typeof initialQuery === 'string' && !isGenerating && !isStreaming) {
-          submitQuestionText(initialQuery);
-        }
-      },
-      closeAskBar: () => toggleAskBar(false),
-      openReady: (prefill) => {
-        toggleDialog(true);
-        const input = document.getElementById('nlwebTextInput');
-        if (input) {
-          if (prefill && typeof prefill === 'string') {
-            input.value = prefill.slice(0, MAX_INPUT_CHARS);
+  domRefs.askSection = document.getElementById('ask-bar');
+  domRefs.askForm = document.getElementById('askInputForm');
+  domRefs.askInput = document.getElementById('askTextInput');
+  domRefs.askSendBtn = document.getElementById('askSendBtn');
+  domRefs.askPanel = document.getElementById('askAnswerPanel');
+  domRefs.askAnswerBody = document.getElementById('askAnswerBody');
+  domRefs.askFollowupForm = document.getElementById('askFollowupForm');
+  domRefs.askFollowupInput = document.getElementById('askFollowupInput');
+  domRefs.askFollowupSendBtn = document.getElementById('askFollowupSendBtn');
+  domRefs.askResetBtn = document.getElementById('askResetBtn');
+  domRefs.askCloseBtn = document.getElementById('askCloseBtn');
+  domRefs.askBackdrop = document.getElementById('askBackdrop');
+  domRefs.askSuggestions = document.getElementById('askSuggestions');
+  domRefs.askChips = Array.from(document.querySelectorAll('.ask-chip'));
+
+  loadHistory();
+  initListeners();
+  renderMessages(true);
+
+  cachedApi = {
+    open: (initialQuery) => {
+      toggleDialog(true);
+      if (initialQuery && typeof initialQuery === 'string' && !isGenerating && !isStreaming) {
+        submitQuestionText(initialQuery);
+      }
+    },
+    openAskBar: (initialQuery) => {
+      toggleAskBar(true);
+      if (initialQuery && typeof initialQuery === 'string' && !isGenerating && !isStreaming) {
+        submitQuestionText(initialQuery);
+      }
+    },
+    closeAskBar: () => toggleAskBar(false),
+    openReady: (prefill) => {
+      toggleDialog(true);
+      const input = domRefs.nlwebInput;
+      if (input) {
+        if (prefill && typeof prefill === 'string') {
+          input.value = prefill.slice(0, MAX_INPUT_CHARS);
+          if (!supportsFieldSizing) {
             input.style.height = 'auto';
             input.style.height = `${Math.min(Math.max(input.scrollHeight, 44), 120)}px`;
-            updateSendBtnState();
           }
+          updateSendBtnState();
+        }
+        input.focus();
+        if (typeof input.setSelectionRange === 'function') {
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
+        setTimeout(() => {
           input.focus();
           if (typeof input.setSelectionRange === 'function') {
             input.setSelectionRange(input.value.length, input.value.length);
           }
-          setTimeout(() => {
-            input.focus();
-            if (typeof input.setSelectionRange === 'function') {
-              input.setSelectionRange(input.value.length, input.value.length);
-            }
-          }, 120);
+        }, 120);
+      }
+    },
+    close: () => toggleDialog(false),
+    toggle: () => toggleDialog(),
+    toggleMaximize: (forceState) => toggleMaximize(forceState),
+    isMaximized: () => isMaximized
+  };
+
+  return cachedApi;
+}
+
+  let enginePromise = null;
+  let engineApi = null;
+
+  function loadChatStyles() {
+    const existing = document.querySelector('link[href*="chat-widget"]');
+    if (existing) {
+      if (existing.media && existing.media !== 'all') existing.media = 'all';
+      return Promise.resolve();
+    }
+    return new Promise((resolve) => {
+      const link = document.createElement('link');
+      link.id = 'nlwebChatStylesLink';
+      link.rel = 'stylesheet';
+      link.href = CHAT_CSS_HREF;
+      let settled = false;
+      const done = () => {
+        if (!settled) {
+          settled = true;
+          resolve();
         }
-      },
-      close: () => toggleDialog(false),
-      toggle: () => toggleDialog(),
-      toggleMaximize: (forceState) => toggleMaximize(forceState),
-      isMaximized: () => isMaximized
-    };
+      };
+      link.addEventListener('load', done, { once: true });
+      link.addEventListener('error', done, { once: true });
+      setTimeout(done, 1500);
+      document.head.appendChild(link);
+    });
   }
 
-  function scheduleStart() {
-    if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(start, { timeout: 300 });
-    } else {
-      setTimeout(start, 1);
+  function ensureEngine() {
+    if (engineApi) return Promise.resolve(engineApi);
+    if (!enginePromise) {
+      enginePromise = loadChatStyles()
+        .then(() => {
+          const mod = { initChatEngine };
+          engineApi = mod.initChatEngine();
+          window.nlwebChat = engineApi;
+          return engineApi;
+        })
+        .catch((err) => {
+          enginePromise = null;
+          throw err;
+        });
     }
+    return enginePromise;
+  }
+
+  function createLauncherButton() {
+    let launcher = document.getElementById('nlwebChatLauncher');
+    if (!launcher) {
+      launcher = document.createElement('button');
+      launcher.id = 'nlwebChatLauncher';
+      launcher.className = 'nlweb-launcher';
+      launcher.setAttribute('aria-label', 'Ask Radu AI - NLWeb assistant');
+      launcher.setAttribute('aria-haspopup', 'dialog');
+      launcher.setAttribute('aria-expanded', 'false');
+      launcher.setAttribute('aria-controls', 'nlwebChatDialog');
+      launcher.innerHTML = `<span class="nlweb-launcher-icon">${SPARKLE_ICON}</span>`;
+      document.body.appendChild(launcher);
+    }
+    return launcher;
+  }
+
+  function init() {
+    updateAskBarPlaceholder();
+    if (askMobileQuery) {
+      if (typeof askMobileQuery.addEventListener === 'function') {
+        askMobileQuery.addEventListener('change', updateAskBarPlaceholder);
+      } else if (typeof askMobileQuery.addListener === 'function') {
+        askMobileQuery.addListener(updateAskBarPlaceholder);
+      }
+    }
+
+    const launcher = createLauncherButton();
+
+    // Public proxy API (ensures WebMCP and custom triggers work seamlessly before interaction)
+    window.nlwebChat = {
+      open: (initialQuery) => ensureEngine().then((api) => api.open(initialQuery)),
+      openAskBar: (initialQuery) => ensureEngine().then((api) => api.openAskBar(initialQuery)),
+      closeAskBar: () => (engineApi ? engineApi.closeAskBar() : undefined),
+      openReady: (prefill) => ensureEngine().then((api) => api.openReady(prefill)),
+      close: () => (engineApi ? engineApi.close() : undefined),
+      toggle: () => ensureEngine().then((api) => api.toggle()),
+      toggleMaximize: (forceState) => (engineApi ? engineApi.toggleMaximize(forceState) : undefined),
+      isMaximized: () => (engineApi ? engineApi.isMaximized() : false)
+    };
+
+    launcher.addEventListener('click', () => {
+      if (engineApi) return;
+      ensureEngine().then((api) => api.open());
+    }, { once: true });
+
+    const askInput = document.getElementById('askTextInput');
+    const askForm = document.getElementById('askInputForm');
+    const askSendBtn = document.getElementById('askSendBtn');
+    const askSuggestions = document.getElementById('askSuggestions');
+
+    if (askInput) {
+      const openBarOnFirstInteract = () => {
+        if (engineApi) return;
+        ensureEngine().then((api) => api.openAskBar());
+      };
+      askInput.addEventListener('focus', openBarOnFirstInteract, { once: true });
+      askInput.addEventListener('click', openBarOnFirstInteract, { once: true });
+
+      askInput.addEventListener('input', () => {
+        if (engineApi) return;
+        if (askSendBtn) askSendBtn.disabled = !askInput.value.trim();
+      });
+
+      askInput.addEventListener('keydown', (e) => {
+        if (engineApi) return;
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          if (e.isComposing || e.keyCode === 229) return;
+          const q = askInput.value.trim();
+          if (q) {
+            askInput.value = '';
+            if (askSendBtn) askSendBtn.disabled = true;
+          }
+          ensureEngine().then((api) => api.openAskBar(q || undefined));
+        }
+      });
+    }
+
+    if (askForm) {
+      askForm.addEventListener('submit', (e) => {
+        if (engineApi) return;
+        e.preventDefault();
+        const q = askInput ? askInput.value.trim() : '';
+        if (q && askInput) {
+          askInput.value = '';
+          if (askSendBtn) askSendBtn.disabled = true;
+        }
+        ensureEngine().then((api) => api.openAskBar(q || undefined));
+      });
+    }
+
+    if (askSuggestions) {
+      askSuggestions.addEventListener('click', (e) => {
+        if (engineApi) return;
+        const chip = e.target.closest('.ask-chip[data-query]');
+        if (!chip) return;
+        const q = chip.getAttribute('data-query');
+        if (q) ensureEngine().then((api) => api.openAskBar(q));
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (engineApi) return;
+      const trigger = e.target.closest('[data-nlweb-trigger]');
+      if (trigger) {
+        e.preventDefault();
+        const query = trigger.getAttribute('data-nlweb-query');
+        ensureEngine().then((api) => api.open(query || undefined));
+      }
+    });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', scheduleStart);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    scheduleStart();
+    init();
   }
-
 })();

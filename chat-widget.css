@@ -1,9 +1,9 @@
-/* NLWeb Conversational AI Chat Widget Styles
+/* NLWeb Conversational AI Chat Widget Styles (Lazy-Loaded on Interaction)
    Matches the radustoian.com glassmorphism aesthetic and dark violet palette */
 
 :root {
-  --nlweb-bg: rgba(12, 5, 22, 0.94);
-  --nlweb-bg-card: rgba(22, 10, 38, 0.75);
+  --nlweb-bg: rgba(14, 6, 26, 0.97);
+  --nlweb-bg-card: rgba(22, 10, 38, 0.78);
   --nlweb-border: rgba(216, 180, 254, 0.16);
   --nlweb-border-hi: rgba(216, 180, 254, 0.32);
   --nlweb-purple: #a855f7;
@@ -19,60 +19,7 @@
   --nlweb-font-serif: 'Fraunces', 'Fraunces Fallback', serif;
 }
 
-/* 1. Floating Launcher Button (Circular Sparkle FAB) */
-.nlweb-launcher {
-  position: fixed;
-  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-  right: calc(24px + env(safe-area-inset-right, 0px));
-  z-index: 9999;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  padding: 0;
-  background: rgba(18, 8, 32, 0.94);
-  color: var(--nlweb-text);
-  border: 1px solid var(--nlweb-border-hi);
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--nlweb-purple-glow);
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.nlweb-launcher:hover {
-  transform: translateY(-2px) scale(1.06);
-  border-color: rgba(216, 180, 254, 0.55);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75), 0 0 28px rgba(168, 85, 247, 0.5);
-}
-
-.nlweb-launcher:active {
-  transform: translateY(0) scale(0.96);
-}
-
-.nlweb-launcher:focus-visible {
-  outline: 2px solid var(--nlweb-purple);
-  outline-offset: 3px;
-}
-
-.nlweb-launcher-icon {
-  width: 22px;
-  height: 22px;
-  color: #c084fc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: transform 0.25s ease;
-}
-
-.nlweb-launcher:hover .nlweb-launcher-icon {
-  transform: rotate(15deg) scale(1.12);
-}
-
-/* 2. Chat Modal / Dialog Window */
+/* 1. Chat Modal / Dialog Window (Compositor-only opacity/transform + CSS containment) */
 .nlweb-dialog {
   position: fixed;
   bottom: calc(84px + env(safe-area-inset-bottom, 0px));
@@ -84,6 +31,7 @@
   max-height: min(70vh, calc(100vh - 104px));
   max-height: min(70dvh, calc(100dvh - 104px));
   z-index: 10000;
+  contain: layout style paint;
   background: var(--nlweb-bg);
   border: 1px solid var(--nlweb-border);
   border-radius: 20px;
@@ -94,16 +42,8 @@
   opacity: 0;
   pointer-events: none;
   transform: translateY(16px) scale(0.97);
-  transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-              max-height 0.3s ease,
-              width 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              height 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              top 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              bottom 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              left 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              right 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              border-radius 0.25s ease;
+  transition: opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
   font-family: var(--nlweb-font-sans);
   color: var(--nlweb-text);
 }
@@ -112,8 +52,6 @@
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
 }
 
 /* Maximised Dialog State (Desktop: 80% height, 40% width) */
@@ -157,6 +95,10 @@
   flex-shrink: 0;
 }
 
+.nlweb-avatar-wrap picture {
+  display: contents;
+}
+
 .nlweb-avatar {
   width: 100%;
   height: 100%;
@@ -192,28 +134,6 @@
   gap: 6px;
 }
 
-.nlweb-badge {
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 1px 6px;
-  border-radius: 6px;
-  background: rgba(168, 85, 247, 0.2);
-  color: #d8b4fe;
-  border: 1px solid rgba(168, 85, 247, 0.3);
-}
-
-.nlweb-header-sub {
-  font-size: 11px;
-  color: var(--nlweb-text-muted);
-  line-height: 1.3;
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .nlweb-header-actions {
   display: flex;
   align-items: center;
@@ -231,7 +151,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .nlweb-icon-btn:hover {
@@ -243,15 +163,6 @@
   outline: 2px solid var(--nlweb-purple);
 }
 
-.nlweb-icon-btn.is-spinning svg {
-  animation: nlweb-spin 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes nlweb-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
-}
-
 /* Messages Container */
 .nlweb-messages {
   flex: 1 1 auto;
@@ -261,8 +172,10 @@
   flex-direction: column;
   gap: 12px;
   min-height: 120px;
-  scroll-behavior: smooth;
   transition: opacity 0.15s ease-out;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nlweb-messages { scroll-behavior: smooth; }
 }
 
 .nlweb-messages.is-resetting {
@@ -287,7 +200,9 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  animation: nlweb-fade-in 0.25s ease-out;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nlweb-msg-row { animation: nlweb-fade-in 0.25s ease-out; }
 }
 
 .nlweb-msg-row.is-user {
@@ -324,9 +239,7 @@
   color: var(--nlweb-text-subtle);
   border-bottom-left-radius: 4px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-  transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              min-height 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              padding 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+  transition: padding 0.25s cubic-bezier(0.22, 1, 0.36, 1),
               font-size 0.25s ease;
 }
 
@@ -440,7 +353,7 @@
   border-radius: 8px;
   margin-bottom: 10px;
   overflow: hidden;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .nlweb-fanout[open] {
@@ -460,7 +373,7 @@
   color: #d8b4fe;
   cursor: pointer;
   user-select: none;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .nlweb-fanout-summary::-webkit-details-marker {
@@ -591,7 +504,8 @@
   border-radius: 6px;
   color: #d8b4fe;
   text-decoration: none;
-  transition: all 0.15s ease;
+  translate: 0 0;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, translate 0.15s ease;
   max-width: 100%;
 }
 
@@ -599,7 +513,9 @@
   background: rgba(168, 85, 247, 0.25);
   border-color: rgba(168, 85, 247, 0.5);
   color: #faf5ff;
-  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nlweb-source-chip:hover { translate: 0 -1px; }
 }
 
 .nlweb-source-chip span {
@@ -629,7 +545,7 @@
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .nlweb-msg-copy-btn:hover {
@@ -654,11 +570,12 @@
   height: 6px;
   border-radius: 50%;
   background: #c084fc;
-  animation: nlweb-bounce 1.4s infinite ease-in-out both;
 }
-
-.nlweb-typing-dot:nth-child(1) { animation-delay: -0.32s; }
-.nlweb-typing-dot:nth-child(2) { animation-delay: -0.16s; }
+@media (prefers-reduced-motion: no-preference) {
+  .nlweb-typing-dot { animation: nlweb-bounce 1.4s infinite ease-in-out both; }
+  .nlweb-typing-dot:nth-child(1) { animation-delay: -0.32s; }
+  .nlweb-typing-dot:nth-child(2) { animation-delay: -0.16s; }
+}
 
 .nlweb-typing-label {
   font-size: 11.5px;
@@ -680,7 +597,9 @@
   vertical-align: -1px;
   background: #c084fc;
   border-radius: 1px;
-  animation: nlweb-cursor-blink 0.75s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nlweb-typing-cursor { animation: nlweb-cursor-blink 0.75s ease-in-out infinite; }
 }
 
 @keyframes nlweb-cursor-blink {
@@ -714,6 +633,12 @@
 
 .nlweb-input {
   flex: 1 1 auto;
+  width: 100%;
+  height: auto;
+  field-sizing: content;
+  min-block-size: 44px;
+  max-block-size: 120px;
+  overflow-y: auto;
   background: transparent;
   border: none;
   color: var(--nlweb-text);
@@ -744,18 +669,21 @@
   cursor: pointer;
   flex-shrink: 0;
   margin-bottom: 4px;
-  transition: all 0.18s ease;
+  scale: 1;
+  transition: scale 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
 }
 
 .nlweb-send-btn:hover:not(:disabled) {
-  transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nlweb-send-btn:hover:not(:disabled) { scale: 1.05; }
 }
 
 .nlweb-send-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  transform: none;
+  scale: 1;
 }
 
 .nlweb-footer-sub {
@@ -790,16 +718,6 @@
 
 /* Mobile Responsive Adaptations */
 @media (max-width: 640px) {
-  .nlweb-launcher {
-    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-    bottom: max(20px, calc(14px + env(safe-area-inset-bottom, 0px)));
-    right: calc(16px + env(safe-area-inset-right, 0px));
-    right: max(16px, env(safe-area-inset-right, 0px));
-    width: 48px;
-    height: 48px;
-    z-index: 9999;
-  }
-
   .nlweb-dialog {
     top: auto;
     bottom: 0;
@@ -859,9 +777,8 @@
   }
 }
 
-/* High Contrast & Reduced Motion */
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .nlweb-launcher,
   .nlweb-dialog,
   .ask-backdrop,
   .ask-answer-panel,
@@ -873,29 +790,12 @@
 }
 
 /* ==========================================================================
-   3. Horizontal Ask Chatbot Bar Section (#ask-bar) & 80% Page Overlay
+   2. Horizontal Ask Chatbot Bar Active Overlay & Answer Panel (#ask-bar)
    ========================================================================== */
-
-.ask-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(5, 1, 10, 0.8);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 940;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-body.ask-overlay-open .wrap {
-  z-index: auto;
-  perspective: none;
-}
 
 body.ask-overlay-open .ask-backdrop {
   opacity: 1;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 body.ask-overlay-open .ask-section {
@@ -907,207 +807,6 @@ body.ask-overlay-open .nlweb-launcher {
   pointer-events: none;
 }
 
-.ask-section {
-  position: relative;
-  width: 100%;
-  margin-bottom: 28px;
-  scroll-margin-top: 32px;
-  font-family: var(--nlweb-font-sans);
-}
-
-.ask-bar-wrap {
-  position: relative;
-  width: 100%;
-}
-
-.ask-input-form {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  width: 100%;
-  background: var(--sheen, none), linear-gradient(135deg, rgba(26, 12, 45, 0.82) 0%, rgba(12, 4, 22, 0.68) 100%);
-  border: 1px solid var(--nlweb-border-hi);
-  border-top-color: rgba(255, 255, 255, 0.28);
-  border-left-color: rgba(255, 255, 255, 0.18);
-  border-radius: 28px;
-  padding: 8px 10px 8px 20px;
-  backdrop-filter: blur(28px) saturate(200%);
-  -webkit-backdrop-filter: blur(28px) saturate(200%);
-  box-shadow: var(--bevel-hi, inset 0 1px 0 rgba(255, 255, 255, 0.18)),
-              var(--bevel-lo, inset 0 -4px 10px rgba(0, 0, 0, 0.5)),
-              0 14px 36px -8px rgba(0, 0, 0, 0.78);
-  transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
-}
-
-.ask-input-form:hover,
-.ask-input-form:focus-within,
-.ask-section.is-active .ask-input-form {
-  border-color: var(--nlweb-purple);
-  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.28),
-              0 18px 44px -8px rgba(0, 0, 0, 0.9),
-              0 0 28px rgba(168, 85, 247, 0.22);
-}
-
-.ask-input-form.is-locked {
-  opacity: 0.72;
-  cursor: pointer;
-}
-
-.ask-input-icon {
-  width: 18px;
-  height: 18px;
-  margin-bottom: 11px;
-  color: #c084fc;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  opacity: 0.9;
-}
-
-.ask-input-icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.ask-input {
-  flex: 1 1 auto;
-  min-width: 0;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--nlweb-text);
-  font-family: var(--nlweb-font-sans);
-  font-size: 14.5px;
-  line-height: 20px;
-  padding: 10px 0;
-  resize: none;
-  max-height: 120px;
-  overflow-y: hidden;
-  display: block;
-}
-
-.ask-input:disabled {
-  pointer-events: none;
-  cursor: pointer;
-}
-
-.ask-input::placeholder {
-  color: var(--nlweb-text-muted);
-  opacity: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ask-send-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  background: linear-gradient(135deg, #7e22ce 0%, #9333ea 55%, #6366f1 100%);
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 14px rgba(147, 51, 234, 0.45);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-}
-
-.ask-send-btn svg {
-  width: 17px;
-  height: 17px;
-}
-
-.ask-send-btn:hover:not(:disabled) {
-  transform: scale(1.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 20px rgba(168, 85, 247, 0.65);
-}
-
-.ask-send-btn:focus-visible {
-  outline: 2px solid var(--nlweb-purple);
-  outline-offset: 2px;
-}
-
-.ask-send-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Suggestion Question Mini Buttons */
-.ask-suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.ask-chip {
-  appearance: none;
-  -webkit-appearance: none;
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: var(--sheen, none), linear-gradient(135deg, rgba(30, 15, 50, 0.52) 0%, rgba(12, 4, 22, 0.32) 100%);
-  backdrop-filter: blur(20px) saturate(200%);
-  -webkit-backdrop-filter: blur(20px) saturate(200%);
-  border: 1px solid rgba(216, 180, 254, 0.16);
-  border-top-color: rgba(255, 255, 255, 0.26);
-  border-left-color: rgba(255, 255, 255, 0.18);
-  font-family: var(--nlweb-font-sans);
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--nlweb-text-muted);
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.25s ease,
-              border-color 0.25s ease,
-              color 0.2s ease,
-              background 0.25s ease;
-}
-
-.ask-chip svg,
-.ask-chip-icon {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  color: #c084fc;
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.ask-chip:hover:not(:disabled),
-.ask-chip:focus-visible {
-  color: #ffffff;
-  border-color: rgba(192, 132, 252, 0.48);
-  border-top-color: rgba(255, 255, 255, 0.42);
-  background: linear-gradient(135deg, rgba(48, 22, 78, 0.68) 0%, rgba(20, 8, 36, 0.45) 100%);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6), 0 0 16px rgba(168, 85, 247, 0.22);
-  outline: none;
-}
-
-.ask-chip:hover:not(:disabled) svg,
-.ask-chip:hover:not(:disabled) .ask-chip-icon,
-.ask-chip:focus-visible svg,
-.ask-chip:focus-visible .ask-chip-icon {
-  color: #e9d5ff;
-  transform: scale(1.12);
-}
-
-.ask-chip:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 /* Expanding Answer Box */
 .ask-answer-panel {
   position: absolute;
@@ -1115,6 +814,7 @@ body.ask-overlay-open .nlweb-launcher {
   left: 0;
   right: 0;
   z-index: 955;
+  contain: layout style paint;
   height: auto;
   max-height: 0;
   background: var(--nlweb-bg);
@@ -1122,8 +822,6 @@ body.ask-overlay-open .nlweb-launcher {
   border-top-color: rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-lg, 12px);
   box-shadow: var(--nlweb-shadow), 0 0 40px rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(32px) saturate(200%);
-  -webkit-backdrop-filter: blur(32px) saturate(200%);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1131,9 +829,9 @@ body.ask-overlay-open .nlweb-launcher {
   visibility: hidden;
   pointer-events: none;
   transform: translateY(-8px);
-  transition: opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-              visibility 0.3s;
+  transition: opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              visibility 0.25s;
 }
 
 .ask-section.is-active .ask-answer-panel {
@@ -1199,7 +897,11 @@ body.ask-overlay-open .nlweb-launcher {
 
 .ask-answer-panel.has-answer .ask-answer-footer #askFollowupForm {
   display: flex;
-  animation: nlweb-fade-in 0.25s ease-out;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ask-answer-panel.has-answer .ask-answer-footer #askFollowupForm {
+    animation: nlweb-fade-in 0.25s ease-out;
+  }
 }
 
 .ask-answer-panel:not(.has-answer) .ask-answer-footer .nlweb-footer-sub {
@@ -1207,47 +909,6 @@ body.ask-overlay-open .nlweb-launcher {
 }
 
 @media (max-width: 640px) {
-  .ask-section {
-    margin-bottom: 20px;
-    scroll-margin-top: max(16px, env(safe-area-inset-top, 0px));
-  }
-
-  .ask-input-form {
-    border-radius: 24px;
-    padding: 6px 8px 6px 14px;
-    gap: 8px;
-  }
-
-  .ask-input-icon {
-    margin-bottom: 9px;
-  }
-
-  .ask-input {
-    font-size: 16px; /* Prevents iOS auto-zoom on focus */
-    line-height: 22px;
-    padding: 7px 0;
-  }
-
-  .ask-send-btn {
-    width: 36px;
-    height: 36px;
-  }
-
-  .ask-suggestions {
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .ask-suggestions .ask-chip:nth-child(n+2) {
-    display: none;
-  }
-
-  .ask-chip {
-    padding: 7px 13px;
-    font-size: 12px;
-    gap: 6px;
-  }
-
   .ask-answer-messages {
     padding: 16px 16px 12px;
   }
