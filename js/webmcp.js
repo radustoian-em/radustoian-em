@@ -296,8 +296,14 @@
       }
 
       if (moved) {
-        // Slide animation is 0.45s; wait for it so we read the final positions.
-        await waitFor(track, 'transitionend', 800, (e) => e.target === track && e.propertyName === 'transform');
+        // Native CSS scroll-snap settles with scrollend; skip wait under reduced motion.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          await new Promise((r) => setTimeout(r, 20));
+        } else if ('onscrollend' in window) {
+          await waitFor(track, 'scrollend', 800);
+        } else {
+          await new Promise((r) => setTimeout(r, 450));
+        }
       }
 
       const visible = getVisibleIndexes(cfg);
@@ -651,11 +657,11 @@
 
       const textToPrefill = (question || query || prompt || '').trim();
 
-      // Open the chat dialog
+      // Open the chat dialog (awaiting lazy engine load when triggered for the first time)
       if (window.nlwebChat && typeof window.nlwebChat.openReady === 'function') {
-        window.nlwebChat.openReady(textToPrefill);
+        await window.nlwebChat.openReady(textToPrefill);
       } else if (window.nlwebChat && typeof window.nlwebChat.open === 'function') {
-        window.nlwebChat.open();
+        await window.nlwebChat.open();
       } else {
         const launcher = document.getElementById('nlwebChatLauncher');
         if (launcher && launcher.getAttribute('aria-expanded') !== 'true') {

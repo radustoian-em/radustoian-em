@@ -1,674 +1,640 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+(() => {
+  'use strict';
 
-  // 1. Global Image Error Handler (replaces inline onerror with cached fallbacks)
-  document.querySelectorAll('img').forEach(img => {
-    img.addEventListener('error', function() {
-      if (this.dataset.fallbackSrc && this.src !== this.dataset.fallbackSrc) {
-        this.src = this.dataset.fallbackSrc;
+  // Activate deferred non-critical stylesheets without inline onload handlers (CSP-safe)
+  const activateAsyncStyles = () => {
+    document.querySelectorAll('link[data-async-style]').forEach((link) => {
+      if (link.media === 'all') return;
+      if (link.sheet || document.readyState === 'complete') {
+        link.media = 'all';
       } else {
-        this.style.display = 'none';
-        const fallback = this.closest('.hero-portrait')?.querySelector('.fallback') || (this.nextElementSibling && this.nextElementSibling.classList.contains('fallback') ? this.nextElementSibling : null);
-        if (fallback) {
-          fallback.style.display = 'flex';
-        }
+        link.addEventListener('load', () => {
+          link.media = 'all';
+        }, { once: true });
       }
-    }, { once: true });
-  });
+    });
+  };
+  activateAsyncStyles();
 
-  // 2. Desktop-only Cursor Glow (GPU translate3d + requestAnimationFrame, disabled on mobile/touch)
-  const cursorGlow = document.getElementById('cursorGlow');
-  if (cursorGlow) {
-    if (!isFinePointer || prefersReducedMotion) {
-      cursorGlow.style.display = 'none';
-    } else {
+  document.addEventListener('DOMContentLoaded', () => {
+    activateAsyncStyles();
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    // 1. Global Image Error Handler
+    document.querySelectorAll('img').forEach((img) => {
+      img.addEventListener('error', function () {
+        if (this.dataset.fallbackSrc && this.src !== this.dataset.fallbackSrc) {
+          this.src = this.dataset.fallbackSrc;
+        } else {
+          this.style.display = 'none';
+          const fallback =
+            this.closest('.hero-portrait')?.querySelector('.fallback') ||
+            (this.nextElementSibling && this.nextElementSibling.classList.contains('fallback')
+              ? this.nextElementSibling
+              : null);
+          if (fallback) {
+            fallback.style.display = 'flex';
+          }
+        }
+      }, { once: true });
+    });
+
+    // 2. Desktop-only Cursor Glow (Single passive listener, GPU translate3d, zero initial layer/reflow cost)
+    const cursorGlow = document.getElementById('cursorGlow');
+    if (cursorGlow && isFinePointer && !prefersReducedMotion) {
       let mouseX = -1000;
       let mouseY = -1000;
       let glowTicking = false;
+      let glowVisible = false;
 
-      window.addEventListener('mousemove', (e) => {
+      window.addEventListener('pointermove', (e) => {
+        if (e.pointerType && e.pointerType !== 'mouse') return;
         mouseX = e.clientX;
         mouseY = e.clientY;
         if (!glowTicking) {
           glowTicking = true;
           requestAnimationFrame(() => {
+            if (!glowVisible) {
+              cursorGlow.style.opacity = '1';
+              glowVisible = true;
+            }
             cursorGlow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
             glowTicking = false;
           });
         }
       }, { passive: true });
     }
-  }
 
-  // Track scroll/slider layout invalidation epoch (O(1) on scroll, zero forced reflow)
-  let layoutEpoch = 0;
-  window.addEventListener('scroll', () => {
-    layoutEpoch++;
-  }, { passive: true });
+    // 3. Mobile Navigation Menu Toggle (CSS drives icon swap & rotation via aria-expanded)
+    const navToggle = document.getElementById('navToggle');
+    const navbar = document.getElementById('navbar');
+    const navBackdrop = document.getElementById('navBackdrop');
 
-  // 3. Desktop-only 3D Glass Tilt & Sheen (Cached rect invalidated on scroll/slide, throttled via rAF)
-  if (isFinePointer && !prefersReducedMotion) {
-    const cards = document.querySelectorAll('.card-3d, .panel');
-    cards.forEach(card => {
-      let rect = null;
-      let rectEpoch = -1;
-      let isTicking = false;
-      let mouseX = 0;
-      let mouseY = 0;
-      const isCard3d = card.classList.contains('card-3d');
+    if (navToggle && navbar) {
+      const closeMobileNav = () => {
+        navbar.classList.remove('mobile-open');
+        document.body.classList.remove('menu-open');
+        if (navBackdrop) navBackdrop.classList.remove('active');
+        navToggle.setAttribute('aria-expanded', 'false');
+      };
 
-      card.addEventListener('mouseenter', () => {
-        rect = card.getBoundingClientRect();
-        rectEpoch = layoutEpoch;
-      }, { passive: true });
+      const openMobileNav = () => {
+        navbar.classList.add('mobile-open');
+        document.body.classList.add('menu-open');
+        if (navBackdrop) navBackdrop.classList.add('active');
+        navToggle.setAttribute('aria-expanded', 'true');
+      };
 
-      card.addEventListener('mousemove', (e) => {
-        if (card.closest('.is-dragging')) return;
-        if (!rect || rectEpoch !== layoutEpoch) {
-          rect = card.getBoundingClientRect();
-          rectEpoch = layoutEpoch;
+      navToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (navbar.classList.contains('mobile-open')) {
+          closeMobileNav();
+        } else {
+          openMobileNav();
         }
-        mouseX = e.clientX - rect.left;
-        mouseY = e.clientY - rect.top;
+      });
 
-        if (!isTicking) {
-          isTicking = true;
-          requestAnimationFrame(() => {
-            if (rect && rect.width && rect.height && !card.closest('.is-dragging')) {
-              const xPercent = (mouseX / rect.width) * 100;
-              const yPercent = (mouseY / rect.height) * 100;
-              card.style.setProperty('--mouse-x', `${xPercent.toFixed(1)}%`);
-              card.style.setProperty('--mouse-y', `${yPercent.toFixed(1)}%`);
-
-              if (isCard3d) {
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = ((mouseY - centerY) / centerY) * -4;
-                const rotateY = ((mouseX - centerX) / centerX) * 4;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
-              }
-            }
-            isTicking = false;
-          });
-        }
-      }, { passive: true });
-
-      card.addEventListener('mouseleave', () => {
-        rect = null;
-        if (isCard3d) {
-          card.style.transform = '';
-        }
-      }, { passive: true });
-    });
-  }
-
-  // 4. Mobile Navigation Menu Toggle (with body scroll lock, backdrop & a11y Escape handler)
-  const navToggle = document.getElementById('navToggle');
-  const navbar = document.getElementById('navbar');
-  const navLinks = document.getElementById('navLinks');
-  const navBackdrop = document.getElementById('navBackdrop');
-
-  if (navToggle && navbar) {
-    const closeMobileNav = () => {
-      navbar.classList.remove('mobile-open');
-      document.body.classList.remove('menu-open');
-      if (navBackdrop) navBackdrop.classList.remove('active');
-      navToggle.setAttribute('aria-expanded', 'false');
-      navToggle.style.transform = 'rotate(0)';
-      navToggle.innerHTML = '<svg viewBox="0 0 24 24"><use href="icons.svg#icon-menu"></use></svg>';
-    };
-
-    const openMobileNav = () => {
-      navbar.classList.add('mobile-open');
-      document.body.classList.add('menu-open');
-      if (navBackdrop) navBackdrop.classList.add('active');
-      navToggle.setAttribute('aria-expanded', 'true');
-      navToggle.style.transform = 'rotate(90deg)';
-      navToggle.innerHTML = '<svg viewBox="0 0 24 24"><use href="icons.svg#icon-close"></use></svg>';
-    };
-
-    navToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (navbar.classList.contains('mobile-open')) {
-        closeMobileNav();
-      } else {
-        openMobileNav();
+      if (navBackdrop) {
+        navBackdrop.addEventListener('click', closeMobileNav);
       }
-    });
 
-    if (navBackdrop) {
-      navBackdrop.addEventListener('click', closeMobileNav);
-    }
-
-    document.addEventListener('click', (e) => {
-      if (navbar.classList.contains('mobile-open') && !navbar.contains(e.target) && !navToggle.contains(e.target)) {
-        closeMobileNav();
-      }
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && navbar.classList.contains('mobile-open')) {
-        closeMobileNav();
-        navToggle.focus();
-      }
-    });
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 960 && navbar.classList.contains('mobile-open')) {
-        closeMobileNav();
-      }
-    }, { passive: true });
-
-    navbar.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => {
-        if (window.innerWidth <= 960) {
+      document.addEventListener('click', (e) => {
+        if (
+          navbar.classList.contains('mobile-open') &&
+          !navbar.contains(e.target) &&
+          !navToggle.contains(e.target)
+        ) {
           closeMobileNav();
         }
       });
-    });
-  }
 
-  // 5. High-Performance Active Section Tracking via IntersectionObserver (Zero layout thrashing, no forced reflows)
-  const sections = document.querySelectorAll('section[id]');
-  const links = document.querySelectorAll('.nav-links a');
-  const linkMap = new Map();
-  links.forEach(l => {
-    const href = l.getAttribute('href');
-    if (href && href.startsWith('#')) {
-      linkMap.set(href.slice(1), l);
-    }
-  });
-
-  const setActiveNav = (id) => {
-    links.forEach(l => l.classList.remove('active'));
-    const activeLink = linkMap.get(id);
-    if (activeLink) activeLink.classList.add('active');
-  };
-
-  if ('IntersectionObserver' in window) {
-    const visibleSections = new Set();
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const id = entry.target.id || (entry.target.tagName === 'FOOTER' ? 'connect' : '');
-        if (!id) return;
-
-        if (entry.isIntersecting) {
-          visibleSections.add(id);
-        } else {
-          visibleSections.delete(id);
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navbar.classList.contains('mobile-open')) {
+          closeMobileNav();
+          navToggle.focus();
         }
       });
 
-      for (const sec of sections) {
-        if (visibleSections.has(sec.id)) {
-          setActiveNav(sec.id);
-          break;
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 960 && navbar.classList.contains('mobile-open')) {
+          closeMobileNav();
         }
-      }
-      if (visibleSections.has('connect')) {
-        setActiveNav('connect');
-      }
-    }, {
-      rootMargin: '-15% 0px -55% 0px',
-      threshold: [0, 0.2]
-    });
+      }, { passive: true });
 
-    sections.forEach(s => observer.observe(s));
-    const footer = document.querySelector('footer');
-    if (footer) observer.observe(footer);
-  }
-
-  // 6. Unified Responsive Carousel Manager (Handles 'always' and 'mobile-only' sliders)
-  const desktopMediaQuery = window.matchMedia('(min-width: 641px)');
-  const sliderInstances = [];
-  const slidersById = {};
-
-  function setupCarousel(wrapper) {
-    const mode = wrapper.dataset.carouselMode || 'always';
-    const carouselId = wrapper.dataset.carouselId || '';
-    const track = wrapper.querySelector('.slider-track');
-    const viewport = wrapper.querySelector('.slider-viewport');
-    const prevBtn = wrapper.querySelector('[data-carousel-prev]');
-    const nextBtn = wrapper.querySelector('[data-carousel-next]');
-    if (!track || !prevBtn || !nextBtn) return null;
-
-    let currentIndex = 0;
-    const items = track.children;
-    const totalItems = items.length;
-
-    let isDragging = false;
-    let isDraggingAction = false;
-    let startX = 0;
-    let startY = 0;
-    let draggedX = 0;
-    let dragInScrollable = false;
-    let dragDirectionLocked = null;
-    let cachedStep = 0;
-    let cachedMaxIndex = 0;
-    let rAFId = null;
-
-    function isCarouselActive() {
-      return mode === 'always' || !desktopMediaQuery.matches;
-    }
-
-    function getItemsPerView() {
-      return (mode === 'always' && desktopMediaQuery.matches) ? 2 : 1;
-    }
-
-    function getMaxIndex() {
-      return Math.max(0, totalItems - getItemsPerView());
-    }
-
-    function getStep() {
-      if (items.length > 1 && items[0] && items[1]) {
-        const step = items[1].offsetLeft - items[0].offsetLeft;
-        if (step > 0) return step;
-      }
-      const itemsPerView = getItemsPerView();
-      const vw = viewport ? viewport.clientWidth : track.clientWidth;
-      return itemsPerView === 1 ? (vw + 20) : ((vw + 20) / 2);
-    }
-
-    function updateSlider(animate = true) {
-      if (!isCarouselActive()) {
-        currentIndex = 0;
-        track.style.transition = '';
-        track.style.transform = '';
-        track.style.cursor = '';
-        prevBtn.disabled = true;
-        nextBtn.disabled = true;
-        return;
-      }
-
-      const maxIndex = getMaxIndex();
-      currentIndex = Math.min(Math.max(0, currentIndex), maxIndex);
-      layoutEpoch++;
-
-      track.style.cursor = 'grab';
-      track.style.transition = (animate && !prefersReducedMotion) ? 'transform 0.35s var(--ease)' : 'none';
-
-      if (currentIndex === 0) {
-        track.style.transform = 'translate3d(0px, 0, 0)';
-      } else {
-        const step = getStep();
-        track.style.transform = `translate3d(-${currentIndex * step}px, 0, 0)`;
-      }
-
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex >= maxIndex;
-    }
-
-    function getPositionX(e) {
-      return e.type.includes('mouse') ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-    }
-
-    function getPositionY(e) {
-      return e.type.includes('mouse') ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
-    }
-
-    function dragStart(e) {
-      if (!isCarouselActive()) return;
-      if (e.type === 'mousedown' && e.button !== 0) return;
-      if (e.target && e.target.closest && e.target.closest('.testimonial-expand-btn')) {
-        isDraggingAction = false;
-        return;
-      }
-
-      const scrollableBq = e.target && e.target.closest ? e.target.closest('blockquote') : null;
-      dragInScrollable = !!(scrollableBq && scrollableBq.scrollHeight > scrollableBq.clientHeight + 2);
-      dragDirectionLocked = null;
-
-      isDragging = true;
-      isDraggingAction = false;
-      startX = getPositionX(e);
-      startY = getPositionY(e);
-      draggedX = 0;
-      cachedStep = getStep();
-      cachedMaxIndex = getMaxIndex();
-      track.style.transition = 'none';
-      track.style.cursor = 'grabbing';
-      track.classList.add('is-dragging');
-
-      window.addEventListener('mousemove', dragMove, { passive: true });
-      window.addEventListener('mouseup', dragEnd);
-      window.addEventListener('touchmove', dragMove, { passive: true });
-      window.addEventListener('touchend', dragEnd);
-      window.addEventListener('touchcancel', dragEnd);
-      window.addEventListener('blur', dragEnd);
-    }
-
-    function dragMove(e) {
-      if (!isDragging) return;
-      const currentX = getPositionX(e);
-      if (dragInScrollable && !dragDirectionLocked) {
-        const deltaX = Math.abs(currentX - startX);
-        const deltaY = Math.abs(getPositionY(e) - startY);
-        if (deltaX > 6 || deltaY > 6) {
-          if (deltaY >= deltaX) {
-            dragDirectionLocked = 'y';
-            draggedX = 0;
-            dragEnd();
-            return;
+      navbar.querySelectorAll('a').forEach((a) => {
+        a.addEventListener('click', () => {
+          if (window.innerWidth <= 960) {
+            closeMobileNav();
           }
-          dragDirectionLocked = 'x';
+        });
+      });
+    }
+
+    // 4. Active Section Scrollspy (Native CSS scroll-target-group + IntersectionObserver fallback)
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+
+    if (navLinks.length) {
+      if (CSS.supports('scroll-target-group: auto')) {
+        const syncAriaCurrent = () => {
+          const currentLink = document.querySelector('.nav-links a:target-current');
+          navLinks.forEach((link) => {
+            if (link === currentLink) {
+              link.setAttribute('aria-current', 'true');
+            } else {
+              link.removeAttribute('aria-current');
+            }
+          });
+        };
+
+        if ('onscrollend' in window) {
+          document.addEventListener('scrollend', syncAriaCurrent, { passive: true });
         } else {
+          let spyTimer = null;
+          window.addEventListener('scroll', () => {
+            clearTimeout(spyTimer);
+            spyTimer = setTimeout(syncAriaCurrent, 120);
+          }, { passive: true });
+        }
+      } else if ('IntersectionObserver' in window) {
+        const linkMap = new Map();
+        navLinks.forEach((l) => {
+          const href = l.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            linkMap.set(href.slice(1), l);
+          }
+        });
+
+        const setActiveNav = (id) => {
+          const targetLink = linkMap.get(id);
+          navLinks.forEach((l) => {
+            const active = l === targetLink;
+            l.classList.toggle('active', active);
+            if (active) {
+              l.setAttribute('aria-current', 'true');
+            } else {
+              l.removeAttribute('aria-current');
+            }
+          });
+        };
+
+        const visibleSections = new Set();
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            const id = entry.target.id || (entry.target.tagName === 'FOOTER' ? 'connect' : '');
+            if (!id) return;
+            if (entry.isIntersecting) {
+              visibleSections.add(id);
+            } else {
+              visibleSections.delete(id);
+            }
+          });
+
+          for (const sec of sections) {
+            if (visibleSections.has(sec.id)) {
+              setActiveNav(sec.id);
+              break;
+            }
+          }
+          if (visibleSections.has('connect')) {
+            setActiveNav('connect');
+          }
+        }, {
+          rootMargin: '-15% 0px -55% 0px',
+          threshold: [0, 0.2]
+        });
+
+        sections.forEach((s) => observer.observe(s));
+        const footer = document.querySelector('footer');
+        if (footer) observer.observe(footer);
+      }
+    }
+
+    // 5. CSS Scroll-Snap Carousel Controls & Accessible Status Sync
+    const desktopMediaQuery = window.matchMedia('(min-width: 641px)');
+    const mobileMediaQuery = window.matchMedia('(max-width: 640px)');
+    const sliderInstances = [];
+    const slidersById = {};
+
+    function setupCarousel(wrapper) {
+      const mode = wrapper.dataset.carouselMode || 'always';
+      const carouselId = wrapper.dataset.carouselId || '';
+      const track = wrapper.querySelector('.slider-track');
+      const prevBtn = wrapper.querySelector('[data-carousel-prev]');
+      const nextBtn = wrapper.querySelector('[data-carousel-next]');
+      const statusEl = wrapper.querySelector('[data-carousel-status]');
+      if (!track || !prevBtn || !nextBtn) return null;
+
+      const slides = Array.from(track.children);
+      const totalItems = slides.length;
+      let pendingIndex = 0;
+      let lastSettledIndex = 0;
+      let hasInteracted = false;
+
+      function isCarouselActive() {
+        return mode === 'always' || !desktopMediaQuery.matches;
+      }
+
+      function getItemsPerView() {
+        return (mode === 'always' && desktopMediaQuery.matches) ? 2 : 1;
+      }
+
+      function getMaxIndex() {
+        return Math.max(0, totalItems - getItemsPerView());
+      }
+
+      function syncButtons(index) {
+        if (!isCarouselActive()) {
+          prevBtn.disabled = true;
+          nextBtn.disabled = true;
           return;
         }
+        const maxIndex = getMaxIndex();
+        const clamped = Math.min(Math.max(0, index), maxIndex);
+        const prevWasFocused = document.activeElement === prevBtn;
+        const nextWasFocused = document.activeElement === nextBtn;
+
+        prevBtn.disabled = clamped <= 0;
+        nextBtn.disabled = clamped >= maxIndex;
+
+        if (prevWasFocused && prevBtn.disabled && !nextBtn.disabled) {
+          nextBtn.focus({ preventScroll: true });
+        } else if (nextWasFocused && nextBtn.disabled && !prevBtn.disabled) {
+          prevBtn.focus({ preventScroll: true });
+        }
       }
 
-      draggedX = currentX - startX;
-      if (Math.abs(draggedX) > 8) isDraggingAction = true;
+      function getPadLeft() {
+        return parseFloat(getComputedStyle(track).paddingLeft) || 0;
+      }
 
-      if (!rAFId) {
-        rAFId = requestAnimationFrame(() => {
-          const baseOffset = currentIndex * cachedStep;
-          let effectiveDrag = draggedX;
-          if ((currentIndex === 0 && draggedX > 0) || (currentIndex >= cachedMaxIndex && draggedX < 0)) {
-            effectiveDrag = draggedX * 0.25;
+      function getNearestIndex() {
+        if (!isCarouselActive() || slides.length === 0) return 0;
+        const padLeft = getPadLeft();
+        const scrollLeft = track.scrollLeft;
+        const maxIndex = getMaxIndex();
+        let bestIdx = 0;
+        let bestDist = Infinity;
+        for (let i = 0; i <= maxIndex; i++) {
+          const dist = Math.abs((slides[i].offsetLeft - padLeft) - scrollLeft);
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestIdx = i;
           }
-          track.style.transform = `translate3d(-${baseOffset - effectiveDrag}px, 0, 0)`;
-          rAFId = null;
+        }
+        return bestIdx;
+      }
+
+      function announceSlide(index) {
+        if (!statusEl || !hasInteracted) return;
+        const perView = getItemsPerView();
+        const start = index + 1;
+        if (perView > 1) {
+          const end = Math.min(totalItems, index + perView);
+          statusEl.textContent = `Showing items ${start} to ${end} of ${totalItems}`;
+        } else {
+          statusEl.textContent = `Slide ${start} of ${totalItems}`;
+        }
+      }
+
+      function goToIndex(targetIndex, animate = true) {
+        if (!isCarouselActive() || slides.length === 0) return;
+        const maxIndex = getMaxIndex();
+        pendingIndex = Math.min(Math.max(0, targetIndex), maxIndex);
+        hasInteracted = true;
+        syncButtons(pendingIndex);
+
+        const padLeft = getPadLeft();
+        const targetLeft = Math.max(0, slides[pendingIndex].offsetLeft - padLeft);
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        track.scrollTo({
+          left: targetLeft,
+          behavior: (animate && !reduceMotion) ? 'smooth' : 'instant'
         });
       }
-    }
 
-    function dragEnd() {
-      if (!isDragging) return;
-      isDragging = false;
-      if (rAFId) {
-        cancelAnimationFrame(rAFId);
-        rAFId = null;
-      }
-      track.style.cursor = isCarouselActive() ? 'grab' : '';
-      track.classList.remove('is-dragging');
-
-      window.removeEventListener('mousemove', dragMove);
-      window.removeEventListener('mouseup', dragEnd);
-      window.removeEventListener('touchmove', dragMove);
-      window.removeEventListener('touchend', dragEnd);
-      window.removeEventListener('touchcancel', dragEnd);
-      window.removeEventListener('blur', dragEnd);
-
-      const threshold = 40;
-      if (Math.abs(draggedX) > threshold && cachedStep > 0) {
-        const cardsMoved = Math.max(1, Math.round(Math.abs(draggedX) / cachedStep));
-        if (draggedX < -threshold) currentIndex += cardsMoved;
-        else if (draggedX > threshold) currentIndex -= cardsMoved;
-      }
-
-      setTimeout(() => {
-        isDraggingAction = false;
-      }, 60);
-
-      updateSlider(true);
-    }
-
-    prevBtn.addEventListener('click', () => {
-      if (!isCarouselActive()) return;
-      currentIndex--;
-      updateSlider(true);
-    });
-
-    nextBtn.addEventListener('click', () => {
-      if (!isCarouselActive()) return;
-      currentIndex++;
-      updateSlider(true);
-    });
-
-    track.addEventListener('mousedown', dragStart);
-    track.addEventListener('touchstart', dragStart, { passive: true });
-    track.addEventListener('dragstart', e => {
-      if (isCarouselActive()) e.preventDefault();
-    });
-
-    if (viewport) {
-      let wheelAccum = 0;
-      let wheelCooldown = false;
-      let wheelResetTimer = null;
-
-      viewport.addEventListener('wheel', (e) => {
-        if (!isCarouselActive()) return;
-        const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-        const isShiftWheel = e.shiftKey && Math.abs(e.deltaY) > 0;
-        if (!isHorizontal && !isShiftWheel) return;
-
-        const delta = isHorizontal ? e.deltaX : e.deltaY;
-        const maxIndex = getMaxIndex();
-        if ((delta < 0 && currentIndex <= 0) || (delta > 0 && currentIndex >= maxIndex)) {
+      function onSettled() {
+        if (!isCarouselActive()) {
+          pendingIndex = 0;
+          lastSettledIndex = 0;
+          syncButtons(0);
           return;
         }
-
-        e.preventDefault();
-        clearTimeout(wheelResetTimer);
-        wheelResetTimer = setTimeout(() => { wheelAccum = 0; }, 150);
-
-        if (wheelCooldown) return;
-        wheelAccum += delta;
-
-        if (Math.abs(wheelAccum) > 30) {
-          if (wheelAccum > 0) currentIndex++;
-          else currentIndex--;
-          wheelAccum = 0;
-          wheelCooldown = true;
-          updateSlider(true);
-          setTimeout(() => { wheelCooldown = false; }, 220);
+        const settled = getNearestIndex();
+        pendingIndex = settled;
+        syncButtons(settled);
+        if (settled !== lastSettledIndex) {
+          lastSettledIndex = settled;
+          announceSlide(settled);
         }
-      }, { passive: false });
-    }
-
-    track.addEventListener('click', (e) => {
-      if (e.target && e.target.closest && e.target.closest('.testimonial-expand-btn')) {
-        isDraggingAction = false;
-        return;
       }
-      if (isDraggingAction) {
-        e.preventDefault();
-        e.stopPropagation();
-        isDraggingAction = false;
-      }
-    }, true);
 
-    updateSlider(false);
-    const instance = { updateSlider };
-    sliderInstances.push(instance);
-    if (carouselId) slidersById[carouselId] = instance;
-    return instance;
-  }
-
-  document.querySelectorAll('[data-carousel]').forEach(setupCarousel);
-
-  const clientSlider = slidersById.testimonials;
-  const colleagueSlider = slidersById.colleagueTestimonials;
-
-  const testimonialCards = Array.from(document.querySelectorAll('#testimonials .testimonial-card'));
-  const testimonialModal = document.getElementById('testimonialModal');
-  const testimonialModalQuote = document.getElementById('testimonialModalQuote');
-  const testimonialModalAuthor = document.getElementById('testimonialModalAuthor');
-  const testimonialModalRole = document.getElementById('testimonialModalRole');
-  const testimonialModalContext = document.getElementById('testimonialModalContext');
-
-  let syncOverflowRaf = null;
-  function syncTestimonialOverflows() {
-    if (syncOverflowRaf) cancelAnimationFrame(syncOverflowRaf);
-    syncOverflowRaf = requestAnimationFrame(() => {
-      syncOverflowRaf = null;
-      const measurements = testimonialCards.map((card) => {
-        const bq = card.querySelector('blockquote');
-        if (!bq) return null;
-        const clientH = bq.clientHeight;
-        if (clientH === 0) return null;
-        const scrollH = bq.scrollHeight;
-        const scrollT = bq.scrollTop;
-        const hasOverflow = scrollH > clientH + 2;
-        const isAtBottom = !hasOverflow || (scrollT + clientH >= scrollH - 2);
-        return { card, bq, hasOverflow, isAtBottom };
+      prevBtn.addEventListener('click', () => {
+        goToIndex(pendingIndex - 1, true);
       });
 
-      measurements.forEach((m) => {
-        if (!m) return;
-        m.card.classList.toggle('has-overflow', m.hasOverflow);
-        m.bq.classList.toggle('has-overflow', m.hasOverflow);
-        m.bq.classList.toggle('is-at-bottom', m.isAtBottom);
+      nextBtn.addEventListener('click', () => {
+        goToIndex(pendingIndex + 1, true);
       });
-    });
-  }
 
-  testimonialCards.forEach((card) => {
-    const bq = card.querySelector('blockquote');
-    const expandBtn = card.querySelector('.testimonial-expand-btn');
+      if ('onscrollend' in window) {
+        track.addEventListener('scrollend', () => {
+          hasInteracted = true;
+          onSettled();
+        }, { passive: true });
+      } else {
+        let scrollSettleTimer = null;
+        track.addEventListener('scroll', () => {
+          hasInteracted = true;
+          clearTimeout(scrollSettleTimer);
+          scrollSettleTimer = setTimeout(onSettled, 120);
+        }, { passive: true });
+      }
 
-    if (bq) {
-      bq.addEventListener('scroll', () => {
-        const isAtBottom = bq.scrollTop + bq.clientHeight >= bq.scrollHeight - 2;
-        bq.classList.toggle('is-at-bottom', isAtBottom);
-      }, { passive: true });
-    }
+      // Initialize button disabled state with ZERO forced reflow on DOMContentLoaded
+      if (!isCarouselActive()) {
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+      } else {
+        prevBtn.disabled = true;
+        nextBtn.disabled = getMaxIndex() === 0;
+      }
 
-    if (expandBtn && testimonialModal) {
-      expandBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const nameEl = card.querySelector('.testimonial-attr .name');
-        const roleEl = card.querySelector('.testimonial-attr .role');
-        const contextEl = card.querySelector('.testimonial-attr .context');
-
-        if (testimonialModalQuote && bq) testimonialModalQuote.textContent = bq.textContent;
-        if (testimonialModalAuthor && nameEl) testimonialModalAuthor.innerHTML = nameEl.innerHTML;
-        if (testimonialModalRole && roleEl) testimonialModalRole.textContent = roleEl.textContent;
-        if (testimonialModalContext) {
-          if (contextEl && contextEl.textContent) {
-            testimonialModalContext.textContent = contextEl.textContent;
-            testimonialModalContext.hidden = false;
-          } else {
-            testimonialModalContext.textContent = '';
-            testimonialModalContext.hidden = true;
+      const instance = {
+        sync() {
+          if (!isCarouselActive()) {
+            pendingIndex = 0;
+            lastSettledIndex = 0;
+            syncButtons(0);
+            return;
           }
+          const idx = getNearestIndex();
+          pendingIndex = idx;
+          lastSettledIndex = idx;
+          syncButtons(idx);
+        },
+        reset() {
+          pendingIndex = 0;
+          lastSettledIndex = 0;
+          if (isCarouselActive()) {
+            track.scrollTo({ left: 0, behavior: 'instant' });
+          }
+          syncButtons(0);
         }
-        testimonialModal.showModal();
+      };
+
+      sliderInstances.push(instance);
+      if (carouselId) slidersById[carouselId] = instance;
+      return instance;
+    }
+
+    document.querySelectorAll('[data-carousel]').forEach(setupCarousel);
+
+    const clientSlider = slidersById.testimonials;
+    const colleagueSlider = slidersById.colleagueTestimonials;
+
+    // 6. Testimonials Modal & Lazy Mobile-Only Overflow / Legacy Scroll-Fade Fallback
+    const testimonialsSection = document.getElementById('testimonials');
+    const testimonialCards = Array.from(document.querySelectorAll('#testimonials .testimonial-card'));
+    const testimonialModal = document.getElementById('testimonialModal');
+    const testimonialModalQuote = document.getElementById('testimonialModalQuote');
+    const testimonialModalAuthor = document.getElementById('testimonialModalAuthor');
+    const testimonialModalRole = document.getElementById('testimonialModalRole');
+    const testimonialModalContext = document.getElementById('testimonialModalContext');
+    const supportsUntilFound = 'onbeforematch' in HTMLElement.prototype;
+
+    let testimonialsInView = false;
+    let fadeMaskInitialized = false;
+
+    function syncMobileExpandButtons() {
+      if (!testimonialsInView || !mobileMediaQuery.matches) return;
+      const clientPanel = document.getElementById('clientTestimonialsPanel');
+      const colleaguePanel = document.getElementById('colleagueTestimonialsPanel');
+      const activePanel = (colleaguePanel && colleaguePanel.classList.contains('is-active'))
+        ? colleaguePanel
+        : clientPanel;
+      const cards = activePanel
+        ? Array.from(activePanel.querySelectorAll('.testimonial-card'))
+        : testimonialCards;
+
+      const measurements = cards.map((card) => {
+        const bq = card.querySelector('blockquote');
+        if (!bq || bq.clientHeight === 0) return null;
+        return { card, hasOverflow: bq.scrollHeight > bq.clientHeight + 2 };
+      });
+      measurements.forEach((m) => {
+        if (m) m.card.classList.toggle('has-overflow', m.hasOverflow);
       });
     }
-  });
 
-  if (testimonialModal && !('closedBy' in HTMLDialogElement.prototype)) {
-    const outside = (e, dialog) => {
-      const r = dialog.getBoundingClientRect();
-      return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
-    };
-    let pressedOutside = false;
-    testimonialModal.addEventListener('pointerdown', (e) => { pressedOutside = outside(e, testimonialModal); });
-    testimonialModal.addEventListener('pointerup', (e) => { if (pressedOutside && outside(e, testimonialModal)) testimonialModal.close(); });
-  }
+    function initOverflowFadeMasks() {
+      if (fadeMaskInitialized || !('IntersectionObserver' in window)) return;
+      fadeMaskInitialized = true;
+      testimonialCards.forEach((card) => {
+        const bq = card.querySelector('blockquote');
+        if (!bq) return;
+        const endSentinel = document.createElement('span');
+        endSentinel.setAttribute('aria-hidden', 'true');
+        endSentinel.style.cssText = 'display:block;width:1px;height:1px;pointer-events:none;';
+        bq.appendChild(endSentinel);
+        const obs = new IntersectionObserver((entries) => {
+          const entry = entries[entries.length - 1];
+          bq.classList.toggle('more-end', !entry.isIntersecting);
+        }, { root: bq, threshold: 0.1 });
+        obs.observe(endSentinel);
+      });
+    }
 
-  syncTestimonialOverflows();
+    if (testimonialsSection && 'IntersectionObserver' in window) {
+      const sectionObserver = new IntersectionObserver((entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          testimonialsInView = true;
+          sectionObserver.disconnect();
+          requestAnimationFrame(() => {
+            syncMobileExpandButtons();
+            initOverflowFadeMasks();
+          });
+        }
+      }, { rootMargin: '200px 0px' });
+      sectionObserver.observe(testimonialsSection);
+    }
 
-  let resizeTimeout;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      sliderInstances.forEach(s => s.updateSlider(false));
-      syncTestimonialOverflows();
-    }, 80);
-  }, { passive: true });
+    testimonialCards.forEach((card) => {
+      const bq = card.querySelector('blockquote');
+      const expandBtn = card.querySelector('.testimonial-expand-btn');
 
-  if (typeof desktopMediaQuery.addEventListener === 'function') {
-    desktopMediaQuery.addEventListener('change', () => {
-      sliderInstances.forEach(s => s.updateSlider(false));
-      syncTestimonialOverflows();
+      if (expandBtn && testimonialModal) {
+        expandBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const nameLink = card.querySelector('.testimonial-attr .name a');
+          const nameEl = card.querySelector('.testimonial-attr .name');
+          const roleEl = card.querySelector('.testimonial-attr .role');
+          const contextEl = card.querySelector('.testimonial-attr .context');
+
+          if (testimonialModalQuote && bq) testimonialModalQuote.textContent = bq.textContent;
+          if (testimonialModalAuthor) {
+            testimonialModalAuthor.textContent = '';
+            if (nameLink) {
+              testimonialModalAuthor.appendChild(nameLink.cloneNode(true));
+            } else if (nameEl) {
+              testimonialModalAuthor.textContent = nameEl.textContent;
+            }
+          }
+          if (testimonialModalRole && roleEl) testimonialModalRole.textContent = roleEl.textContent;
+          if (testimonialModalContext) {
+            if (contextEl && contextEl.textContent) {
+              testimonialModalContext.textContent = contextEl.textContent;
+              testimonialModalContext.hidden = false;
+            } else {
+              testimonialModalContext.textContent = '';
+              testimonialModalContext.hidden = true;
+            }
+          }
+          testimonialModal.showModal();
+        });
+      }
     });
-  }
 
-  // 7. Testimonials Section Tabs & Mobile Mini Burger Switcher
-  const clientTab = document.getElementById('clientTab');
-  const colleagueTab = document.getElementById('colleagueTab');
-  const clientPanel = document.getElementById('clientTestimonialsPanel');
-  const colleaguePanel = document.getElementById('colleagueTestimonialsPanel');
-  const testimonialsBurgerBtn = document.getElementById('testimonialsBurgerBtn');
-  const testimonialsActiveHeading = document.getElementById('testimonialsActiveHeading');
+    if (testimonialModal && !('closedBy' in HTMLDialogElement.prototype)) {
+      const outside = (e, dialog) => {
+        const r = dialog.getBoundingClientRect();
+        return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      };
+      let pressedOutside = false;
+      testimonialModal.addEventListener('pointerdown', (e) => {
+        pressedOutside = outside(e, testimonialModal);
+      });
+      testimonialModal.addEventListener('pointerup', (e) => {
+        if (pressedOutside && outside(e, testimonialModal)) testimonialModal.close();
+      });
+    }
 
-  if (clientTab && colleagueTab && clientPanel && colleaguePanel) {
-    const tabs = [clientTab, colleagueTab];
+    let resizeTimeout = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        sliderInstances.forEach((s) => s.sync());
+        syncMobileExpandButtons();
+      }, 100);
+    }, { passive: true });
 
-    function activateTestimonialsTab(targetTab, focusTab = false) {
-      const isColleague = targetTab === colleagueTab;
+    if (typeof desktopMediaQuery.addEventListener === 'function') {
+      desktopMediaQuery.addEventListener('change', () => {
+        sliderInstances.forEach((s) => s.sync());
+        syncMobileExpandButtons();
+      });
+    }
+
+    // 7. Testimonials Section Tabs, hidden="until-found" beforematch & Mobile Switcher
+    const clientTab = document.getElementById('clientTab');
+    const colleagueTab = document.getElementById('colleagueTab');
+    const clientPanel = document.getElementById('clientTestimonialsPanel');
+    const colleaguePanel = document.getElementById('colleagueTestimonialsPanel');
+    const testimonialsBurgerBtn = document.getElementById('testimonialsBurgerBtn');
+    const testimonialsActiveHeading = document.getElementById('testimonialsActiveHeading');
+
+    if (clientTab && colleagueTab && clientPanel && colleaguePanel) {
+      const tabs = [clientTab, colleagueTab];
+
+      function hidePanel(panel) {
+        if (supportsUntilFound) {
+          panel.setAttribute('hidden', 'until-found');
+        } else {
+          panel.hidden = true;
+        }
+      }
+
+      function activateTestimonialsTab(targetTab, focusTab = false) {
+        const isColleague = targetTab === colleagueTab;
+
+        tabs.forEach((tab) => {
+          const active = tab === targetTab;
+          tab.classList.toggle('is-active', active);
+          tab.setAttribute('aria-selected', active ? 'true' : 'false');
+          tab.setAttribute('tabindex', active ? '0' : '-1');
+        });
+
+        clientPanel.classList.toggle('is-active', !isColleague);
+        if (isColleague) {
+          hidePanel(clientPanel);
+          colleaguePanel.removeAttribute('hidden');
+        } else {
+          clientPanel.removeAttribute('hidden');
+          hidePanel(colleaguePanel);
+        }
+        colleaguePanel.classList.toggle('is-active', isColleague);
+
+        if (testimonialsActiveHeading) {
+          testimonialsActiveHeading.textContent = isColleague
+            ? 'Colleagues'
+            : 'Client Testimonials';
+        }
+
+        if (testimonialsBurgerBtn) {
+          testimonialsBurgerBtn.setAttribute(
+            'aria-label',
+            isColleague ? 'Switch to Client Testimonials' : 'Switch to Colleagues testimonials'
+          );
+        }
+
+        if (isColleague && colleagueSlider) {
+          colleagueSlider.sync();
+        } else if (!isColleague && clientSlider) {
+          clientSlider.sync();
+        }
+
+        requestAnimationFrame(syncMobileExpandButtons);
+
+        if (focusTab) {
+          targetTab.focus();
+        }
+      }
+
+      clientPanel.addEventListener('beforematch', () => activateTestimonialsTab(clientTab, false));
+      colleaguePanel.addEventListener('beforematch', () => activateTestimonialsTab(colleagueTab, false));
 
       tabs.forEach((tab) => {
-        const active = tab === targetTab;
-        tab.classList.toggle('is-active', active);
-        tab.setAttribute('aria-selected', active ? 'true' : 'false');
-        tab.setAttribute('tabindex', active ? '0' : '-1');
+        tab.addEventListener('click', () => {
+          activateTestimonialsTab(tab, false);
+        });
+
+        tab.addEventListener('keydown', (e) => {
+          const idx = tabs.indexOf(tab);
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const nextIdx = e.key === 'ArrowRight'
+              ? (idx + 1) % tabs.length
+              : (idx - 1 + tabs.length) % tabs.length;
+            activateTestimonialsTab(tabs[nextIdx], true);
+          } else if (e.key === 'Home') {
+            e.preventDefault();
+            activateTestimonialsTab(tabs[0], true);
+          } else if (e.key === 'End') {
+            e.preventDefault();
+            activateTestimonialsTab(tabs[tabs.length - 1], true);
+          }
+        });
       });
-
-      clientPanel.classList.toggle('is-active', !isColleague);
-      clientPanel.hidden = isColleague;
-
-      colleaguePanel.classList.toggle('is-active', isColleague);
-      colleaguePanel.hidden = !isColleague;
-
-      if (testimonialsActiveHeading) {
-        testimonialsActiveHeading.textContent = isColleague
-          ? 'Colleagues'
-          : 'Client Testimonials';
-      }
 
       if (testimonialsBurgerBtn) {
-        testimonialsBurgerBtn.setAttribute(
-          'aria-label',
-          isColleague ? 'Switch to Client Testimonials' : 'Switch to Colleagues testimonials'
-        );
+        testimonialsBurgerBtn.addEventListener('click', () => {
+          const isColleague = colleagueTab.classList.contains('is-active');
+          activateTestimonialsTab(isColleague ? clientTab : colleagueTab, false);
+        });
       }
 
-      if (isColleague && colleagueSlider) {
-        colleagueSlider.updateSlider(false);
-      } else if (!isColleague && clientSlider) {
-        clientSlider.updateSlider(false);
-      }
-      syncTestimonialOverflows();
-      layoutEpoch++;
-
-      if (focusTab) {
-        targetTab.focus();
-      }
-    }
-
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        activateTestimonialsTab(tab, false);
-      });
-
-      tab.addEventListener('keydown', (e) => {
-        const idx = tabs.indexOf(tab);
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-          e.preventDefault();
-          const nextIdx = e.key === 'ArrowRight'
-            ? (idx + 1) % tabs.length
-            : (idx - 1 + tabs.length) % tabs.length;
-          activateTestimonialsTab(tabs[nextIdx], true);
-        } else if (e.key === 'Home') {
-          e.preventDefault();
-          activateTestimonialsTab(tabs[0], true);
-        } else if (e.key === 'End') {
-          e.preventDefault();
-          activateTestimonialsTab(tabs[tabs.length - 1], true);
+      function handleTestimonialsHash() {
+        if (window.location.hash === '#colleague-testimonials') {
+          activateTestimonialsTab(colleagueTab, false);
+          const sec = document.getElementById('testimonials');
+          if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion ? 'instant' : 'smooth' });
         }
-      });
-    });
-
-    if (testimonialsBurgerBtn) {
-      testimonialsBurgerBtn.addEventListener('click', () => {
-        const isColleague = colleagueTab.classList.contains('is-active');
-        activateTestimonialsTab(isColleague ? clientTab : colleagueTab, false);
-      });
-    }
-
-    function handleTestimonialsHash() {
-      if (window.location.hash === '#colleague-testimonials') {
-        activateTestimonialsTab(colleagueTab, false);
-        const sec = document.getElementById('testimonials');
-        if (sec) sec.scrollIntoView({ behavior: 'smooth' });
       }
-    }
 
-    handleTestimonialsHash();
-    window.addEventListener('hashchange', handleTestimonialsHash);
-  }
-});
+      handleTestimonialsHash();
+      window.addEventListener('hashchange', handleTestimonialsHash);
+    }
+  });
+})();
