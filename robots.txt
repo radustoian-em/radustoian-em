@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 
+User-agent: __usage_ai-training
+Allow: /
+
 Sitemap: https://radustoian.com/sitemap.xml
 
 Content-Signal: ai-train=yes, search=yes, ai-input=yes
