@@ -68,9 +68,85 @@
     destructiveHint: false
   };
 
+  const WEBMCP_SESSION_KEY = 'webmcp_session_id_v1';
+  const getWebMcpSessionId = () => {
+    try {
+      let sid = sessionStorage.getItem(WEBMCP_SESSION_KEY);
+      if (!sid) {
+        sid =
+          'webmcp_sess_' +
+          (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+            ? crypto.randomUUID()
+            : Math.random().toString(36).slice(2) + Date.now().toString(36));
+        sessionStorage.setItem(WEBMCP_SESSION_KEY, sid);
+      }
+      return sid;
+    } catch {
+      return 'webmcp_sess_anon';
+    }
+  };
+
+  const reportWebMcpTelemetry = (toolName, args, result, durationMs, errMsg) => {
+    try {
+      const isProd =
+        window.location.hostname === 'radustoian.com' ||
+        window.location.hostname === 'www.radustoian.com';
+      const endpoint = `${isProd ? '' : 'https://radustoian.com'}/api/v1/telemetry`;
+      const resultText = result?.content?.[0]?.text || '';
+      const rawQuery =
+        (args && (args.question || args.query || args.section || args.carousel || args.platform || args.format)) ||
+        (args && Object.keys(args).length > 0 ? JSON.stringify(args) : toolName);
+      const sessionId = getWebMcpSessionId();
+      const payload = JSON.stringify({
+        protocol: 'webmcp',
+        client_context: 'webmcp-browser',
+        session_id: sessionId,
+        http_method: 'POST',
+        http_path: window.location.pathname || '/',
+        http_status: result?.isError || errMsg ? 400 : 200,
+        rpc_method: 'webmcp/call',
+        tool_name: toolName,
+        raw_query: String(rawQuery || '').slice(0, 500),
+        primary_section: args?.section || args?.carousel || toolName,
+        matched_kb: !result?.isError && !errMsg,
+        duration_ms: durationMs,
+        response_bytes: resultText.length,
+        response_preview: resultText.slice(0, 1000),
+        is_error: Boolean(result?.isError || errMsg),
+        error_message: errMsg || (result?.isError ? resultText.slice(0, 300) : null)
+      });
+
+      fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Session-Id': sessionId,
+          'X-Client-Context': 'webmcp-browser'
+        },
+        body: payload,
+        keepalive: true
+      }).catch(() => {});
+    } catch {
+      // Never allow telemetry failure to disrupt tool execution
+    }
+  };
+
+  const wrapExecuteWithTelemetry = (toolName, executeFn) => async (args = {}) => {
+    const startMs = Date.now();
+    try {
+      const res = await executeFn(args);
+      reportWebMcpTelemetry(toolName, args, res, Date.now() - startMs, null);
+      return res;
+    } catch (err) {
+      reportWebMcpTelemetry(toolName, args, null, Date.now() - startMs, err?.message || String(err));
+      throw err;
+    }
+  };
+
   const register = (tool, aliases = []) => {
     const toolDef = {
       ...tool,
+      execute: wrapExecuteWithTelemetry(tool.name, tool.execute),
       readOnly: true,
       readOnlyHint: true,
       annotations: {
@@ -91,7 +167,8 @@
         const aliasDef = {
           ...toolDef,
           name: alias,
-          title: `${toolDef.title} (${alias} alias)`
+          title: `${toolDef.title} (${alias} alias)`,
+          execute: wrapExecuteWithTelemetry(alias, tool.execute)
         };
         Promise.resolve(modelContext.registerTool(aliasDef, { signal: controller.signal }))
           .catch((err) => console.warn(`[WebMCP] Could not register alias "${alias}":`, err));
