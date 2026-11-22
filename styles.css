@@ -101,6 +101,8 @@
     border: 0;
   }
 
+  html { scrollbar-gutter: stable; }
+
   html, body {
     overflow-x: hidden;
     overflow-x: clip;
@@ -113,7 +115,7 @@
     -webkit-font-smoothing: antialiased;
     padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
   }
-  body.menu-open { overflow: hidden; }
+  html:has(> body.menu-open) { overflow: hidden; }
 
   h1, h2, h3, .section-title { transform: translateZ(0); backface-visibility: hidden; }
 
@@ -147,7 +149,7 @@
 
   .navbar { position: sticky; top: 40px; z-index: 50; width: 250px; flex-shrink: 0; margin-top: 40px; }
   .nav-glass {
-    position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; gap: 24px; padding: 32px 24px; border-radius: var(--radius-lg);
+    position: relative; overflow: hidden; overscroll-behavior: contain; display: flex; flex-direction: column; align-items: flex-start; gap: 24px; padding: 32px 24px; border-radius: var(--radius-lg);
     background: var(--sheen), linear-gradient(135deg, rgba(30, 15, 50, 0.65) 0%, rgba(12, 4, 22, 0.45) 100%);
     border: 1px solid var(--glass-border); border-top-color: rgba(255, 255, 255, 0.25); border-left-color: rgba(255, 255, 255, 0.15); box-shadow: var(--bevel-hi), var(--bevel-lo), var(--sh-panel);
   }
@@ -193,6 +195,7 @@
     position: fixed; inset: 0;
     background: rgba(5, 1, 10, 0.82);
     z-index: 90; opacity: 0; pointer-events: none;
+    overflow: hidden; overscroll-behavior: contain; touch-action: none;
     transition: opacity 0.25s var(--ease);
   }
 
