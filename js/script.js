@@ -636,5 +636,164 @@
       handleTestimonialsHash();
       window.addEventListener('hashchange', handleTestimonialsHash);
     }
+
+    // 8. Click-to-Reveal Email & Accessible Copy Button (Spam-Hardened Tier A)
+    const revealEmailBtn = document.getElementById('revealEmailBtn');
+    const emailRevealPanel = document.getElementById('emailRevealPanel');
+    const revealedEmailAddress = document.getElementById('revealedEmailAddress');
+    const openEmailLink = document.getElementById('openEmailLink');
+    const copyEmailBtn = document.getElementById('copyEmailBtn');
+
+    if (revealEmailBtn && emailRevealPanel && revealedEmailAddress && openEmailLink) {
+      let supportsDisplayTransition;
+      function canTransitionDisplay() {
+        if (supportsDisplayTransition !== undefined) return supportsDisplayTransition;
+        if (!window.CSS?.supports?.('transition-behavior', 'allow-discrete') || !document.body) {
+          return false;
+        }
+        const probe = document.createElement('div');
+        probe.style.cssText = 'transition: display 1s allow-discrete !important; display: block;';
+        document.body.appendChild(probe);
+        getComputedStyle(probe).display;
+        probe.style.display = 'none';
+        supportsDisplayTransition = getComputedStyle(probe).display === 'block';
+        probe.remove();
+        return supportsDisplayTransition;
+      }
+
+      const copyTimers = new WeakMap();
+      let lastCopyMessage = '';
+
+      function clearCopyFeedback(button) {
+        if (!button) return;
+        clearTimeout(copyTimers.get(button));
+        button.removeAttribute('data-copied');
+        button.removeAttribute('data-failed');
+        const tip = button.nextElementSibling;
+        if (tip) tip.textContent = '';
+      }
+
+      function reportCopy(button, ok) {
+        const tip = button.nextElementSibling;
+        clearTimeout(copyTimers.get(button));
+        button.removeAttribute('data-copied');
+        button.removeAttribute('data-failed');
+        let message = ok ? 'Copied' : 'Copy failed';
+        if (message === lastCopyMessage) message += '\u00A0';
+        lastCopyMessage = message;
+        if (tip) tip.textContent = '';
+        void button.offsetWidth;
+        button.setAttribute(ok ? 'data-copied' : 'data-failed', '');
+        requestAnimationFrame(() => {
+          if (tip) tip.textContent = message;
+        });
+        copyTimers.set(button, setTimeout(() => {
+          button.removeAttribute('data-copied');
+          button.removeAttribute('data-failed');
+          if (tip) tip.textContent = '';
+        }, 2000));
+      }
+
+      async function copyTargetText(button, target) {
+        const text = target.matches('input, textarea')
+          ? target.value
+          : target.innerText.trim();
+        if (!text) return;
+        try {
+          await navigator.clipboard.writeText(text);
+          reportCopy(button, true);
+        } catch {
+          reportCopy(button, false);
+        }
+      }
+
+      // Register only one path (Invoker Commands or click fallback) so a click never copies twice
+      if ('CommandEvent' in window) {
+        document.addEventListener('command', (event) => {
+          if (event.command === '--copy' && event.source && event.target) {
+            copyTargetText(event.source, event.target);
+          }
+        }, true);
+      } else {
+        document.addEventListener('click', (event) => {
+          const button = event.target.closest('button[command="--copy"]');
+          if (!button) return;
+          const target = document.getElementById(button.getAttribute('commandfor'));
+          if (target) copyTargetText(button, target);
+        });
+      }
+
+      // Encoded address segments decoded strictly on user interaction (never on load)
+      const decodeSegment = (codes, mask) =>
+        codes.map((n) => String.fromCharCode(n ^ mask)).join('');
+
+      function assembleAddress() {
+        const mask = 42;
+        const local = [73, 69, 68, 94, 75, 73, 94];
+        const domain = [88, 75, 78, 95, 89, 94, 69, 67, 75, 68, 4, 73, 69, 71];
+        return decodeSegment(local, mask) + String.fromCharCode(64) + decodeSegment(domain, mask);
+      }
+
+      let isEmailOpen = false;
+
+      function showEmailPanel() {
+        const address = assembleAddress();
+        revealedEmailAddress.textContent = address;
+        openEmailLink.setAttribute('href', ['mai', 'lto:'].join('') + address);
+        emailRevealPanel.removeAttribute('data-closing');
+        emailRevealPanel.hidden = false;
+        isEmailOpen = true;
+        revealEmailBtn.setAttribute('aria-expanded', 'true');
+      }
+
+      async function hideEmailPanel() {
+        isEmailOpen = false;
+        revealEmailBtn.setAttribute('aria-expanded', 'false');
+        clearCopyFeedback(copyEmailBtn);
+
+        if (canTransitionDisplay()) {
+          emailRevealPanel.hidden = true;
+        } else {
+          emailRevealPanel.setAttribute('data-closing', '');
+        }
+
+        const animations = typeof emailRevealPanel.getAnimations === 'function'
+          ? emailRevealPanel.getAnimations()
+          : [];
+        if (animations.length > 0) {
+          await Promise.race([
+            Promise.allSettled(animations.map((a) => a.finished)),
+            new Promise((r) => setTimeout(r, 600))
+          ]);
+        }
+
+        if (emailRevealPanel.hasAttribute('data-closing')) {
+          emailRevealPanel.removeAttribute('data-closing');
+          emailRevealPanel.hidden = true;
+        }
+
+        if (!isEmailOpen && emailRevealPanel.hidden) {
+          revealedEmailAddress.textContent = '';
+          openEmailLink.removeAttribute('href');
+        }
+      }
+
+      revealEmailBtn.addEventListener('click', () => {
+        if (isEmailOpen) {
+          hideEmailPanel();
+        } else {
+          showEmailPanel();
+        }
+      });
+
+      const handleEmailEscape = (event) => {
+        if (event.key === 'Escape' && isEmailOpen) {
+          hideEmailPanel();
+          revealEmailBtn.focus();
+        }
+      };
+      revealEmailBtn.addEventListener('keydown', handleEmailEscape);
+      emailRevealPanel.addEventListener('keydown', handleEmailEscape);
+    }
   });
 })();
