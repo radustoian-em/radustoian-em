@@ -79,11 +79,29 @@ function initChatEngine() {
   const MAX_SESSION_QUESTIONS = 10;
   const COOLDOWN_MS = 2500;
   const SESSION_QUERY_COUNT_KEY = 'nlweb_query_count_v1';
+  const SESSION_ID_STORAGE_KEY = 'nlweb_session_id_v1';
   const PERSISTENT_QUOTA_KEY = 'nlweb_query_quota_v2';
   const QUOTA_WINDOW_MS = 24 * 60 * 60 * 1000;
   const LIMIT_REACHED_MESSAGE =
     "You've reached the free limit of 10 questions about Radu. If you're interested to find out more reach out on LinkedIn https://www.linkedin.com/in/radustoian";
   let lastSubmitTime = 0;
+
+  function getOrCreateChatSessionId() {
+    try {
+      let sid = sessionStorage.getItem(SESSION_ID_STORAGE_KEY);
+      if (!sid) {
+        sid =
+          'chat_sess_' +
+          (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+            ? crypto.randomUUID()
+            : Math.random().toString(36).slice(2) + Date.now().toString(36));
+        sessionStorage.setItem(SESSION_ID_STORAGE_KEY, sid);
+      }
+      return sid;
+    } catch {
+      return 'chat_sess_anon';
+    }
+  }
 
   // Typewriter Speed Configuration: 5 words per second (200ms per word)
   const WORDS_PER_SECOND = 5;
@@ -1442,12 +1460,15 @@ function initChatEngine() {
     }, WORD_TICK_MS);
 
     try {
+      const chatSessionId = getOrCreateChatSessionId();
       const streamUrl = `${ASK_ENDPOINT}?q=${encodeURIComponent(userQuestion)}${
         currentPrev ? '&prev=' + encodeURIComponent(currentPrev) : ''
-      }&mode=generate`;
+      }&mode=generate&session_id=${encodeURIComponent(chatSessionId)}&client_context=human-chat-widget`;
       const response = await fetch(streamUrl, {
         method: 'GET',
-        headers: { Accept: 'text/event-stream' },
+        headers: {
+          Accept: 'text/event-stream'
+        },
         signal: abortController.signal
       });
 
@@ -1614,12 +1635,18 @@ function initChatEngine() {
       }
 
       try {
+        const chatSessionId = getOrCreateChatSessionId();
         const jsonRes = await fetch(ASK_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
           body: JSON.stringify({
             query: userQuestion,
             prev: currentPrev,
+            session_id: chatSessionId,
+            client_context: 'human-chat-widget',
             streaming: false,
             mode: 'generate'
           }),
@@ -1825,6 +1852,7 @@ function initChatEngine() {
 
       setTimeout(() => {
         sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(SESSION_ID_STORAGE_KEY);
         prevQuery = '';
         loadHistory();
         renderMessages(true);
@@ -1841,6 +1869,7 @@ function initChatEngine() {
       }, 150);
     } else {
       sessionStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(SESSION_ID_STORAGE_KEY);
       prevQuery = '';
       loadHistory();
       renderMessages(true);
