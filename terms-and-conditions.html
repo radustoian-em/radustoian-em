@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/styles.css?v=5.2">
+<link rel="stylesheet" href="/styles.css?v=5.3">
 <script src="/js/script.js?v=5.1" defer></script>
 <script src="/js/chat-widget.js?v=5.0" defer fetchpriority="low"></script>
 </head>
@@ -191,6 +191,31 @@
         <h2 class="section-title">9. Contact Information</h2>
         <p>If you have questions regarding these testing endpoints, privacy practices, or Model Context Protocol tools, you can reach out directly to <strong>Radu Stoian</strong>:</p>
         <p>Connect via <a href="https://www.linkedin.com/in/radustoian/" target="_blank" rel="noopener" class="terms-contact-link"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-linkedin"></use></svg> LinkedIn</a> or review public code repositories on <a href="https://github.com/radustoian-em" target="_blank" rel="noopener" class="terms-contact-link"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-github"></use></svg> GitHub</a>.</p>
+        <div class="terms-email-actions">
+          <button type="button" class="btn-glass" id="revealEmailBtn" aria-expanded="false" aria-controls="emailRevealPanel">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-connect"></use></svg> Email me
+          </button>
+        </div>
+        <div class="email-reveal" id="emailRevealPanel" hidden>
+          <div class="email-reveal-card">
+            <span class="email-address" id="revealedEmailAddress"></span>
+            <div class="email-reveal-actions">
+              <span class="copy">
+                <button type="button" class="email-action-btn copy-button" id="copyEmailBtn" command="--copy" commandfor="revealedEmailAddress">
+                  <svg class="icon icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <svg class="icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Copy<span class="sr-only"> email address</span></span>
+                </button>
+                <span class="copy-tip" role="status"></span>
+              </span>
+              <a class="email-action-btn email-mailto-btn" id="openEmailLink">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="icons.svg#icon-connect"></use></svg>
+                <span>Open mail app</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <noscript><p class="connect-noscript">Enable JavaScript to reveal the email address, or connect via LinkedIn above.</p></noscript>
       </div>
     </section>
 

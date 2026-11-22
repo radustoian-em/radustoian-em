@@ -1172,6 +1172,27 @@
     font-size: 0.86rem;
     color: var(--ink-soft);
   }
+  .terms-email-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .terms-panel .email-reveal {
+    justify-content: flex-start;
+  }
+  .terms-section .email-action-btn {
+    color: var(--p-100);
+    text-decoration: none;
+  }
+  .terms-section .email-action-btn:hover {
+    color: #fff;
+  }
+  .terms-panel .connect-noscript {
+    margin-top: 14px;
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+  }
   @media (max-width: 640px) {
     .email-reveal-card {
       width: 100%;
