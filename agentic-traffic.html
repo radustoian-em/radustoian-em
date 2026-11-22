@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="theme-color" content="#05010a">
+  <title>Agentic &amp; MCP Traffic Analytics — Radu Stoian</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">
+  <style>
+    :root {
+      --p-50: #f3e8ff;
+      --p-100: #e9d5ff;
+      --p-200: #d8b4fe;
+      --p-300: #c084fc;
+      --p-400: #a855f7;
+      --p-500: #7c3aed;
+      --p-600: #6d28d9;
+      --p-900: #240d3a;
+      --emerald: #34d399;
+      --amber: #f59e0b;
+      --sky: #38bdf8;
+      --rose: #fb7185;
+      --ink: #f8fafc;
+      --ink-soft: #cbcbdb;
+      --ink-muted: #9494ad;
+      --paper: #05010a;
+      --glass-fill: rgba(22, 10, 36, 0.68);
+      --glass-fill-hi: rgba(34, 16, 56, 0.78);
+      --glass-border: rgba(216, 180, 254, 0.14);
+      --glass-border-hi: rgba(216, 180, 254, 0.28);
+      --bevel-hi: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      --sh-panel: 0 24px 60px -20px rgba(0, 0, 0, 0.8), var(--bevel-hi);
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+      --font-display: "Fraunces", Georgia, serif;
+      --font-body: "Inter", system-ui, -apple-system, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      color-scheme: dark;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      background:
+        radial-gradient(920px 460px at 12% -10%, rgba(124, 58, 237, 0.22), transparent 60%),
+        radial-gradient(760px 420px at 88% 8%, rgba(56, 189, 248, 0.1), transparent 58%),
+        var(--paper);
+      color: var(--ink);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    [hidden]:not([hidden="until-found"]) {
+      display: none !important;
+    }
+
+    a {
+      color: var(--p-300);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    button, input, select {
+      font: inherit;
+      color: inherit;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    summary:focus-visible,
+    .table-wrapper:focus-visible {
+      outline: 2px solid var(--p-300);
+      outline-offset: 2px;
+    }
+
+    .shell {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px 20px 64px;
+    }
+
+    .glass {
+      background: var(--glass-fill);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--sh-panel);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 15px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border-hi);
+      background: rgba(168, 85, 247, 0.14);
+      color: var(--ink);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 140ms ease, border-color 140ms ease, transform 120ms ease;
+    }
+    .btn:hover:not(:disabled) {
+      background: rgba(168, 85, 247, 0.26);
+      border-color: var(--p-300);
+    }
+    .btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--p-500), var(--p-600));
+      border-color: rgba(216, 180, 254, 0.45);
+      font-weight: 600;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--p-400), var(--p-500));
+    }
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--glass-border);
+    }
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Auth Lock Screen */
+    .auth-wrap {
+      min-height: calc(100dvh - 88px);
+      display: grid;
+      place-items: center;
+      padding: 20px 0;
+    }
+    .auth-card {
+      width: min(500px, 100%);
+      padding: 32px;
+    }
+    .auth-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(168, 85, 247, 0.16);
+      border: 1px solid rgba(192, 132, 252, 0.28);
+      color: var(--p-200);
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .auth-title {
+      margin: 16px 0 8px;
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3vw, 1.95rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .auth-sub {
+      margin: 0 0 22px;
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+    }
+    .field-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink-soft);
+    }
+    .input-group {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .input {
+      width: 100%;
+      padding: 10px 13px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border-hi);
+      background: rgba(8, 3, 16, 0.78);
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+    .input::placeholder {
+      color: var(--ink-muted);
+    }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 14px 0 20px;
+      font-size: 0.84rem;
+      color: var(--ink-soft);
+      cursor: pointer;
+    }
+    .alert {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      border: 1px solid rgba(251, 113, 133, 0.35);
+      background: rgba(136, 19, 55, 0.35);
+      color: #fecdd3;
+    }
+    .alert-info {
+      border-color: rgba(56, 189, 248, 0.35);
+      background: rgba(12, 74, 110, 0.32);
+      color: #e0f2fe;
+    }
+    .setup-details {
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--glass-border);
+      font-size: 0.83rem;
+      color: var(--ink-muted);
+    }
+    .setup-details summary {
+      cursor: pointer;
+      color: var(--ink-soft);
+      font-weight: 500;
+    }
+    .setup-details pre {
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--glass-border);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      overflow-x: auto;
+      color: var(--p-100);
+    }
+
+    /* Dashboard Header */
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--p-300);
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+    }
+    .page-title {
+      margin: 6px 0 4px;
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .meta-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: var(--ink-muted);
+    }
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.04);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--ink-soft);
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .select {
+      padding: 9px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border-hi);
+      background: rgba(16, 7, 28, 0.9);
+      color: var(--ink);
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
+
+    /* KPI Strip */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .kpi-card {
+      padding: 16px 18px;
+      background: var(--glass-fill);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--bevel-hi);
+    }
+    .kpi-label {
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+    }
+    .kpi-value {
+      margin: 6px 0 4px;
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 600;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+    }
+    .kpi-sub {
+      font-size: 0.79rem;
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Accessible Tabs (modern-web-guidance tabs pattern) */
+    .tabs-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      border-bottom: 1px solid var(--glass-border);
+      margin-bottom: 18px;
+    }
+    .tab-btn {
+      position: relative;
+      padding: 11px 18px;
+      border: 0;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      background: transparent;
+      color: var(--ink-muted);
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 140ms ease, background 140ms ease;
+    }
+    .tab-btn:hover {
+      color: var(--ink);
+      background: rgba(216, 180, 254, 0.06);
+    }
+    .tab-btn[aria-selected="true"] {
+      color: var(--p-100);
+    }
+    .tab-btn[aria-selected="true"]::after {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      inset-block-end: -1px;
+      border-block-end: 3px solid var(--p-400);
+    }
+    .tab-count {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: rgba(216, 180, 254, 0.14);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--p-200);
+    }
+
+    /* Note: background & spacing on .tab-panel-inner, never on [role="tabpanel"] itself */
+    .tab-panel-inner {
+      display: grid;
+      gap: 18px;
+    }
+
+    /* Overview Grid & Charts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 16px;
+    }
+    .grid-main-side {
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 960px) {
+      .grid-main-side {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-card {
+      padding: 20px;
+    }
+    .panel-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .panel-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .panel-sub {
+      margin: 2px 0 0;
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .chart-stage {
+      position: relative;
+      width: 100%;
+    }
+    .chart-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+    .chart-tooltip {
+      position: fixed;
+      z-index: 30;
+      pointer-events: none;
+      padding: 8px 11px;
+      border-radius: var(--radius-sm);
+      background: rgba(12, 5, 22, 0.96);
+      border: 1px solid var(--glass-border-hi);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    /* Donut Layout */
+    .donut-layout {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 18px;
+    }
+    .donut-wrap {
+      flex: 0 0 170px;
+      margin: 0 auto;
+    }
+    .donut-legend {
+      flex: 1 1 180px;
+      display: grid;
+      gap: 9px;
+    }
+    .donut-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.83rem;
+    }
+
+    /* Horizontal Bars */
+    .hbar-list {
+      display: grid;
+      gap: 11px;
+    }
+    .hbar-row {
+      display: grid;
+      gap: 4px;
+    }
+    .hbar-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 0.83rem;
+    }
+    .hbar-label {
+      color: var(--ink);
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .hbar-nums {
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+    .hbar-track {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+    .hbar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--p-500), var(--p-300));
+    }
+
+    /* Filters Toolbar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .filter-bar .input {
+      flex: 1 1 240px;
+    }
+
+    /* Responsive & Sortable Tables (modern-web-guidance) */
+    .table-wrapper {
+      overflow: auto;
+      max-inline-size: 100%;
+      max-block-size: 620px;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      background: rgba(9, 4, 18, 0.6);
+      container-type: inline-size;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      text-align: left;
+    }
+
+    .data-table thead th {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 2;
+      background: #170a28;
+      border-bottom: 1px solid var(--glass-border-hi);
+      padding: 0;
+      font-weight: 600;
+      color: var(--ink-soft);
+      white-space: nowrap;
+    }
+
+    .data-table thead th:not([data-sortable]),
+    .sort-btn {
+      padding: 11px 12px;
+    }
+
+    .sort-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+    }
+    .sort-btn:hover {
+      color: var(--p-200);
+      background: rgba(216, 180, 254, 0.08);
+    }
+
+    .sort-icon::after {
+      content: "↕";
+      opacity: 0.35;
+      font-size: 0.78em;
+    }
+    th[aria-sort="ascending"] .sort-icon::after {
+      content: "▲";
+      opacity: 1;
+      color: var(--p-300);
+    }
+    th[aria-sort="descending"] .sort-icon::after {
+      content: "▼";
+      opacity: 1;
+      color: var(--p-300);
+    }
+
+    .data-table tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(216, 180, 254, 0.08);
+      vertical-align: top;
+    }
+    .data-table tbody tr:hover {
+      background: rgba(168, 85, 247, 0.08);
+    }
+    .data-table tbody tr[data-clickable="true"] {
+      cursor: pointer;
+    }
+
+    .num-cell {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .pill-violet {
+      background: rgba(168, 85, 247, 0.16);
+      border-color: rgba(192, 132, 252, 0.3);
+      color: var(--p-200);
+    }
+    .pill-green {
+      background: rgba(52, 211, 153, 0.15);
+      border-color: rgba(52, 211, 153, 0.32);
+      color: #a7f3d0;
+    }
+    .pill-amber {
+      background: rgba(245, 158, 11, 0.16);
+      border-color: rgba(245, 158, 11, 0.32);
+      color: #fde68a;
+    }
+    .pill-sky {
+      background: rgba(56, 189, 248, 0.14);
+      border-color: rgba(56, 189, 248, 0.32);
+      color: #bae6fd;
+    }
+    .pill-rose {
+      background: rgba(251, 113, 133, 0.16);
+      border-color: rgba(251, 113, 133, 0.34);
+      color: #fecdd3;
+    }
+
+    .q-primary {
+      font-weight: 500;
+      color: var(--ink);
+      max-width: 440px;
+      word-break: break-word;
+    }
+    .q-sub {
+      margin-top: 3px;
+      font-size: 0.76rem;
+      color: var(--ink-muted);
+      max-width: 440px;
+      word-break: break-word;
+    }
+
+    @container (width < 640px) {
+      .table-wrapper {
+        max-block-size: none;
+      }
+      .data-table,
+      .data-table tbody,
+      .data-table tr,
+      .data-table th,
+      .data-table td {
+        display: block;
+      }
+      .data-table thead {
+        display: none;
+      }
+      .data-table tbody tr {
+        display: grid;
+        gap: 6px;
+        padding: 12px;
+        border-bottom: 1px solid var(--glass-border-hi);
+      }
+      .data-table tbody td {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 8px;
+        padding: 2px 0;
+        border: 0;
+      }
+      .data-table tbody td::before {
+        content: attr(data-label) ": ";
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+      }
+    }
+
+    /* Question Detail Modal */
+    dialog.detail-dialog {
+      width: min(760px, calc(100vw - 24px));
+      max-height: calc(100dvh - 36px);
+      padding: 0;
+      border: 1px solid var(--glass-border-hi);
+      border-radius: var(--radius-lg);
+      background: #120620;
+      color: var(--ink);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.85);
+    }
+    dialog.detail-dialog::backdrop {
+      background: rgba(3, 1, 8, 0.78);
+      backdrop-filter: blur(6px);
+    }
+    .dialog-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .dialog-body {
+      padding: 18px 20px;
+      overflow-y: auto;
+      max-height: calc(100dvh - 140px);
+      display: grid;
+      gap: 14px;
+    }
+    .detail-block {
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+    }
+    .detail-label {
+      margin-bottom: 4px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--p-300);
+    }
+    .detail-value {
+      font-size: 0.88rem;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+      gap: 10px;
+    }
+
+    .empty-state {
+      padding: 34px 16px;
+      text-align: center;
+      color: var(--ink-muted);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <!-- Token Gate -->
+    <section id="authGate" class="auth-wrap" aria-labelledby="authHeading">
+      <div class="glass auth-card">
+        <span class="auth-badge">Private Owner Telemetry</span>
+        <h1 id="authHeading" class="auth-title">Agentic &amp; MCP Analytics</h1>
+        <p class="auth-sub">
+          Token-gated dashboard backed directly by BigQuery views on
+          <code>analytics-humans-agents.radustoian_analytics</code>. Dashboard queries are excluded from telemetry logging.
+        </p>
+
+        <form id="authForm" novalidate>
+          <label class="field-label" for="tokenInput">Dashboard Access Token (<code>DASHBOARD_API_KEY</code>)</label>
+          <div class="input-group">
+            <input
+              id="tokenInput"
+              class="input"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Paste your secret Bearer token"
+              required
+            >
+            <button type="button" id="toggleTokenBtn" class="btn btn-ghost" aria-label="Show token">Show</button>
+          </div>
+
+          <label class="check-row">
+            <input id="rememberTokenChk" type="checkbox">
+            <span>Remember token on this device (<code>localStorage</code>)</span>
+          </label>
+
+          <button type="submit" id="unlockBtn" class="btn btn-primary" style="width: 100%;">
+            Unlock Live Dashboard
+          </button>
+        </form>
+
+        <div id="authError" class="alert" role="alert" hidden></div>
+
+        <details class="setup-details">
+          <summary>First-time Worker &amp; GCP IAM prerequisites</summary>
+          <p style="margin: 8px 0 6px;">
+            Ensure your Service Account has <strong>BigQuery Job User</strong> (<code>roles/bigquery.jobUser</code>) in Google Cloud IAM,
+            and store a long random secret on the <code>mcp-server</code> Worker:
+          </p>
+          <pre>npx wrangler secret put DASHBOARD_API_KEY</pre>
+        </details>
+      </div>
+    </section>
+
+    <!-- Live Dashboard View -->
+    <section id="dashboardView" aria-labelledby="dashHeading" hidden>
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            Live BigQuery Telemetry
+          </span>
+          <h1 id="dashHeading" class="page-title">Agentic, MCP &amp; Chat Traffic</h1>
+          <div class="meta-strip">
+            <span id="datasetBadge" class="meta-chip">BigQuery</span>
+            <span id="cacheBadge" class="meta-chip">Live</span>
+            <span id="updatedBadge">Loading...</span>
+            <span>·</span>
+            <a href="/">← Back to radustoian.com</a>
+          </div>
+        </div>
+
+        <div class="controls">
+          <label class="sr-only" for="windowSelect">Date window</label>
+          <select id="windowSelect" class="select">
+            <option value="7">Last 7 days</option>
+            <option value="14">Last 14 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="365">Last 365 days</option>
+          </select>
+          <button type="button" id="refreshBtn" class="btn">Refresh</button>
+          <button type="button" id="lockBtn" class="btn btn-ghost">Lock</button>
+        </div>
+      </header>
+
+      <div id="dashBanner" class="alert" role="alert" hidden></div>
+
+      <!-- Top KPI Strip -->
+      <section class="kpi-grid" aria-label="Top level metrics">
+        <article class="kpi-card">
+          <div class="kpi-label">Total Calls</div>
+          <div id="kpiTotalCalls" class="kpi-value">—</div>
+          <div id="kpiTotalCallsSub" class="kpi-sub">—</div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Unique Sessions</div>
+          <div id="kpiSessions" class="kpi-value">—</div>
+          <div id="kpiSessionsSub" class="kpi-sub">—</div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Interactive Agent + Chat</div>
+          <div id="kpiInteractive" class="kpi-value">—</div>
+          <div id="kpiInteractiveSub" class="kpi-sub">—</div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Questions Asked</div>
+          <div id="kpiQuestions" class="kpi-value">—</div>
+          <div id="kpiQuestionsSub" class="kpi-sub">—</div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">KB Hit &amp; Avg Latency</div>
+          <div id="kpiKbLatency" class="kpi-value">—</div>
+          <div id="kpiKbLatencySub" class="kpi-sub">—</div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Tokens Delivered</div>
+          <div id="kpiTokens" class="kpi-value">—</div>
+          <div id="kpiTokensSub" class="kpi-sub">—</div>
+        </article>
+      </section>
+
+      <!-- Tabs Bar (modern-web-guidance: no aria-controls, active indicator via ::after, hidden="until-found") -->
+      <div class="tabs-bar" role="tablist" aria-label="Analytics sections" focusgroup="tablist nomemory">
+        <button type="button" class="tab-btn" role="tab" id="tab-overview" aria-selected="true" focusgroupstart data-panel="panel-overview">
+          Overview &amp; Breakdowns
+        </button>
+        <button type="button" class="tab-btn" role="tab" id="tab-questions" aria-selected="false" tabindex="-1" data-panel="panel-questions">
+          Questions Asked <span id="tabCountQuestions" class="tab-count">0</span>
+        </button>
+        <button type="button" class="tab-btn" role="tab" id="tab-sessions" aria-selected="false" tabindex="-1" data-panel="panel-sessions">
+          Sessions &amp; Journeys <span id="tabCountSessions" class="tab-count">0</span>
+        </button>
+      </div>
+
+      <!-- Tab Panel 1: Overview & Breakdowns -->
+      <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+        <div class="tab-panel-inner">
+          <div class="grid-main-side">
+            <article class="glass panel-card">
+              <div class="panel-head">
+                <div>
+                  <h2 class="panel-title">Daily Traffic by Classification</h2>
+                  <p class="panel-sub">Hover or focus any day bar for session, token, and caller mix counts</p>
+                </div>
+                <div class="legend" aria-label="Traffic chart legend">
+                  <span class="legend-item"><span class="swatch" style="background: var(--p-400);"></span>Interactive AI Agent</span>
+                  <span class="legend-item"><span class="swatch" style="background: var(--emerald);"></span>Human Visitor</span>
+                  <span class="legend-item"><span class="swatch" style="background: var(--amber);"></span>Discovery Probe</span>
+                  <span class="legend-item"><span class="swatch" style="background: var(--sky);"></span>Automated Crawler</span>
+                </div>
+              </div>
+              <div id="dailyChartStage" class="chart-stage"></div>
+            </article>
+
+            <article class="glass panel-card">
+              <div class="panel-head">
+                <div>
+                  <h2 class="panel-title">Calls by Channel Surface</h2>
+                  <p class="panel-sub">MCP, Chat UI, NLWeb /ask, Markdown, REST</p>
+                </div>
+              </div>
+              <div id="channelDonutContainer"></div>
+            </article>
+          </div>
+
+          <div class="grid-2">
+            <article class="glass panel-card">
+              <div class="panel-head">
+                <div>
+                  <h2 class="panel-title">Top Agentic Actions &amp; Endpoints</h2>
+                  <p class="panel-sub">MCP tool calls, JSON-RPC methods, Markdown &amp; API endpoints</p>
+                </div>
+              </div>
+              <div id="actionsBars" class="hbar-list"></div>
+            </article>
+
+            <article class="glass panel-card">
+              <div class="panel-head">
+                <div>
+                  <h2 class="panel-title">Agent Clients &amp; Platforms</h2>
+                  <p class="panel-sub">Detected LLM platforms, IDE MCP clients, and browser visitors</p>
+                </div>
+              </div>
+              <div id="platformsBars" class="hbar-list"></div>
+            </article>
+
+            <article class="glass panel-card">
+              <div class="panel-head">
+                <div>
+                  <h2 class="panel-title">Canonical Topics Explored</h2>
+                  <p class="panel-sub">Highest-demand portfolio topics across agents and humans</p>
+                </div>
+              </div>
+              <div id="topicsBars" class="hbar-list"></div>
+            </article>
+
+            <article class="glass panel-card">
+              <div class="panel-head">
+                <div>
+                  <h2 class="panel-title">Top Caller Countries</h2>
+                  <p class="panel-sub">Cloudflare edge country distribution &amp; latency</p>
+                </div>
+              </div>
+              <div id="countriesBars" class="hbar-list"></div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Panel 2: Questions Asked -->
+      <div id="panel-questions" role="tabpanel" aria-labelledby="tab-questions" hidden="until-found">
+        <div class="tab-panel-inner">
+          <article class="glass panel-card">
+            <div class="panel-head">
+              <div>
+                <h2 id="hTopQuestions" class="panel-title">Top Recurring Questions</h2>
+                <p class="panel-sub">Grouped by normalized question text. Click any row to filter the detailed log below.</p>
+              </div>
+            </div>
+            <div tabindex="0" role="region" aria-labelledby="hTopQuestions" class="table-wrapper">
+              <table id="tblTopQuestions" class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-sortable data-col="0" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
+                        <span>Question</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="1" data-type="number" aria-sort="descending">
+                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
+                        <span>Times Asked</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="2" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
+                        <span>Sessions</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="3" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
+                        <span>Sources</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="4" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
+                        <span>Topic</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="5" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
+                        <span>Avg BM25</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="6" data-type="date">
+                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
+                        <span>Last Asked</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyTopQuestions"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="glass panel-card">
+            <div class="panel-head">
+              <div>
+                <h2 id="hRecentQuestions" class="panel-title">Detailed Questions Log</h2>
+                <p class="panel-sub">Verbatim prompts from Chat UI, MCP tools, NLWeb /ask, and WebMCP. Click any row for fanout &amp; answer preview.</p>
+              </div>
+              <button type="button" id="exportQuestionsBtn" class="btn btn-sm">Export Filtered CSV</button>
+            </div>
+
+            <div class="filter-bar">
+              <label class="sr-only" for="qSearch">Filter questions</label>
+              <input id="qSearch" class="input" type="search" placeholder="Search question text, topic, platform, fanout queries, or preview...">
+              <label class="sr-only" for="qSourceFilter">Filter by source</label>
+              <select id="qSourceFilter" class="select">
+                <option value="all">All Sources</option>
+              </select>
+              <label class="sr-only" for="qStatusFilter">Filter by match outcome</label>
+              <select id="qStatusFilter" class="select">
+                <option value="all">All Outcomes</option>
+                <option value="matched">KB Matched</option>
+                <option value="missed">KB Miss / Unmatched</option>
+                <option value="blocked">Guardrail Blocked</option>
+              </select>
+            </div>
+
+            <div tabindex="0" role="region" aria-labelledby="hRecentQuestions" class="table-wrapper">
+              <table id="tblRecentQuestions" class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-sortable data-col="0" data-type="date" aria-sort="descending">
+                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
+                        <span>Time (UTC)</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="1" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
+                        <span>Question Asked</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="2" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
+                        <span>Source / Client</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="3" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
+                        <span>Topic / Section</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="4" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
+                        <span>BM25</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="5" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
+                        <span>Latency</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col">Outcome</th>
+                    <th scope="col">Inspect</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyRecentQuestions"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Tab Panel 3: Sessions & Journeys -->
+      <div id="panel-sessions" role="tabpanel" aria-labelledby="tab-sessions" hidden="until-found">
+        <div class="tab-panel-inner">
+          <article class="glass panel-card">
+            <div class="panel-head">
+              <div>
+                <h2 id="hSessions" class="panel-title">Recent Agent &amp; Human Sessions</h2>
+                <p class="panel-sub">4-tier correlated sessions with caller platform, traffic classification, actions trail, and tokens delivered</p>
+              </div>
+            </div>
+
+            <div class="filter-bar">
+              <label class="sr-only" for="sSearch">Search sessions</label>
+              <input id="sSearch" class="input" type="search" placeholder="Search session ID, platform, actions summary, topics, country...">
+              <label class="sr-only" for="sSegmentFilter">Filter by traffic class</label>
+              <select id="sSegmentFilter" class="select">
+                <option value="all">All Traffic Classes</option>
+              </select>
+            </div>
+
+            <div tabindex="0" role="region" aria-labelledby="hSessions" class="table-wrapper">
+              <table id="tblSessions" class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-sortable data-col="0" data-type="date" aria-sort="descending">
+                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                        <span>Last Activity</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="1" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                        <span>Platform &amp; Session</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="2" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                        <span>Classification</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="3" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                        <span>Calls</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="4" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                        <span>Duration</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="5" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                        <span>Tokens</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="6" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                        <span>Actions, Topics &amp; Questions Trail</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="tbodySessions"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div id="sortStatus" class="sr-only" role="status" aria-live="polite"></div>
+    <div id="chartTooltip" class="chart-tooltip" hidden></div>
+
+    <!-- Question Inspector Modal -->
+    <dialog id="questionDialog" class="detail-dialog" aria-labelledby="dlgQuestionTitle">
+      <div class="dialog-head">
+        <div>
+          <span id="dlgMetaPill" class="pill pill-violet">Question Telemetry</span>
+          <h2 id="dlgQuestionTitle" class="panel-title" style="margin-top: 8px;">Question Detail</h2>
+        </div>
+        <button type="button" id="dlgCloseBtn" class="btn btn-sm btn-ghost">Close</button>
+      </div>
+      <div id="dlgBody" class="dialog-body"></div>
+    </dialog>
+  </main>
+
+  <script src="/js/agentic-traffic.js?v=1" defer></script>
+</body>
+</html>

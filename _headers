@@ -15,6 +15,15 @@
   Cache-Control: public, max-age=0, must-revalidate
   Vary: Accept
 
+# Private owner analytics dashboard - exclude from search/AI indexing and public caching
+/agentic-traffic.html
+  Cache-Control: private, no-store, no-cache, must-revalidate
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/agentic-traffic
+  Cache-Control: private, no-store, no-cache, must-revalidate
+  X-Robots-Tag: noindex, nofollow, noarchive
+
 # Immutable static media (1 year cache)
 /*.jpg
   Cache-Control: public, max-age=31536000, immutable
