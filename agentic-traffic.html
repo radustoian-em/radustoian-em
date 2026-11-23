@@ -27,10 +27,10 @@
       --ink-soft: #cbcbdb;
       --ink-muted: #9494ad;
       --paper: #05010a;
-      --glass-fill: rgba(22, 10, 36, 0.68);
-      --glass-fill-hi: rgba(34, 16, 56, 0.78);
+      --glass-fill: rgba(22, 10, 36, 0.7);
+      --glass-fill-hi: rgba(34, 16, 56, 0.82);
       --glass-border: rgba(216, 180, 254, 0.14);
-      --glass-border-hi: rgba(216, 180, 254, 0.28);
+      --glass-border-hi: rgba(216, 180, 254, 0.3);
       --bevel-hi: inset 0 1px 0 rgba(255, 255, 255, 0.08);
       --sh-panel: 0 24px 60px -20px rgba(0, 0, 0, 0.8), var(--bevel-hi);
       --radius-lg: 14px;
@@ -102,9 +102,14 @@
     }
 
     .shell {
-      max-width: 1380px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 24px 20px 64px;
+      padding: 24px 20px 72px;
+    }
+
+    .main-stack {
+      display: grid;
+      gap: 28px;
     }
 
     .glass {
@@ -211,12 +216,12 @@
     }
     .input {
       width: 100%;
-      padding: 10px 13px;
+      padding: 9px 13px;
       border-radius: var(--radius-md);
       border: 1px solid var(--glass-border-hi);
       background: rgba(8, 3, 16, 0.78);
       color: var(--ink);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
     .input::placeholder {
       color: var(--ink-muted);
@@ -231,7 +236,7 @@
       cursor: pointer;
     }
     .alert {
-      margin-top: 16px;
+      margin-top: 14px;
       padding: 12px 14px;
       border-radius: var(--radius-md);
       font-size: 0.85rem;
@@ -275,13 +280,12 @@
       justify-content: space-between;
       align-items: flex-end;
       gap: 16px;
-      margin-bottom: 22px;
     }
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -297,7 +301,7 @@
     .page-title {
       margin: 6px 0 4px;
       font-family: var(--font-display);
-      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+      font-size: clamp(1.5rem, 2.8vw, 2.15rem);
       font-weight: 600;
       letter-spacing: -0.02em;
     }
@@ -337,110 +341,72 @@
       cursor: pointer;
     }
 
-    /* KPI Strip */
+    /* Section Headings */
+    .section-block {
+      display: grid;
+      gap: 14px;
+    }
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+    }
+    .section-title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.32rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .section-sub {
+      margin: 2px 0 0;
+      font-size: 0.84rem;
+      color: var(--ink-muted);
+    }
+
+    /* 4 Headline KPI Cards */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
       gap: 14px;
-      margin-bottom: 22px;
     }
     .kpi-card {
-      padding: 16px 18px;
+      padding: 18px 20px;
       background: var(--glass-fill);
       border: 1px solid var(--glass-border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       box-shadow: var(--bevel-hi);
     }
     .kpi-label {
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--ink-muted);
     }
     .kpi-value {
-      margin: 6px 0 4px;
+      margin: 8px 0 6px;
       font-family: var(--font-display);
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: 600;
-      line-height: 1.1;
+      line-height: 1.05;
       font-variant-numeric: tabular-nums;
       color: var(--ink);
     }
     .kpi-sub {
-      font-size: 0.79rem;
+      font-size: 0.82rem;
       color: var(--ink-soft);
       font-variant-numeric: tabular-nums;
     }
 
-    /* Accessible Tabs (modern-web-guidance tabs pattern) */
-    .tabs-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      border-bottom: 1px solid var(--glass-border);
-      margin-bottom: 18px;
-    }
-    .tab-btn {
-      position: relative;
-      padding: 11px 18px;
-      border: 0;
-      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-      background: transparent;
-      color: var(--ink-muted);
-      font-size: 0.92rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: color 140ms ease, background 140ms ease;
-    }
-    .tab-btn:hover {
-      color: var(--ink);
-      background: rgba(216, 180, 254, 0.06);
-    }
-    .tab-btn[aria-selected="true"] {
-      color: var(--p-100);
-    }
-    .tab-btn[aria-selected="true"]::after {
-      content: "";
-      position: absolute;
-      inset-inline: 0;
-      inset-block-end: -1px;
-      border-block-end: 3px solid var(--p-400);
-    }
-    .tab-count {
-      display: inline-block;
-      margin-left: 6px;
-      padding: 1px 7px;
-      border-radius: 999px;
-      background: rgba(216, 180, 254, 0.14);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--p-200);
-    }
-
-    /* Note: background & spacing on .tab-panel-inner, never on [role="tabpanel"] itself */
-    .tab-panel-inner {
-      display: grid;
-      gap: 18px;
-    }
-
-    /* Overview Grid & Charts */
+    /* Panels & Charts */
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       gap: 16px;
     }
-    .grid-main-side {
-      display: grid;
-      grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr);
-      gap: 16px;
-    }
-    @media (max-width: 960px) {
-      .grid-main-side {
-        grid-template-columns: 1fr;
-      }
-    }
-
     .panel-card {
       padding: 20px;
     }
@@ -454,21 +420,21 @@
     }
     .panel-title {
       margin: 0;
-      font-size: 1rem;
+      font-size: 1.02rem;
       font-weight: 600;
       color: var(--ink);
     }
     .panel-sub {
       margin: 2px 0 0;
-      font-size: 0.8rem;
+      font-size: 0.81rem;
       color: var(--ink-muted);
     }
 
     .legend {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      font-size: 0.78rem;
+      gap: 14px;
+      font-size: 0.79rem;
       color: var(--ink-soft);
     }
     .legend-item {
@@ -497,7 +463,7 @@
       position: fixed;
       z-index: 30;
       pointer-events: none;
-      padding: 8px 11px;
+      padding: 9px 12px;
       border-radius: var(--radius-sm);
       background: rgba(12, 5, 22, 0.96);
       border: 1px solid var(--glass-border-hi);
@@ -508,38 +474,37 @@
       white-space: nowrap;
     }
 
-    /* Donut Layout */
+    /* Donut & Horizontal Bars */
     .donut-layout {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 18px;
+      gap: 20px;
     }
     .donut-wrap {
-      flex: 0 0 170px;
+      flex: 0 0 164px;
       margin: 0 auto;
     }
     .donut-legend {
-      flex: 1 1 180px;
+      flex: 1 1 200px;
       display: grid;
-      gap: 9px;
+      gap: 10px;
     }
     .donut-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      font-size: 0.83rem;
+      font-size: 0.85rem;
     }
 
-    /* Horizontal Bars */
     .hbar-list {
       display: grid;
-      gap: 11px;
+      gap: 12px;
     }
     .hbar-row {
       display: grid;
-      gap: 4px;
+      gap: 5px;
     }
     .hbar-meta {
       display: flex;
@@ -574,13 +539,245 @@
       background: linear-gradient(90deg, var(--p-500), var(--p-300));
     }
 
+    /* Segmented Filter Pills */
+    .seg-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .seg-pills {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 4px;
+      border-radius: var(--radius-md);
+      background: rgba(12, 5, 22, 0.75);
+      border: 1px solid var(--glass-border);
+    }
+    .seg-btn {
+      padding: 6px 12px;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--ink-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 120ms ease, color 120ms ease;
+    }
+    .seg-btn:hover {
+      color: var(--ink);
+    }
+    .seg-btn[aria-pressed="true"] {
+      background: rgba(168, 85, 247, 0.28);
+      color: var(--p-100);
+    }
+
+    /* Expandable Agent Cards */
+    .agents-list {
+      display: grid;
+      gap: 10px;
+    }
+    details.agent-card {
+      background: var(--glass-fill);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      transition: border-color 140ms ease;
+    }
+    details.agent-card:hover {
+      border-color: var(--glass-border-hi);
+    }
+    details.agent-card[open] {
+      border-color: rgba(192, 132, 252, 0.42);
+      background: rgba(26, 12, 44, 0.82);
+    }
+    summary.agent-summary {
+      list-style: none;
+      display: grid;
+      grid-template-columns: minmax(180px, 1.4fr) minmax(160px, 1.6fr) auto;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      cursor: pointer;
+    }
+    summary.agent-summary::-webkit-details-marker {
+      display: none;
+    }
+    @media (max-width: 760px) {
+      summary.agent-summary {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+    .agent-identity {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+    .agent-name-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .agent-name {
+      font-weight: 600;
+      font-size: 0.96rem;
+      color: var(--ink);
+      word-break: break-word;
+    }
+    .agent-meta {
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+    }
+    .agent-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+    .agent-stats {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .agent-calls-big {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .agent-pct {
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+    }
+    .chev {
+      display: inline-block;
+      color: var(--p-300);
+      font-size: 0.85rem;
+      transition: transform 150ms ease;
+    }
+    details.agent-card[open] .chev {
+      transform: rotate(90deg);
+    }
+    .agent-body {
+      padding: 0 16px 16px;
+      border-top: 1px solid rgba(216, 180, 254, 0.1);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      padding-top: 14px;
+    }
+    .mini-title {
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--p-200);
+    }
+    .mini-list {
+      display: grid;
+      gap: 7px;
+    }
+    .mini-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      background: rgba(7, 2, 14, 0.55);
+      border: 1px solid rgba(216, 180, 254, 0.08);
+      font-size: 0.82rem;
+    }
+
+    /* Call-Type Card Tabs (modern-web-guidance: tabs rules) */
+    .ct-tabs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 10px;
+    }
+    .ct-tab {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 14px 15px 17px;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      background: var(--glass-fill);
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+      transition: background 140ms ease, border-color 140ms ease;
+    }
+    .ct-tab:hover {
+      background: var(--glass-fill-hi);
+      border-color: var(--glass-border-hi);
+    }
+    .ct-tab[aria-selected="true"] {
+      background: var(--glass-fill-hi);
+      border-color: rgba(192, 132, 252, 0.45);
+      color: var(--p-100);
+    }
+    .ct-tab[aria-selected="true"]::after {
+      content: "";
+      position: absolute;
+      inset-inline: 10px;
+      inset-block-end: 0;
+      border-block-end: 3px solid var(--p-400);
+    }
+    .ct-name {
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+    .ct-tab[aria-selected="true"] .ct-name {
+      color: var(--p-200);
+    }
+    .ct-num {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 600;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+    }
+    .ct-sub {
+      font-size: 0.74rem;
+      color: var(--ink-muted);
+    }
+
+    /* Background and spacing inside .tab-panel-inner, never on [role="tabpanel"] */
+    .tab-panel-inner {
+      padding: 20px;
+      display: grid;
+      gap: 18px;
+    }
+
     /* Filters Toolbar */
     .filter-bar {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       align-items: center;
-      margin-bottom: 14px;
     }
     .filter-bar .input {
       flex: 1 1 240px;
@@ -590,17 +787,17 @@
     .table-wrapper {
       overflow: auto;
       max-inline-size: 100%;
-      max-block-size: 620px;
+      max-block-size: 560px;
       border: 1px solid var(--glass-border);
       border-radius: var(--radius-md);
-      background: rgba(9, 4, 18, 0.6);
+      background: rgba(9, 4, 18, 0.65);
       container-type: inline-size;
     }
 
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.84rem;
+      font-size: 0.83rem;
       text-align: left;
     }
 
@@ -618,7 +815,7 @@
 
     .data-table thead th:not([data-sortable]),
     .sort-btn {
-      padding: 11px 12px;
+      padding: 10px 11px;
     }
 
     .sort-btn {
@@ -627,6 +824,7 @@
       justify-content: space-between;
       gap: 6px;
       width: 100%;
+      min-height: 36px;
       border: 0;
       background: transparent;
       color: inherit;
@@ -657,9 +855,10 @@
     }
 
     .data-table tbody td {
-      padding: 10px 12px;
+      padding: 10px 11px;
       border-bottom: 1px solid rgba(216, 180, 254, 0.08);
       vertical-align: top;
+      overflow-wrap: anywhere;
     }
     .data-table tbody tr:hover {
       background: rgba(168, 85, 247, 0.08);
@@ -676,7 +875,7 @@
 
     .pill {
       display: inline-block;
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 999px;
       font-size: 0.72rem;
       font-weight: 600;
@@ -709,17 +908,15 @@
       color: #fecdd3;
     }
 
-    .q-primary {
+    .cell-main {
       font-weight: 500;
       color: var(--ink);
-      max-width: 440px;
       word-break: break-word;
     }
-    .q-sub {
+    .cell-sub {
       margin-top: 3px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       color: var(--ink-muted);
-      max-width: 440px;
       word-break: break-word;
     }
 
@@ -745,10 +942,11 @@
       }
       .data-table tbody td {
         display: grid;
-        grid-template-columns: 120px 1fr;
+        grid-template-columns: 112px 1fr;
         gap: 8px;
         padding: 2px 0;
         border: 0;
+        white-space: normal;
       }
       .data-table tbody td::before {
         content: attr(data-label) ": ";
@@ -758,7 +956,43 @@
       }
     }
 
-    /* Question Detail Modal */
+    /* Collapsed Advanced Section */
+    details.advanced-panel {
+      background: rgba(16, 7, 28, 0.62);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+    }
+    summary.advanced-summary {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.96rem;
+      color: var(--ink-soft);
+    }
+    summary.advanced-summary::-webkit-details-marker {
+      display: none;
+    }
+    summary.advanced-summary:hover {
+      color: var(--ink);
+    }
+    details.advanced-panel[open] .chev {
+      transform: rotate(90deg);
+    }
+    .advanced-body {
+      padding: 0 20px 20px;
+      border-top: 1px solid rgba(216, 180, 254, 0.1);
+      display: grid;
+      gap: 18px;
+      padding-top: 18px;
+    }
+
+    /* Detail Dialog */
     dialog.detail-dialog {
       width: min(760px, calc(100vw - 24px));
       max-height: calc(100dvh - 36px);
@@ -815,10 +1049,10 @@
     }
 
     .empty-state {
-      padding: 34px 16px;
+      padding: 28px 16px;
       text-align: center;
       color: var(--ink-muted);
-      font-size: 0.88rem;
+      font-size: 0.87rem;
     }
   </style>
 </head>
@@ -872,14 +1106,14 @@
     </section>
 
     <!-- Live Dashboard View -->
-    <section id="dashboardView" aria-labelledby="dashHeading" hidden>
+    <section id="dashboardView" class="main-stack" aria-labelledby="dashHeading" hidden>
       <header class="topbar">
         <div>
           <span class="eyebrow">
             <span class="pulse-dot" aria-hidden="true"></span>
             Live BigQuery Telemetry
           </span>
-          <h1 id="dashHeading" class="page-title">Agentic, MCP &amp; Chat Traffic</h1>
+          <h1 id="dashHeading" class="page-title">Agentic Traffic Overview</h1>
           <div class="meta-strip">
             <span id="datasetBadge" class="meta-chip">BigQuery</span>
             <span id="cacheBadge" class="meta-chip">Live</span>
@@ -905,332 +1139,557 @@
 
       <div id="dashBanner" class="alert" role="alert" hidden></div>
 
-      <!-- Top KPI Strip -->
-      <section class="kpi-grid" aria-label="Top level metrics">
+      <!-- 4 Plain-English Top Metrics -->
+      <section class="kpi-grid" aria-label="Headline agentic metrics">
         <article class="kpi-card">
-          <div class="kpi-label">Total Calls</div>
-          <div id="kpiTotalCalls" class="kpi-value">—</div>
-          <div id="kpiTotalCallsSub" class="kpi-sub">—</div>
+          <div class="kpi-label">Total Agentic Calls</div>
+          <div id="kpiAgenticCalls" class="kpi-value">—</div>
+          <div id="kpiAgenticCallsSub" class="kpi-sub">—</div>
         </article>
         <article class="kpi-card">
-          <div class="kpi-label">Unique Sessions</div>
-          <div id="kpiSessions" class="kpi-value">—</div>
-          <div id="kpiSessionsSub" class="kpi-sub">—</div>
+          <div class="kpi-label">Active Agents &amp; Clients</div>
+          <div id="kpiUniqueAgents" class="kpi-value">—</div>
+          <div id="kpiUniqueAgentsSub" class="kpi-sub">—</div>
         </article>
         <article class="kpi-card">
-          <div class="kpi-label">Interactive Agent + Chat</div>
+          <div class="kpi-label">Automated vs User-Driven</div>
+          <div id="kpiReasonSplit" class="kpi-value">—</div>
+          <div id="kpiReasonSplitSub" class="kpi-sub">—</div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Questions &amp; Tool Calls</div>
           <div id="kpiInteractive" class="kpi-value">—</div>
           <div id="kpiInteractiveSub" class="kpi-sub">—</div>
         </article>
-        <article class="kpi-card">
-          <div class="kpi-label">Questions Asked</div>
-          <div id="kpiQuestions" class="kpi-value">—</div>
-          <div id="kpiQuestionsSub" class="kpi-sub">—</div>
-        </article>
-        <article class="kpi-card">
-          <div class="kpi-label">KB Hit &amp; Avg Latency</div>
-          <div id="kpiKbLatency" class="kpi-value">—</div>
-          <div id="kpiKbLatencySub" class="kpi-sub">—</div>
-        </article>
-        <article class="kpi-card">
-          <div class="kpi-label">Tokens Delivered</div>
-          <div id="kpiTokens" class="kpi-value">—</div>
-          <div id="kpiTokensSub" class="kpi-sub">—</div>
-        </article>
       </section>
 
-      <!-- Tabs Bar (modern-web-guidance: no aria-controls, active indicator via ::after, hidden="until-found") -->
-      <div class="tabs-bar" role="tablist" aria-label="Analytics sections" focusgroup="tablist nomemory">
-        <button type="button" class="tab-btn" role="tab" id="tab-overview" aria-selected="true" focusgroupstart data-panel="panel-overview">
-          Overview &amp; Breakdowns
-        </button>
-        <button type="button" class="tab-btn" role="tab" id="tab-questions" aria-selected="false" tabindex="-1" data-panel="panel-questions">
-          Questions Asked <span id="tabCountQuestions" class="tab-count">0</span>
-        </button>
-        <button type="button" class="tab-btn" role="tab" id="tab-sessions" aria-selected="false" tabindex="-1" data-panel="panel-sessions">
-          Sessions &amp; Journeys <span id="tabCountSessions" class="tab-count">0</span>
-        </button>
-      </div>
-
-      <!-- Tab Panel 1: Overview & Breakdowns -->
-      <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
-        <div class="tab-panel-inner">
-          <div class="grid-main-side">
-            <article class="glass panel-card">
-              <div class="panel-head">
-                <div>
-                  <h2 class="panel-title">Daily Traffic by Classification</h2>
-                  <p class="panel-sub">Hover or focus any day bar for session, token, and caller mix counts</p>
-                </div>
-                <div class="legend" aria-label="Traffic chart legend">
-                  <span class="legend-item"><span class="swatch" style="background: var(--p-400);"></span>Interactive AI Agent</span>
-                  <span class="legend-item"><span class="swatch" style="background: var(--emerald);"></span>Human Visitor</span>
-                  <span class="legend-item"><span class="swatch" style="background: var(--amber);"></span>Discovery Probe</span>
-                  <span class="legend-item"><span class="swatch" style="background: var(--sky);"></span>Automated Crawler</span>
-                </div>
-              </div>
-              <div id="dailyChartStage" class="chart-stage"></div>
-            </article>
-
-            <article class="glass panel-card">
-              <div class="panel-head">
-                <div>
-                  <h2 class="panel-title">Calls by Channel Surface</h2>
-                  <p class="panel-sub">MCP, Chat UI, NLWeb /ask, Markdown, REST</p>
-                </div>
-              </div>
-              <div id="channelDonutContainer"></div>
-            </article>
+      <!-- Daily Calls Chart -->
+      <article class="glass panel-card">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Daily Traffic Trend</h2>
+            <p class="panel-sub">Hover or focus any day bar to inspect User-Driven AI Agents, Automated Bots, and Human Chatbot visits</p>
           </div>
-
-          <div class="grid-2">
-            <article class="glass panel-card">
-              <div class="panel-head">
-                <div>
-                  <h2 class="panel-title">Top Agentic Actions &amp; Endpoints</h2>
-                  <p class="panel-sub">MCP tool calls, JSON-RPC methods, Markdown &amp; API endpoints</p>
-                </div>
-              </div>
-              <div id="actionsBars" class="hbar-list"></div>
-            </article>
-
-            <article class="glass panel-card">
-              <div class="panel-head">
-                <div>
-                  <h2 class="panel-title">Agent Clients &amp; Platforms</h2>
-                  <p class="panel-sub">Detected LLM platforms, IDE MCP clients, and browser visitors</p>
-                </div>
-              </div>
-              <div id="platformsBars" class="hbar-list"></div>
-            </article>
-
-            <article class="glass panel-card">
-              <div class="panel-head">
-                <div>
-                  <h2 class="panel-title">Canonical Topics Explored</h2>
-                  <p class="panel-sub">Highest-demand portfolio topics across agents and humans</p>
-                </div>
-              </div>
-              <div id="topicsBars" class="hbar-list"></div>
-            </article>
-
-            <article class="glass panel-card">
-              <div class="panel-head">
-                <div>
-                  <h2 class="panel-title">Top Caller Countries</h2>
-                  <p class="panel-sub">Cloudflare edge country distribution &amp; latency</p>
-                </div>
-              </div>
-              <div id="countriesBars" class="hbar-list"></div>
-            </article>
+          <div class="legend" aria-label="Traffic chart legend">
+            <span class="legend-item"><span class="swatch" style="background: var(--p-400);"></span>User-Driven AI Agents</span>
+            <span class="legend-item"><span class="swatch" style="background: var(--sky);"></span>Automated Bots / Crawlers</span>
+            <span class="legend-item"><span class="swatch" style="background: var(--emerald);"></span>Human Chatbot</span>
           </div>
         </div>
-      </div>
+        <div id="dailyChartStage" class="chart-stage"></div>
+      </article>
 
-      <!-- Tab Panel 2: Questions Asked -->
-      <div id="panel-questions" role="tabpanel" aria-labelledby="tab-questions" hidden="until-found">
-        <div class="tab-panel-inner">
+      <!-- Section 1: Breakdown by Reason -->
+      <section class="section-block" aria-labelledby="hByReason">
+        <div class="section-header">
+          <div>
+            <h2 id="hByReason" class="section-title">1. Breakdown by Reason</h2>
+            <p class="section-sub">Why traffic is calling: automated directory crawlers &amp; research bots vs user-driven agents and human chat</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
           <article class="glass panel-card">
             <div class="panel-head">
               <div>
-                <h2 id="hTopQuestions" class="panel-title">Top Recurring Questions</h2>
-                <p class="panel-sub">Grouped by normalized question text. Click any row to filter the detailed log below.</p>
+                <h3 class="panel-title">Caller Type</h3>
+                <p class="panel-sub">Automated crawlers vs user-initiated AI vs human visitors</p>
               </div>
             </div>
-            <div tabindex="0" role="region" aria-labelledby="hTopQuestions" class="table-wrapper">
-              <table id="tblTopQuestions" class="data-table">
-                <thead>
-                  <tr>
-                    <th scope="col" data-sortable data-col="0" data-type="text">
-                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
-                        <span>Question</span><span class="sort-icon" aria-hidden="true"></span>
-                      </button>
-                    </th>
-                    <th scope="col" data-sortable data-col="1" data-type="number" aria-sort="descending">
-                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
-                        <span>Times Asked</span><span class="sort-icon" aria-hidden="true"></span>
-                      </button>
-                    </th>
-                    <th scope="col" data-sortable data-col="2" data-type="number">
-                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
-                        <span>Sessions</span><span class="sort-icon" aria-hidden="true"></span>
-                      </button>
-                    </th>
-                    <th scope="col" data-sortable data-col="3" data-type="text">
-                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
-                        <span>Sources</span><span class="sort-icon" aria-hidden="true"></span>
-                      </button>
-                    </th>
-                    <th scope="col" data-sortable data-col="4" data-type="text">
-                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
-                        <span>Topic</span><span class="sort-icon" aria-hidden="true"></span>
-                      </button>
-                    </th>
-                    <th scope="col" data-sortable data-col="5" data-type="number">
-                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
-                        <span>Avg BM25</span><span class="sort-icon" aria-hidden="true"></span>
-                      </button>
-                    </th>
-                    <th scope="col" data-sortable data-col="6" data-type="date">
-                      <button type="button" class="sort-btn" commandfor="tblTopQuestions" command="--sort">
-                        <span>Last Asked</span><span class="sort-icon" aria-hidden="true"></span>
-                      </button>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody id="tbodyTopQuestions"></tbody>
-              </table>
-            </div>
+            <div id="reasonDonutContainer"></div>
           </article>
 
           <article class="glass panel-card">
             <div class="panel-head">
               <div>
-                <h2 id="hRecentQuestions" class="panel-title">Detailed Questions Log</h2>
-                <p class="panel-sub">Verbatim prompts from Chat UI, MCP tools, NLWeb /ask, and WebMCP. Click any row for fanout &amp; answer preview.</p>
+                <h3 class="panel-title">Call Purpose / Intent</h3>
+                <p class="panel-sub">What each request came here to accomplish</p>
               </div>
-              <button type="button" id="exportQuestionsBtn" class="btn btn-sm">Export Filtered CSV</button>
+            </div>
+            <div id="intentBars" class="hbar-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Section 2: Breakdown by Agent Name (Expandable into Call Types) -->
+      <section class="section-block" aria-labelledby="hByAgent">
+        <div class="section-header">
+          <div>
+            <h2 id="hByAgent" class="section-title">2. Breakdown by Agent Name</h2>
+            <p class="section-sub">
+              Click any agent row to inspect the exact call types and actions it made
+              <span id="agentsCountBadge" class="meta-chip" style="margin-left: 6px;">0</span>
+            </p>
+          </div>
+          <div class="seg-controls">
+            <div id="agentFilterBar" class="seg-pills" role="group" aria-label="Filter agents by reason">
+              <button type="button" class="seg-btn" data-filter="all" aria-pressed="true">All</button>
+              <button type="button" class="seg-btn" data-filter="agents" aria-pressed="false">Agents Only</button>
+              <button type="button" class="seg-btn" data-filter="user_driven" aria-pressed="false">User-Driven</button>
+              <button type="button" class="seg-btn" data-filter="automated" aria-pressed="false">Automated Bots</button>
+            </div>
+            <label class="sr-only" for="agentSearch">Search agent name</label>
+            <input id="agentSearch" class="input" type="search" placeholder="Search agent name..." style="width: 210px;">
+          </div>
+        </div>
+
+        <div id="agentsList" class="agents-list"></div>
+      </section>
+
+      <!-- Section 3: Breakdown by Call Type -> Relevant Data Drill-Down -->
+      <section class="section-block" aria-labelledby="hByCallType">
+        <div class="section-header">
+          <div>
+            <h2 id="hByCallType" class="section-title">3. Breakdown by Call Type &amp; Activity Detail</h2>
+            <p class="section-sub">Select a call type card to inspect MCP questions/tools, On-Site Chatbot prompts, WebMCP tools, NLWeb, REST, or Markdown hits</p>
+          </div>
+        </div>
+
+        <!-- Call-Type Clickable Summary Cards as Accessible Tabs -->
+        <div class="ct-tabs-grid" role="tablist" aria-label="Breakdown by call type" focusgroup="tablist nomemory">
+          <button type="button" class="ct-tab" role="tab" id="tab-ct-mcp" aria-selected="true" focusgroupstart data-panel="panel-ct-mcp">
+            <span class="ct-name">Remote MCP (/mcp)</span>
+            <span id="cntCtMcp" class="ct-num">0</span>
+            <span id="subCtMcp" class="ct-sub">0 tool/resource calls</span>
+          </button>
+          <button type="button" class="ct-tab" role="tab" id="tab-ct-chatbot" aria-selected="false" tabindex="-1" data-panel="panel-ct-chatbot">
+            <span class="ct-name">On-Site Chatbot</span>
+            <span id="cntCtChatbot" class="ct-num">0</span>
+            <span id="subCtChatbot" class="ct-sub">Human questions asked</span>
+          </button>
+          <button type="button" class="ct-tab" role="tab" id="tab-ct-webmcp" aria-selected="false" tabindex="-1" data-panel="panel-ct-webmcp">
+            <span class="ct-name">In-Browser WebMCP</span>
+            <span id="cntCtWebmcp" class="ct-num">0</span>
+            <span id="subCtWebmcp" class="ct-sub">DOM tools triggered</span>
+          </button>
+          <button type="button" class="ct-tab" role="tab" id="tab-ct-nlweb" aria-selected="false" tabindex="-1" data-panel="panel-ct-nlweb">
+            <span class="ct-name">External NLWeb</span>
+            <span id="cntCtNlweb" class="ct-num">0</span>
+            <span id="subCtNlweb" class="ct-sub">/ask &amp; /who calls</span>
+          </button>
+          <button type="button" class="ct-tab" role="tab" id="tab-ct-rest" aria-selected="false" tabindex="-1" data-panel="panel-ct-rest">
+            <span class="ct-name">Public REST API</span>
+            <span id="cntCtRest" class="ct-num">0</span>
+            <span id="subCtRest" class="ct-sub">/api/v1 endpoints</span>
+          </button>
+          <button type="button" class="ct-tab" role="tab" id="tab-ct-markdown" aria-selected="false" tabindex="-1" data-panel="panel-ct-markdown">
+            <span class="ct-name">Markdown Feeds</span>
+            <span id="cntCtMarkdown" class="ct-num">0</span>
+            <span id="subCtMarkdown" class="ct-sub">Accept: text/markdown</span>
+          </button>
+        </div>
+
+        <!-- Panel 1: Remote MCP -->
+        <div id="panel-ct-mcp" role="tabpanel" aria-labelledby="tab-ct-mcp">
+          <div class="glass tab-panel-inner">
+            <div class="panel-head" style="margin-bottom: 0;">
+              <div>
+                <h3 id="hMcpTable" class="panel-title">Questions Asked &amp; Tools Called via MCP</h3>
+                <p class="panel-sub">Shows <code>ask</code> prompts, <code>get-section</code> lookups, and <code>resources/read</code> calls. Click a row to inspect full Q&amp;A.</p>
+              </div>
+              <button type="button" id="exportMcpBtn" class="btn btn-sm">Export CSV</button>
             </div>
 
             <div class="filter-bar">
-              <label class="sr-only" for="qSearch">Filter questions</label>
-              <input id="qSearch" class="input" type="search" placeholder="Search question text, topic, platform, fanout queries, or preview...">
-              <label class="sr-only" for="qSourceFilter">Filter by source</label>
-              <select id="qSourceFilter" class="select">
-                <option value="all">All Sources</option>
-              </select>
-              <label class="sr-only" for="qStatusFilter">Filter by match outcome</label>
-              <select id="qStatusFilter" class="select">
-                <option value="all">All Outcomes</option>
-                <option value="matched">KB Matched</option>
-                <option value="missed">KB Miss / Unmatched</option>
-                <option value="blocked">Guardrail Blocked</option>
-              </select>
+              <label class="sr-only" for="mcpSearch">Filter MCP activity</label>
+              <input id="mcpSearch" class="input" type="search" placeholder="Search MCP question, tool name, agent, or answer preview...">
             </div>
 
-            <div tabindex="0" role="region" aria-labelledby="hRecentQuestions" class="table-wrapper">
-              <table id="tblRecentQuestions" class="data-table">
+            <div tabindex="0" role="region" aria-labelledby="hMcpTable" class="table-wrapper">
+              <table id="tblMcpCalls" class="data-table">
                 <thead>
                   <tr>
                     <th scope="col" data-sortable data-col="0" data-type="date" aria-sort="descending">
-                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
+                      <button type="button" class="sort-btn" commandfor="tblMcpCalls" command="--sort">
                         <span>Time (UTC)</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
                     <th scope="col" data-sortable data-col="1" data-type="text">
-                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
+                      <button type="button" class="sort-btn" commandfor="tblMcpCalls" command="--sort">
+                        <span>Agent</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="2" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblMcpCalls" command="--sort">
+                        <span>Tool / Resource</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="3" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblMcpCalls" command="--sort">
+                        <span>Question or Target</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col">Answer Preview</th>
+                    <th scope="col" data-sortable data-col="5" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblMcpCalls" command="--sort">
+                        <span>Latency</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col">Inspect</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyMcpCalls"></tbody>
+              </table>
+            </div>
+
+            <div style="padding-top: 6px; border-top: 1px solid var(--glass-border);">
+              <h4 class="panel-title" style="font-size: 0.94rem; margin-bottom: 4px;">MCP Discovery &amp; Protocol RPC Mix</h4>
+              <p class="panel-sub" style="margin-bottom: 12px;">Includes handshake, listing, and transport RPC calls (<code>initialize</code>, <code>tools/list</code>, <code>resources/list</code>, etc.)</p>
+              <div id="mcpDiscoveryBars" class="hbar-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: On-Site Chatbot -->
+        <div id="panel-ct-chatbot" role="tabpanel" aria-labelledby="tab-ct-chatbot" hidden="until-found">
+          <div class="glass tab-panel-inner">
+            <div class="panel-head" style="margin-bottom: 0;">
+              <div>
+                <h3 id="hChatTable" class="panel-title">Questions Asked via On-Site Chatbot</h3>
+                <p class="panel-sub">Real visitor questions submitted through the radustoian.com chat widget</p>
+              </div>
+              <button type="button" id="exportChatBtn" class="btn btn-sm">Export CSV</button>
+            </div>
+
+            <div class="filter-bar">
+              <label class="sr-only" for="chatSearch">Filter chatbot questions</label>
+              <input id="chatSearch" class="input" type="search" placeholder="Search chatbot question, topic, or answer preview...">
+            </div>
+
+            <div tabindex="0" role="region" aria-labelledby="hChatTable" class="table-wrapper">
+              <table id="tblChatQuestions" class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-sortable data-col="0" data-type="date" aria-sort="descending">
+                      <button type="button" class="sort-btn" commandfor="tblChatQuestions" command="--sort">
+                        <span>Time (UTC)</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="1" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblChatQuestions" command="--sort">
                         <span>Question Asked</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
                     <th scope="col" data-sortable data-col="2" data-type="text">
-                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
-                        <span>Source / Client</span><span class="sort-icon" aria-hidden="true"></span>
+                      <button type="button" class="sort-btn" commandfor="tblChatQuestions" command="--sort">
+                        <span>Topic</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col">Answer Preview</th>
+                    <th scope="col" data-sortable data-col="4" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblChatQuestions" command="--sort">
+                        <span>Status</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="5" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblChatQuestions" command="--sort">
+                        <span>Latency</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col">Inspect</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyChatQuestions"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: In-Browser WebMCP -->
+        <div id="panel-ct-webmcp" role="tabpanel" aria-labelledby="tab-ct-webmcp" hidden="until-found">
+          <div class="glass tab-panel-inner">
+            <div class="panel-head" style="margin-bottom: 0;">
+              <div>
+                <h3 id="hWebmcpTable" class="panel-title">Tools Called via In-Browser WebMCP</h3>
+                <p class="panel-sub">Browser agent interactions triggering WebMCP page tools (navigation, carousels, chat launcher)</p>
+              </div>
+              <button type="button" id="exportWebmcpBtn" class="btn btn-sm">Export CSV</button>
+            </div>
+
+            <div class="filter-bar">
+              <label class="sr-only" for="webmcpSearch">Filter WebMCP tool calls</label>
+              <input id="webmcpSearch" class="input" type="search" placeholder="Search WebMCP tool name, target argument, or topic...">
+            </div>
+
+            <div tabindex="0" role="region" aria-labelledby="hWebmcpTable" class="table-wrapper">
+              <table id="tblWebmcpTools" class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-sortable data-col="0" data-type="date" aria-sort="descending">
+                      <button type="button" class="sort-btn" commandfor="tblWebmcpTools" command="--sort">
+                        <span>Time (UTC)</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="1" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblWebmcpTools" command="--sort">
+                        <span>WebMCP Tool</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="2" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblWebmcpTools" command="--sort">
+                        <span>Arguments / Target</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
                     <th scope="col" data-sortable data-col="3" data-type="text">
-                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
+                      <button type="button" class="sort-btn" commandfor="tblWebmcpTools" command="--sort">
                         <span>Topic / Section</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
                     <th scope="col" data-sortable data-col="4" data-type="number">
-                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
-                        <span>BM25</span><span class="sort-icon" aria-hidden="true"></span>
-                      </button>
-                    </th>
-                    <th scope="col" data-sortable data-col="5" data-type="number">
-                      <button type="button" class="sort-btn" commandfor="tblRecentQuestions" command="--sort">
+                      <button type="button" class="sort-btn" commandfor="tblWebmcpTools" command="--sort">
                         <span>Latency</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
-                    <th scope="col">Outcome</th>
                     <th scope="col">Inspect</th>
                   </tr>
                 </thead>
-                <tbody id="tbodyRecentQuestions"></tbody>
+                <tbody id="tbodyWebmcpTools"></tbody>
               </table>
             </div>
-          </article>
+          </div>
         </div>
-      </div>
 
-      <!-- Tab Panel 3: Sessions & Journeys -->
-      <div id="panel-sessions" role="tabpanel" aria-labelledby="tab-sessions" hidden="until-found">
-        <div class="tab-panel-inner">
-          <article class="glass panel-card">
-            <div class="panel-head">
+        <!-- Panel 4: External NLWeb -->
+        <div id="panel-ct-nlweb" role="tabpanel" aria-labelledby="tab-ct-nlweb" hidden="until-found">
+          <div class="glass tab-panel-inner">
+            <div class="panel-head" style="margin-bottom: 0;">
               <div>
-                <h2 id="hSessions" class="panel-title">Recent Agent &amp; Human Sessions</h2>
-                <p class="panel-sub">4-tier correlated sessions with caller platform, traffic classification, actions trail, and tokens delivered</p>
+                <h3 id="hNlwebTable" class="panel-title">External NLWeb Calls (/ask, /who, /sites)</h3>
+                <p class="panel-sub">External queries hitting the NLWeb endpoints outside the first-party chat UI</p>
               </div>
             </div>
-
-            <div class="filter-bar">
-              <label class="sr-only" for="sSearch">Search sessions</label>
-              <input id="sSearch" class="input" type="search" placeholder="Search session ID, platform, actions summary, topics, country...">
-              <label class="sr-only" for="sSegmentFilter">Filter by traffic class</label>
-              <select id="sSegmentFilter" class="select">
-                <option value="all">All Traffic Classes</option>
-              </select>
-            </div>
-
-            <div tabindex="0" role="region" aria-labelledby="hSessions" class="table-wrapper">
-              <table id="tblSessions" class="data-table">
+            <div tabindex="0" role="region" aria-labelledby="hNlwebTable" class="table-wrapper">
+              <table id="tblNlwebCalls" class="data-table">
                 <thead>
                   <tr>
                     <th scope="col" data-sortable data-col="0" data-type="date" aria-sort="descending">
-                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
-                        <span>Last Activity</span><span class="sort-icon" aria-hidden="true"></span>
+                      <button type="button" class="sort-btn" commandfor="tblNlwebCalls" command="--sort">
+                        <span>Time (UTC)</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
                     <th scope="col" data-sortable data-col="1" data-type="text">
-                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
-                        <span>Platform &amp; Session</span><span class="sort-icon" aria-hidden="true"></span>
+                      <button type="button" class="sort-btn" commandfor="tblNlwebCalls" command="--sort">
+                        <span>Caller</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
                     <th scope="col" data-sortable data-col="2" data-type="text">
-                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
-                        <span>Classification</span><span class="sort-icon" aria-hidden="true"></span>
+                      <button type="button" class="sort-btn" commandfor="tblNlwebCalls" command="--sort">
+                        <span>Endpoint</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
-                    <th scope="col" data-sortable data-col="3" data-type="number">
-                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
-                        <span>Calls</span><span class="sort-icon" aria-hidden="true"></span>
+                    <th scope="col" data-sortable data-col="3" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblNlwebCalls" command="--sort">
+                        <span>Query</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
+                    <th scope="col">Status</th>
+                    <th scope="col" data-sortable data-col="5" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblNlwebCalls" command="--sort">
+                        <span>Latency</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col">Inspect</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyNlwebCalls"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 5: Public REST API -->
+        <div id="panel-ct-rest" role="tabpanel" aria-labelledby="tab-ct-rest" hidden="until-found">
+          <div class="glass tab-panel-inner">
+            <div class="panel-head" style="margin-bottom: 0;">
+              <div>
+                <h3 id="hRestTable" class="panel-title">Public REST API Calls (/api/v1)</h3>
+                <p class="panel-sub">REST queries, section reads, and probe requests handled by the public API router</p>
+              </div>
+            </div>
+            <div tabindex="0" role="region" aria-labelledby="hRestTable" class="table-wrapper">
+              <table id="tblRestCalls" class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-sortable data-col="0" data-type="date" aria-sort="descending">
+                      <button type="button" class="sort-btn" commandfor="tblRestCalls" command="--sort">
+                        <span>Time (UTC)</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="1" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblRestCalls" command="--sort">
+                        <span>Caller</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="2" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblRestCalls" command="--sort">
+                        <span>Path</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col">Query / Topic</th>
                     <th scope="col" data-sortable data-col="4" data-type="number">
-                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
-                        <span>Duration</span><span class="sort-icon" aria-hidden="true"></span>
+                      <button type="button" class="sort-btn" commandfor="tblRestCalls" command="--sort">
+                        <span>HTTP Status</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
                     <th scope="col" data-sortable data-col="5" data-type="number">
-                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                      <button type="button" class="sort-btn" commandfor="tblRestCalls" command="--sort">
+                        <span>Latency</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col">Inspect</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyRestCalls"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 6: Markdown Feeds -->
+        <div id="panel-ct-markdown" role="tabpanel" aria-labelledby="tab-ct-markdown" hidden="until-found">
+          <div class="glass tab-panel-inner">
+            <div class="panel-head" style="margin-bottom: 0;">
+              <div>
+                <h3 id="hMarkdownTable" class="panel-title">Markdown Content Negotiation</h3>
+                <p class="panel-sub">Agents fetching <code>index.md.txt</code>, <code>llms.txt</code>, or requesting <code>Accept: text/markdown</code></p>
+              </div>
+            </div>
+            <div tabindex="0" role="region" aria-labelledby="hMarkdownTable" class="table-wrapper">
+              <table id="tblMarkdownCalls" class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-sortable data-col="0" data-type="date" aria-sort="descending">
+                      <button type="button" class="sort-btn" commandfor="tblMarkdownCalls" command="--sort">
+                        <span>Time (UTC)</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="1" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblMarkdownCalls" command="--sort">
+                        <span>Agent</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="2" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblMarkdownCalls" command="--sort">
+                        <span>Resource / Path</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="3" data-type="text">
+                      <button type="button" class="sort-btn" commandfor="tblMarkdownCalls" command="--sort">
+                        <span>Topic</span><span class="sort-icon" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" data-sortable data-col="4" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblMarkdownCalls" command="--sort">
                         <span>Tokens</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
-                    <th scope="col" data-sortable data-col="6" data-type="text">
-                      <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
-                        <span>Actions, Topics &amp; Questions Trail</span><span class="sort-icon" aria-hidden="true"></span>
+                    <th scope="col" data-sortable data-col="5" data-type="number">
+                      <button type="button" class="sort-btn" commandfor="tblMarkdownCalls" command="--sort">
+                        <span>Latency</span><span class="sort-icon" aria-hidden="true"></span>
                       </button>
                     </th>
                   </tr>
                 </thead>
-                <tbody id="tbodySessions"></tbody>
+                <tbody id="tbodyMarkdownCalls"></tbody>
               </table>
             </div>
-          </article>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <!-- Section 4: Collapsed Advanced Section -->
+      <section aria-label="Advanced details">
+        <details id="advancedSection" class="advanced-panel">
+          <summary class="advanced-summary">
+            <span>
+              <span class="chev" aria-hidden="true">▶</span>
+              Advanced Details — Countries &amp; Raw Sessions
+            </span>
+            <span id="advancedMetaBadge" class="meta-chip">0 sessions · 0 countries</span>
+          </summary>
+
+          <div class="advanced-body">
+            <article class="glass panel-card">
+              <div class="panel-head">
+                <div>
+                  <h3 class="panel-title">Top Caller Countries</h3>
+                  <p class="panel-sub">Cloudflare edge country distribution &amp; average response latency</p>
+                </div>
+              </div>
+              <div id="countriesBars" class="hbar-list"></div>
+            </article>
+
+            <article class="glass panel-card">
+              <div class="panel-head">
+                <div>
+                  <h3 id="hSessions" class="panel-title">Raw Sessions &amp; Journeys</h3>
+                  <p class="panel-sub">Correlated multi-call sessions showing platform, classification, call counts, tokens, and action sequence</p>
+                </div>
+              </div>
+
+              <div class="filter-bar" style="margin-bottom: 14px;">
+                <label class="sr-only" for="sSearch">Search sessions</label>
+                <input id="sSearch" class="input" type="search" placeholder="Search session ID, platform, actions, country...">
+                <label class="sr-only" for="sSegmentFilter">Filter by reason class</label>
+                <select id="sSegmentFilter" class="select">
+                  <option value="all">All Caller Types</option>
+                </select>
+              </div>
+
+              <div tabindex="0" role="region" aria-labelledby="hSessions" class="table-wrapper">
+                <table id="tblSessions" class="data-table">
+                  <thead>
+                    <tr>
+                      <th scope="col" data-sortable data-col="0" data-type="date" aria-sort="descending">
+                        <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                          <span>Last Activity (UTC)</span><span class="sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th scope="col" data-sortable data-col="1" data-type="text">
+                        <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                          <span>Agent / Platform</span><span class="sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th scope="col" data-sortable data-col="2" data-type="text">
+                        <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                          <span>Reason Class</span><span class="sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th scope="col" data-sortable data-col="3" data-type="number">
+                        <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                          <span>Calls</span><span class="sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th scope="col" data-sortable data-col="4" data-type="number">
+                        <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                          <span>Tokens</span><span class="sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th scope="col" data-sortable data-col="5" data-type="text">
+                        <button type="button" class="sort-btn" commandfor="tblSessions" command="--sort">
+                          <span>Actions &amp; Questions Trail</span><span class="sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbodySessions"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </details>
+      </section>
     </section>
 
     <div id="sortStatus" class="sr-only" role="status" aria-live="polite"></div>
     <div id="chartTooltip" class="chart-tooltip" hidden></div>
 
-    <!-- Question Inspector Modal -->
-    <dialog id="questionDialog" class="detail-dialog" aria-labelledby="dlgQuestionTitle">
+    <!-- Activity Detail Modal -->
+    <dialog id="detailDialog" class="detail-dialog" aria-labelledby="dlgTitle">
       <div class="dialog-head">
         <div>
-          <span id="dlgMetaPill" class="pill pill-violet">Question Telemetry</span>
-          <h2 id="dlgQuestionTitle" class="panel-title" style="margin-top: 8px;">Question Detail</h2>
+          <span id="dlgMetaPill" class="pill pill-violet">Call Telemetry</span>
+          <h2 id="dlgTitle" class="panel-title" style="margin-top: 8px;">Call Detail</h2>
         </div>
         <button type="button" id="dlgCloseBtn" class="btn btn-sm btn-ghost">Close</button>
       </div>
@@ -1238,6 +1697,6 @@
     </dialog>
   </main>
 
-  <script src="/js/agentic-traffic.js?v=1" defer></script>
+  <script src="/js/agentic-traffic.js?v=2" defer></script>
 </body>
 </html>
