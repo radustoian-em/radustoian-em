@@ -1457,7 +1457,12 @@
     addDetailBlock(grid, "Topic / Section", `${row.canonical_topic || "—"} / ${row.primary_section || "—"}`);
     addDetailBlock(grid, "Latency / Tokens", `${row.request_duration_ms ?? "—"} ms · ${row.estimated_tokens ?? 0} tok`);
     addDetailBlock(grid, "BM25 / HTTP Status", `${row.top_bm25_score ?? "—"} · HTTP ${row.http_status ?? 200}`);
-    addDetailBlock(grid, "Location / Network", [row.city, row.country, row.as_organization].filter((x) => x && x !== "unknown").join(" · ") || "—");
+    const isBrowserTraffic = row.protocol === "webmcp" || row.traffic_class === "HUMAN_INTERACTIVE";
+    const locBits = [
+      row.country && row.country !== "unknown" ? row.country : null,
+      !isBrowserTraffic && row.as_organization && row.as_organization !== "unknown" ? row.as_organization : null
+    ].filter(Boolean);
+    addDetailBlock(grid, isBrowserTraffic ? "Country" : "Country / AI Network", locBits.join(" · ") || "—");
     addDetailBlock(grid, "Session ID", row.session_id || "—");
     els.dlgBody.appendChild(grid);
 
