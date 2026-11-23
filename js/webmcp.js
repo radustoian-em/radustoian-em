@@ -86,7 +86,79 @@
     }
   };
 
-  const reportWebMcpTelemetry = (toolName, args, result, durationMs, errMsg) => {
+  const pickNonEmptyStr = (val, maxLen) =>
+    typeof val === 'string' && val.trim() ? val.trim().slice(0, maxLen) : null;
+
+  const detectWebMcpClientIdentity = (client) => {
+    let clientName = null;
+    let clientVersion = null;
+    try {
+      clientName =
+        pickNonEmptyStr(client?.clientInfo?.name, 120) ||
+        pickNonEmptyStr(client?.agent?.name, 120) ||
+        pickNonEmptyStr(client?.name, 120) ||
+        pickNonEmptyStr(client?.platform, 120) ||
+        pickNonEmptyStr(client?.agentName, 120) ||
+        pickNonEmptyStr(client?.id, 120) ||
+        pickNonEmptyStr(modelContext?.clientInfo?.name, 120) ||
+        pickNonEmptyStr(modelContext?.agentName, 120);
+      clientVersion =
+        pickNonEmptyStr(client?.clientInfo?.version, 60) ||
+        pickNonEmptyStr(client?.agent?.version, 60) ||
+        pickNonEmptyStr(client?.version, 60) ||
+        pickNonEmptyStr(modelContext?.clientInfo?.version, 60);
+    } catch {
+      // Ignore proxy/frozen ModelContextClient property access errors
+    }
+
+    const brandsArr = Array.isArray(navigator.userAgentData?.brands)
+      ? navigator.userAgentData.brands
+      : [];
+    const brandList = brandsArr.map((b) => String(b?.brand || '')).join(' ');
+    const hasExactBrand = (name) =>
+      brandsArr.some((b) => String(b?.brand || '').trim().toLowerCase() === name.toLowerCase());
+    const ua = String(navigator.userAgent || '');
+    const combined = `${brandList} ${ua}`;
+
+    let agentPlatform = 'WebMCP Browser Agent';
+    if (/\bComet\b/i.test(combined)) {
+      agentPlatform = 'WebMCP (Perplexity Comet)';
+    } else if (/\b(ChatGPT-?Atlas|OpenAI-?Atlas|AtlasBrowser)\b/i.test(combined) || hasExactBrand('Atlas')) {
+      agentPlatform = 'WebMCP (ChatGPT Atlas)';
+    } else if (/\bDia\//i.test(ua) || hasExactBrand('Dia')) {
+      agentPlatform = 'WebMCP (Dia Browser)';
+    } else if (/\bArc\//i.test(ua) || hasExactBrand('Arc')) {
+      agentPlatform = 'WebMCP (Arc Browser)';
+    } else if (Boolean(navigator.brave) || /\bBrave\b/i.test(combined)) {
+      agentPlatform = 'WebMCP (Brave)';
+    } else if (/\bEdg(?:A|iOS)?\/|Microsoft Edge/i.test(combined)) {
+      agentPlatform = 'WebMCP (Microsoft Edge)';
+    } else if (/\bOPR\/|\bOpera\b/i.test(combined)) {
+      agentPlatform = 'WebMCP (Opera)';
+    } else if (/\bFirefox\//i.test(ua)) {
+      agentPlatform = 'WebMCP (Firefox)';
+    } else if (/\bSafari\//i.test(ua) && !/\bChrome\/|\bChromium\/|\bEdg/i.test(ua)) {
+      agentPlatform = 'WebMCP (Safari)';
+    } else if (/Google Chrome/i.test(brandList)) {
+      agentPlatform = 'WebMCP (Chrome)';
+    } else if (/\bChrome\//i.test(ua)) {
+      agentPlatform = 'WebMCP (Chrome / Chromium)';
+    }
+
+    if (!clientVersion) {
+      const brandMatch =
+        brandsArr.find((b) => b?.brand && !/not.?a.?brand|chromium/i.test(String(b.brand))) ||
+        brandsArr.find((b) => b?.brand && !/not.?a.?brand/i.test(String(b.brand)));
+      const uaVerMatch = /(?:Comet|EdgA?|OPR|Firefox|Chrome|Version)\/([0-9.]+)/i.exec(ua);
+      clientVersion =
+        pickNonEmptyStr(brandMatch?.version, 60) ||
+        pickNonEmptyStr(uaVerMatch?.[1], 60);
+    }
+
+    return { mcpClientName: clientName, mcpClientVersion: clientVersion, agentPlatform };
+  };
+
+  const reportWebMcpTelemetry = (toolName, args, result, durationMs, errMsg, client) => {
     try {
       const isProd =
         window.location.hostname === 'radustoian.com' ||
@@ -97,10 +169,14 @@
         (args && (args.question || args.query || args.section || args.carousel || args.platform || args.format)) ||
         (args && Object.keys(args).length > 0 ? JSON.stringify(args) : toolName);
       const sessionId = getWebMcpSessionId();
+      const identity = detectWebMcpClientIdentity(client);
       const payload = JSON.stringify({
         protocol: 'webmcp',
         client_context: 'webmcp-browser',
         session_id: sessionId,
+        mcp_client_name: identity.mcpClientName,
+        mcp_client_version: identity.mcpClientVersion,
+        agent_platform: identity.agentPlatform,
         http_method: 'POST',
         http_path: window.location.pathname || '/',
         http_status: result?.isError || errMsg ? 400 : 200,
@@ -131,14 +207,14 @@
     }
   };
 
-  const wrapExecuteWithTelemetry = (toolName, executeFn) => async (args = {}) => {
+  const wrapExecuteWithTelemetry = (toolName, executeFn) => async (args = {}, client = null) => {
     const startMs = Date.now();
     try {
-      const res = await executeFn(args);
-      reportWebMcpTelemetry(toolName, args, res, Date.now() - startMs, null);
+      const res = await executeFn(args, client);
+      reportWebMcpTelemetry(toolName, args, res, Date.now() - startMs, null, client);
       return res;
     } catch (err) {
-      reportWebMcpTelemetry(toolName, args, null, Date.now() - startMs, err?.message || String(err));
+      reportWebMcpTelemetry(toolName, args, null, Date.now() - startMs, err?.message || String(err), client);
       throw err;
     }
   };

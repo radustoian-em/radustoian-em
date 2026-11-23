@@ -897,6 +897,7 @@
     const all = state.data?.callTypeDetails?.webmcp || [];
     const term = els.webmcpSearch.value.trim().toLowerCase();
     const filtered = !term ? all : all.filter((r) => [
+      r.agent_name,
       r.tool_name,
       r.raw_query,
       r.canonical_topic,
@@ -929,6 +930,7 @@
       const toolName = row.tool_name || row.call_action_label || "WebMCP Tool";
       const tdTool = makeCell("WebMCP Tool", null, { sortValue: toolName });
       tdTool.appendChild(el("span", "pill pill-violet", toolName));
+      tdTool.appendChild(el("div", "cell-sub", row.agent_name || "WebMCP Browser Agent"));
       tr.appendChild(tdTool);
 
       tr.appendChild(makeCell("Arguments / Target", row.raw_query || row.primary_section || "—"));
