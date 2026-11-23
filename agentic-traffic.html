@@ -249,29 +249,6 @@
       background: rgba(12, 74, 110, 0.32);
       color: #e0f2fe;
     }
-    .setup-details {
-      margin-top: 22px;
-      padding-top: 16px;
-      border-top: 1px solid var(--glass-border);
-      font-size: 0.83rem;
-      color: var(--ink-muted);
-    }
-    .setup-details summary {
-      cursor: pointer;
-      color: var(--ink-soft);
-      font-weight: 500;
-    }
-    .setup-details pre {
-      margin: 10px 0 0;
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid var(--glass-border);
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      overflow-x: auto;
-      color: var(--p-100);
-    }
 
     /* Dashboard Header */
     .topbar {
@@ -1093,15 +1070,6 @@
         </form>
 
         <div id="authError" class="alert" role="alert" hidden></div>
-
-        <details class="setup-details">
-          <summary>First-time Worker &amp; GCP IAM prerequisites</summary>
-          <p style="margin: 8px 0 6px;">
-            Ensure your Service Account has <strong>BigQuery Job User</strong> (<code>roles/bigquery.jobUser</code>) in Google Cloud IAM,
-            and store a long random secret on the <code>mcp-server</code> Worker:
-          </p>
-          <pre>npx wrangler secret put DASHBOARD_API_KEY</pre>
-        </details>
       </div>
     </section>
 
