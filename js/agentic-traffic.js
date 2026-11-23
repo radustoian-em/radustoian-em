@@ -86,6 +86,8 @@
   function intentLabel(intent) {
     switch (intent) {
       case "capability_discovery": return "Capability / Directory Scan";
+      case "directory_scan": return "MCP Directory / Registry Scan";
+      case "research_bot": return "Research Bot / Academic Crawler";
       case "bulk_crawl": return "Bulk Crawl / Research Bot";
       case "prompt_grounded_qa": return "Question Answering (Q&A)";
       case "targeted_section_lookup": return "Targeted Section Lookup";
