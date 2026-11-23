@@ -68,22 +68,17 @@
     destructiveHint: false
   };
 
-  const WEBMCP_SESSION_KEY = 'webmcp_session_id_v1';
+  // Ephemeral in-memory page-load session ID (avoids browser storage under PECR/ePrivacy)
+  let webMcpPageSessionId = null;
   const getWebMcpSessionId = () => {
-    try {
-      let sid = sessionStorage.getItem(WEBMCP_SESSION_KEY);
-      if (!sid) {
-        sid =
-          'webmcp_sess_' +
-          (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-            ? crypto.randomUUID()
-            : Math.random().toString(36).slice(2) + Date.now().toString(36));
-        sessionStorage.setItem(WEBMCP_SESSION_KEY, sid);
-      }
-      return sid;
-    } catch {
-      return 'webmcp_sess_anon';
+    if (!webMcpPageSessionId) {
+      webMcpPageSessionId =
+        'webmcp_sess_' +
+        (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : Math.random().toString(36).slice(2) + Date.now().toString(36));
     }
+    return webMcpPageSessionId;
   };
 
   const pickNonEmptyStr = (val, maxLen) =>
