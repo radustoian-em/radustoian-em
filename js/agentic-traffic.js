@@ -26,12 +26,16 @@
     days: 30,
     data: null,
     agentFilter: "all",
+    callPurpose: "all",
+    actionEventsCache: new Map(),
     filteredMcp: [],
     filteredChat: [],
     filteredWebmcp: [],
     filteredSessions: [],
     loading: false
   };
+
+  let activateCallTypeTab = () => {};
 
   const els = {};
 
@@ -191,6 +195,7 @@
   function lockDashboard(message = "") {
     state.token = "";
     state.data = null;
+    state.actionEventsCache.clear();
     clearStoredToken();
     els.tokenInput.value = "";
     els.dashboardView.hidden = true;
@@ -244,6 +249,7 @@
       els.authGate.hidden = true;
       els.dashboardView.hidden = false;
 
+      state.actionEventsCache.clear();
       state.data = payload;
       renderAll(payload);
     } catch (err) {
@@ -267,14 +273,9 @@
     renderReasonDonut(data.breakdowns?.trafficClasses || [], data.kpis?.totalCalls || 0);
     renderIntentBars(data.breakdowns?.intents || []);
     renderAgents();
-    renderCallTypeCards(data);
-    applyMcpFilter();
+    populateCallPurposeSelect(data);
     renderHorizontalBars(els.mcpDiscoveryBars, data.breakdowns?.mcpActions || [], 10, (x) => x);
-    applyChatFilter();
-    applyWebmcpFilter();
-    renderNlwebTable(data.callTypeDetails?.nlweb || []);
-    renderRestTable(data.callTypeDetails?.rest || []);
-    renderMarkdownTable(data.callTypeDetails?.markdown || []);
+    setCallPurposeFilter(state.callPurpose, { autoSelectTab: false });
     renderAdvancedSection(data);
   }
 
@@ -672,18 +673,34 @@
       body.appendChild(ctCol);
 
       const actCol = el("div");
-      actCol.appendChild(el("h4", "mini-title", "Specific Actions / Endpoints Called"));
+      actCol.appendChild(el("h4", "mini-title", "Specific Actions / Endpoints Called (click to inspect)"));
       const actList = el("div", "mini-list");
       for (const act of (agent.actions || []).slice(0, 12)) {
-        const row = el("div", "mini-row");
+        const actDetails = el("details", "action-card");
+        const actSummary = el("summary", "action-summary");
+
         const left = el("div");
         left.appendChild(el("div", "cell-main", act.label));
         left.appendChild(el("div", "cell-sub", `${act.callType} · ${intentLabel(act.intentCategory)}`));
-        row.appendChild(left);
+        actSummary.appendChild(left);
 
+        const right = el("span", "hbar-nums");
         const lat = act.avgLatencyMs !== null && act.avgLatencyMs !== undefined ? ` · ${act.avgLatencyMs}ms` : "";
-        row.appendChild(el("span", "hbar-nums", `${formatNumber(act.calls)} calls${lat}`));
-        actList.appendChild(row);
+        right.appendChild(document.createTextNode(`${formatNumber(act.calls)} calls${lat}`));
+        right.appendChild(el("span", "action-chev", "▶"));
+        actSummary.appendChild(right);
+
+        const eventsBody = el("div", "action-events-body");
+        actDetails.appendChild(actSummary);
+        actDetails.appendChild(eventsBody);
+
+        actDetails.addEventListener("toggle", () => {
+          if (actDetails.open) {
+            loadAndRenderActionEvents(agent, act, eventsBody);
+          }
+        });
+
+        actList.appendChild(actDetails);
       }
       actCol.appendChild(actList);
       body.appendChild(actCol);
@@ -693,38 +710,290 @@
     }
   }
 
+  function formatActionEventRequest(ev) {
+    if (ev.raw_query) return ev.raw_query;
+    if (ev.resource_uri) return `${ev.rpc_method || ev.http_method || "READ"} ${ev.resource_uri}`;
+    const base = `${ev.http_method || "POST"} ${ev.http_path || "/"}`;
+    const extras = [ev.rpc_method, ev.tool_name].filter(Boolean);
+    return extras.length ? `${base} (${extras.join(" · ")})` : base;
+  }
+
+  function renderActionEventsList(container, events) {
+    clearNode(container);
+    if (!events || !events.length) {
+      container.appendChild(el("div", "cell-sub", "No recorded calls found for this action in the selected window."));
+      return;
+    }
+
+    for (const ev of events) {
+      const card = el("div", "event-item");
+
+      const head = el("div", "event-item-head");
+      const metaLeft = el("div", "cell-sub");
+      metaLeft.style.marginTop = "0";
+      const bits = [
+        `${formatTimestampUtc(ev.event_timestamp)} UTC`,
+        ev.request_duration_ms !== null && ev.request_duration_ms !== undefined ? `${ev.request_duration_ms} ms` : null,
+        ev.country && ev.country !== "unknown" ? ev.country : null
+      ].filter(Boolean);
+      metaLeft.appendChild(document.createTextNode(bits.join(" · ")));
+
+      const metaRight = el("div");
+      metaRight.style.display = "inline-flex";
+      metaRight.style.alignItems = "center";
+      metaRight.style.gap = "8px";
+      if (ev.guardrail_blocked) {
+        metaRight.appendChild(el("span", "pill pill-rose", "Blocked"));
+      } else if (ev.is_error) {
+        metaRight.appendChild(el("span", "pill pill-rose", `Error ${ev.error_code || ev.http_status || ""}`.trim()));
+      } else if (ev.matched_kb) {
+        metaRight.appendChild(el("span", "pill pill-green", "KB Hit"));
+      } else {
+        metaRight.appendChild(el("span", "pill pill-sky", `HTTP ${ev.http_status ?? 200}`));
+      }
+
+      const fullBtn = el("button", "btn btn-sm btn-ghost", "Full Detail");
+      fullBtn.type = "button";
+      fullBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openDetailDialog(ev);
+      });
+      metaRight.appendChild(fullBtn);
+
+      head.appendChild(metaLeft);
+      head.appendChild(metaRight);
+      card.appendChild(head);
+
+      const reqRow = el("div", "event-kv");
+      reqRow.appendChild(el("span", "event-label", "Request"));
+      reqRow.appendChild(el("div", "event-val", formatActionEventRequest(ev)));
+      card.appendChild(reqRow);
+
+      const answerText = ev.is_error && ev.error_message
+        ? ev.error_message
+        : truncate(ev.response_preview, 240);
+      if (answerText && answerText !== "—") {
+        const ansRow = el("div", "event-kv");
+        ansRow.appendChild(el("span", "event-label", "Answer"));
+        ansRow.appendChild(el("div", "event-val", answerText));
+        card.appendChild(ansRow);
+      }
+
+      container.appendChild(card);
+    }
+  }
+
+  async function loadAndRenderActionEvents(agent, act, container) {
+    const cacheKey = `${state.days}::${agent.name}::${act.label}::${act.callType}::${act.intentCategory}`;
+    if (state.actionEventsCache.has(cacheKey)) {
+      renderActionEventsList(container, state.actionEventsCache.get(cacheKey));
+      return;
+    }
+
+    clearNode(container);
+    container.appendChild(el("div", "cell-sub", "Loading recent requests & answers..."));
+
+    const qs = new URLSearchParams({
+      days: String(state.days),
+      agent: agent.name,
+      action: act.label,
+      callType: act.callType || "",
+      intent: act.intentCategory || "",
+      limit: "25"
+    });
+
+    try {
+      const resp = await fetch(`${resolveAnalyticsEndpoint()}/events?${qs.toString()}`, {
+        method: "GET",
+        cache: "no-store",
+        headers: {
+          "Authorization": `Bearer ${state.token}`
+        }
+      });
+
+      const payload = await resp.json().catch(() => null);
+      if (resp.status === 401) {
+        lockDashboard(payload?.message || "Session expired or invalid token.");
+        return;
+      }
+      if (!resp.ok || !payload) {
+        if (!container.isConnected) return;
+        clearNode(container);
+        container.appendChild(el("div", "alert", payload?.message || `Failed to load calls (HTTP ${resp.status}).`));
+        return;
+      }
+
+      const events = payload.events || [];
+      state.actionEventsCache.set(cacheKey, events);
+      if (!container.isConnected) return;
+      renderActionEventsList(container, events);
+    } catch (err) {
+      if (!container.isConnected) return;
+      clearNode(container);
+      container.appendChild(el("div", "alert", `Network error loading calls: ${err?.message || err}`));
+    }
+  }
+
   function findChannelEntry(channels, prefix) {
     return (channels || []).find((c) => String(c.label || "").toLowerCase().includes(prefix.toLowerCase()));
   }
 
+  function matchesCallPurpose(row) {
+    if (state.callPurpose === "all") return true;
+    return (row?.intent_category || "capability_discovery") === state.callPurpose;
+  }
+
+  function populateCallPurposeSelect(data) {
+    const prev = state.callPurpose || "all";
+    const purposes = new Set(["prompt_grounded_qa"]);
+    for (const item of data.breakdowns?.intents || []) {
+      if (item.label) purposes.add(item.label);
+    }
+    for (const item of data.breakdowns?.channelIntents || []) {
+      if (item.intent) purposes.add(item.intent);
+    }
+    for (const bucket of Object.values(data.callTypeDetails || {})) {
+      for (const r of bucket || []) {
+        if (r.intent_category) purposes.add(r.intent_category);
+      }
+    }
+
+    clearNode(els.ctPurposeSelect);
+    const allOpt = el("option", "", "All Purposes");
+    allOpt.value = "all";
+    els.ctPurposeSelect.appendChild(allOpt);
+
+    const ordered = [
+      "prompt_grounded_qa",
+      ...[...purposes].filter((p) => p !== "prompt_grounded_qa").sort((a, b) => collator.compare(intentLabel(a), intentLabel(b)))
+    ];
+    for (const p of ordered) {
+      const opt = el("option", "", intentLabel(p));
+      opt.value = p;
+      els.ctPurposeSelect.appendChild(opt);
+    }
+
+    state.callPurpose = prev === "all" || purposes.has(prev) ? prev : "all";
+    els.ctPurposeSelect.value = state.callPurpose;
+  }
+
+  function setCallPurposeFilter(purpose, { autoSelectTab = true } = {}) {
+    state.callPurpose = purpose || "all";
+    els.ctPurposeSelect.value = state.callPurpose;
+
+    for (const btn of els.ctPurposeBar.querySelectorAll("button.seg-btn")) {
+      const active = btn.dataset.purpose === state.callPurpose;
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    }
+
+    const data = state.data;
+    if (!data) return;
+
+    const counts = renderCallTypeCards(data);
+    applyMcpFilter();
+    applyChatFilter();
+    applyWebmcpFilter();
+    renderNlwebTable((data.callTypeDetails?.nlweb || []).filter(matchesCallPurpose));
+    renderRestTable((data.callTypeDetails?.rest || []).filter(matchesCallPurpose));
+    renderMarkdownTable((data.callTypeDetails?.markdown || []).filter(matchesCallPurpose));
+
+    if (els.mcpDiscoverySection) {
+      els.mcpDiscoverySection.hidden = state.callPurpose === "prompt_grounded_qa";
+    }
+
+    if (autoSelectTab && state.callPurpose !== "all" && counts) {
+      const tabOrder = [
+        ["tab-ct-mcp", counts.mcp],
+        ["tab-ct-chatbot", counts.chatbot],
+        ["tab-ct-webmcp", counts.webmcp],
+        ["tab-ct-nlweb", counts.nlweb],
+        ["tab-ct-rest", counts.rest],
+        ["tab-ct-markdown", counts.markdown]
+      ];
+      const activeBtn = document.querySelector('.ct-tabs-grid [role="tab"][aria-selected="true"]');
+      const activeEntry = tabOrder.find(([id]) => activeBtn && activeBtn.id === id);
+      if (!activeEntry || activeEntry[1] === 0) {
+        const firstNonEmpty = tabOrder.find(([, cnt]) => cnt > 0);
+        if (firstNonEmpty) {
+          activateCallTypeTab(document.getElementById(firstNonEmpty[0]));
+        }
+      }
+    }
+  }
+
+  function setCardEmptyState(tabId, count) {
+    const btn = document.getElementById(tabId);
+    if (btn) btn.classList.toggle("ct-tab-empty", count === 0);
+  }
+
   function renderCallTypeCards(data) {
-    const channels = data.breakdowns?.channels || [];
-    const k = data.kpis || {};
+    const purpose = state.callPurpose || "all";
     const details = data.callTypeDetails || {};
+    const k = data.kpis || {};
 
-    const mcp = findChannelEntry(channels, "Remote MCP");
-    els.cntCtMcp.textContent = formatNumber(mcp?.calls || 0);
-    els.subCtMcp.textContent = `${formatNumber(k.mcpToolCallsCount || details.mcp?.length || 0)} Q&A / tool calls`;
+    let sourceChannels = data.breakdowns?.channels || [];
+    if (purpose !== "all") {
+      const ci = (data.breakdowns?.channelIntents || []).filter((x) => x.intent === purpose);
+      if (ci.length > 0 || (data.breakdowns?.channelIntents || []).length > 0) {
+        sourceChannels = ci.map((x) => ({
+          label: x.channel,
+          calls: x.calls,
+          sessions: x.sessions
+        }));
+      } else {
+        sourceChannels = [
+          { label: "Remote MCP (/mcp)", calls: (details.mcp || []).filter(matchesCallPurpose).length, sessions: 0 },
+          { label: "On-Site Chatbot (/ask)", calls: (details.chatbot || []).filter(matchesCallPurpose).length, sessions: 0 },
+          { label: "In-Browser WebMCP", calls: (details.webmcp || []).filter(matchesCallPurpose).length, sessions: 0 },
+          { label: "External NLWeb (/ask, /who)", calls: (details.nlweb || []).filter(matchesCallPurpose).length, sessions: 0 },
+          { label: "Public REST API (/api/v1)", calls: (details.rest || []).filter(matchesCallPurpose).length, sessions: 0 },
+          { label: "Markdown Content Negotiation", calls: (details.markdown || []).filter(matchesCallPurpose).length, sessions: 0 }
+        ];
+      }
+    }
 
-    const chat = findChannelEntry(channels, "On-Site Chatbot");
-    els.cntCtChatbot.textContent = formatNumber(chat?.calls || details.chatbot?.length || 0);
-    els.subCtChatbot.textContent = `${formatNumber(details.chatbot?.length || 0)} visitor prompts`;
+    const mcp = findChannelEntry(sourceChannels, "Remote MCP");
+    const mcpCalls = mcp?.calls || 0;
+    const mcpFilteredRows = (details.mcp || []).filter(matchesCallPurpose).length;
+    els.cntCtMcp.textContent = formatNumber(mcpCalls);
+    els.subCtMcp.textContent = purpose === "all"
+      ? `${formatNumber(k.mcpToolCallsCount || mcpFilteredRows)} Q&A / tool calls`
+      : `${formatNumber(mcp?.sessions || 0)} sessions`;
+    setCardEmptyState("tab-ct-mcp", mcpCalls);
 
-    const webmcp = findChannelEntry(channels, "WebMCP");
-    els.cntCtWebmcp.textContent = formatNumber(webmcp?.calls || details.webmcp?.length || 0);
-    els.subCtWebmcp.textContent = `${formatNumber(details.webmcp?.length || 0)} tool invocations`;
+    const chat = findChannelEntry(sourceChannels, "On-Site Chatbot");
+    const chatFilteredRows = (details.chatbot || []).filter(matchesCallPurpose).length;
+    const chatCalls = chat?.calls || (purpose === "all" ? chatFilteredRows : 0);
+    els.cntCtChatbot.textContent = formatNumber(chatCalls);
+    els.subCtChatbot.textContent = `${formatNumber(chatFilteredRows)} visitor prompts`;
+    setCardEmptyState("tab-ct-chatbot", chatCalls);
 
-    const nlweb = findChannelEntry(channels, "External NLWeb");
-    els.cntCtNlweb.textContent = formatNumber(nlweb?.calls || details.nlweb?.length || 0);
+    const webmcp = findChannelEntry(sourceChannels, "WebMCP");
+    const webmcpFilteredRows = (details.webmcp || []).filter(matchesCallPurpose).length;
+    const webmcpCalls = webmcp?.calls || (purpose === "all" ? webmcpFilteredRows : 0);
+    els.cntCtWebmcp.textContent = formatNumber(webmcpCalls);
+    els.subCtWebmcp.textContent = `${formatNumber(webmcpFilteredRows)} tool invocations`;
+    setCardEmptyState("tab-ct-webmcp", webmcpCalls);
+
+    const nlweb = findChannelEntry(sourceChannels, "External NLWeb");
+    const nlwebCalls = nlweb?.calls || 0;
+    els.cntCtNlweb.textContent = formatNumber(nlwebCalls);
     els.subCtNlweb.textContent = `${formatNumber(nlweb?.sessions || 0)} sessions`;
+    setCardEmptyState("tab-ct-nlweb", nlwebCalls);
 
-    const rest = findChannelEntry(channels, "Public REST API");
-    els.cntCtRest.textContent = formatNumber(rest?.calls || details.rest?.length || 0);
+    const rest = findChannelEntry(sourceChannels, "Public REST API");
+    const restCalls = rest?.calls || 0;
+    els.cntCtRest.textContent = formatNumber(restCalls);
     els.subCtRest.textContent = `${formatNumber(rest?.sessions || 0)} sessions`;
+    setCardEmptyState("tab-ct-rest", restCalls);
 
-    const md = findChannelEntry(channels, "Markdown");
-    els.cntCtMarkdown.textContent = formatNumber(md?.calls || details.markdown?.length || 0);
+    const md = findChannelEntry(sourceChannels, "Markdown");
+    const mdCalls = md?.calls || 0;
+    els.cntCtMarkdown.textContent = formatNumber(mdCalls);
     els.subCtMarkdown.textContent = `${formatNumber(md?.sessions || 0)} sessions`;
+    setCardEmptyState("tab-ct-markdown", mdCalls);
+
+    return { mcp: mcpCalls, chatbot: chatCalls, webmcp: webmcpCalls, nlweb: nlwebCalls, rest: restCalls, markdown: mdCalls };
   }
 
   function makeCell(label, text, { numeric = false, sortValue = null } = {}) {
@@ -750,7 +1019,7 @@
   }
 
   function applyMcpFilter() {
-    const all = state.data?.callTypeDetails?.mcp || [];
+    const all = (state.data?.callTypeDetails?.mcp || []).filter(matchesCallPurpose);
     const term = els.mcpSearch.value.trim().toLowerCase();
     const filtered = !term ? all : all.filter((r) => [
       r.agent_name,
@@ -821,7 +1090,7 @@
   }
 
   function applyChatFilter() {
-    const all = state.data?.callTypeDetails?.chatbot || [];
+    const all = (state.data?.callTypeDetails?.chatbot || []).filter(matchesCallPurpose);
     const term = els.chatSearch.value.trim().toLowerCase();
     const filtered = !term ? all : all.filter((r) => [
       r.raw_query,
@@ -894,7 +1163,7 @@
   }
 
   function applyWebmcpFilter() {
-    const all = state.data?.callTypeDetails?.webmcp || [];
+    const all = (state.data?.callTypeDetails?.webmcp || []).filter(matchesCallPurpose);
     const term = els.webmcpSearch.value.trim().toLowerCase();
     const filtered = !term ? all : all.filter((r) => [
       r.agent_name,
@@ -1274,6 +1543,8 @@
       }
     }
 
+    activateCallTypeTab = activateTab;
+
     for (let i = 0; i < tabBtns.length; i++) {
       const btn = tabBtns[i];
       btn.addEventListener("click", () => activateTab(btn));
@@ -1415,6 +1686,15 @@
     }
     els.agentSearch.addEventListener("input", renderAgents);
 
+    for (const btn of els.ctPurposeBar.querySelectorAll("button.seg-btn")) {
+      btn.addEventListener("click", () => {
+        setCallPurposeFilter(btn.dataset.purpose || "all", { autoSelectTab: true });
+      });
+    }
+    els.ctPurposeSelect.addEventListener("change", () => {
+      setCallPurposeFilter(els.ctPurposeSelect.value || "all", { autoSelectTab: true });
+    });
+
     els.mcpSearch.addEventListener("input", applyMcpFilter);
     els.exportMcpBtn.addEventListener("click", () => exportCsv(state.filteredMcp, "mcp-calls"));
 
@@ -1442,9 +1722,10 @@
       "kpiAgenticCalls", "kpiAgenticCallsSub", "kpiUniqueAgents", "kpiUniqueAgentsSub", "kpiReasonSplit", "kpiReasonSplitSub", "kpiInteractive", "kpiInteractiveSub",
       "dailyChartStage", "reasonDonutContainer", "intentBars",
       "agentFilterBar", "agentSearch", "agentsCountBadge", "agentsList",
+      "ctPurposeBar", "ctPurposeSelect",
       "cntCtMcp", "subCtMcp", "cntCtChatbot", "subCtChatbot", "cntCtWebmcp", "subCtWebmcp",
       "cntCtNlweb", "subCtNlweb", "cntCtRest", "subCtRest", "cntCtMarkdown", "subCtMarkdown",
-      "mcpSearch", "exportMcpBtn", "tblMcpCalls", "tbodyMcpCalls", "mcpDiscoveryBars",
+      "mcpSearch", "exportMcpBtn", "tblMcpCalls", "tbodyMcpCalls", "mcpDiscoverySection", "mcpDiscoveryBars",
       "chatSearch", "exportChatBtn", "tblChatQuestions", "tbodyChatQuestions",
       "webmcpSearch", "exportWebmcpBtn", "tblWebmcpTools", "tbodyWebmcpTools",
       "tblNlwebCalls", "tbodyNlwebCalls", "tblRestCalls", "tbodyRestCalls", "tblMarkdownCalls", "tbodyMarkdownCalls",

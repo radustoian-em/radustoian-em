@@ -683,6 +683,82 @@
       border: 1px solid rgba(216, 180, 254, 0.08);
       font-size: 0.82rem;
     }
+    details.action-card {
+      border-radius: var(--radius-sm);
+      background: rgba(7, 2, 14, 0.58);
+      border: 1px solid rgba(216, 180, 254, 0.1);
+      transition: border-color 140ms ease;
+    }
+    details.action-card:hover {
+      border-color: rgba(216, 180, 254, 0.28);
+    }
+    details.action-card[open] {
+      border-color: rgba(192, 132, 252, 0.42);
+      background: rgba(12, 4, 24, 0.82);
+    }
+    summary.action-summary {
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    summary.action-summary::-webkit-details-marker {
+      display: none;
+    }
+    .action-chev {
+      display: inline-block;
+      margin-left: 8px;
+      font-size: 0.72rem;
+      color: var(--p-300);
+      transition: transform 140ms ease;
+    }
+    details.action-card[open] .action-chev {
+      transform: rotate(90deg);
+    }
+    .action-events-body {
+      padding: 10px 12px 12px;
+      border-top: 1px solid rgba(216, 180, 254, 0.1);
+      display: grid;
+      gap: 8px;
+    }
+    .event-item {
+      padding: 9px 11px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(216, 180, 254, 0.1);
+      display: grid;
+      gap: 6px;
+      font-size: 0.79rem;
+    }
+    .event-item-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .event-kv {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .event-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--p-300);
+    }
+    .event-val {
+      color: var(--ink);
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
 
     /* Call-Type Card Tabs (modern-web-guidance: tabs rules) */
     .ct-tabs-grid {
@@ -720,6 +796,9 @@
       inset-inline: 10px;
       inset-block-end: 0;
       border-block-end: 3px solid var(--p-400);
+    }
+    .ct-tab.ct-tab-empty:not([aria-selected="true"]) {
+      opacity: 0.52;
     }
     .ct-name {
       font-size: 0.83rem;
@@ -1185,7 +1264,7 @@
           <div>
             <h2 id="hByAgent" class="section-title">2. Breakdown by Agent Name</h2>
             <p class="section-sub">
-              Click any agent row to inspect the exact call types and actions it made
+              Click an agent row, then expand any action or endpoint to inspect the exact request and answer
               <span id="agentsCountBadge" class="meta-chip" style="margin-left: 6px;">0</span>
             </p>
           </div>
@@ -1209,7 +1288,18 @@
         <div class="section-header">
           <div>
             <h2 id="hByCallType" class="section-title">3. Breakdown by Call Type &amp; Activity Detail</h2>
-            <p class="section-sub">Select a call type card to inspect MCP questions/tools, On-Site Chatbot prompts, WebMCP tools, NLWeb, REST, or Markdown hits</p>
+            <p class="section-sub">Filter by Call Purpose (such as Question Answering) and select a call type card to inspect detailed activity</p>
+          </div>
+          <div class="seg-controls">
+            <div id="ctPurposeBar" class="seg-pills" role="group" aria-label="Quick call purpose filter">
+              <button type="button" class="seg-btn" data-purpose="all" aria-pressed="true">All Purposes</button>
+              <button type="button" class="seg-btn" data-purpose="prompt_grounded_qa" aria-pressed="false">Question Answering (Q&amp;A)</button>
+            </div>
+            <label class="sr-only" for="ctPurposeSelect">Call purpose filter</label>
+            <select id="ctPurposeSelect" class="select">
+              <option value="all">All Purposes</option>
+              <option value="prompt_grounded_qa">Question Answering (Q&amp;A)</option>
+            </select>
           </div>
         </div>
 
@@ -1300,7 +1390,7 @@
               </table>
             </div>
 
-            <div style="padding-top: 6px; border-top: 1px solid var(--glass-border);">
+            <div id="mcpDiscoverySection" style="padding-top: 6px; border-top: 1px solid var(--glass-border);">
               <h4 class="panel-title" style="font-size: 0.94rem; margin-bottom: 4px;">MCP Discovery &amp; Protocol RPC Mix</h4>
               <p class="panel-sub" style="margin-bottom: 12px;">Includes handshake, listing, and transport RPC calls (<code>initialize</code>, <code>tools/list</code>, <code>resources/list</code>, etc.)</p>
               <div id="mcpDiscoveryBars" class="hbar-list"></div>
@@ -1665,6 +1755,6 @@
     </dialog>
   </main>
 
-  <script src="/js/agentic-traffic.js?v=4" defer></script>
+  <script src="/js/agentic-traffic.js?v=5" defer></script>
 </body>
 </html>
