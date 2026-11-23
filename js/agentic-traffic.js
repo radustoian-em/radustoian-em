@@ -6,20 +6,18 @@
   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
   const CLASS_COLORS = {
-    interactive_rag_agent: "#a855f7",
-    human_visitor: "#34d399",
-    discovery_probe: "#f59e0b",
-    automated_crawler: "#38bdf8"
+    USER_DRIVEN_AGENT: "#a855f7",
+    AUTOMATED_AGENT_CRAWLER: "#38bdf8",
+    HUMAN_INTERACTIVE: "#34d399"
   };
 
-  const CHANNEL_PALETTE = [
+  const INTENT_PALETTE = [
     "#a855f7",
-    "#34d399",
     "#38bdf8",
+    "#34d399",
     "#f59e0b",
     "#f472b6",
-    "#818cf8",
-    "#94a3b8"
+    "#818cf8"
   ];
 
   const state = {
@@ -27,7 +25,10 @@
     remember: false,
     days: 30,
     data: null,
-    filteredQuestions: [],
+    agentFilter: "all",
+    filteredMcp: [],
+    filteredChat: [],
+    filteredWebmcp: [],
     filteredSessions: [],
     loading: false
   };
@@ -64,33 +65,43 @@
     return d.toISOString().replace("T", " ").slice(0, 16);
   }
 
-  function formatDurationSec(sec) {
-    const n = Number(sec);
-    if (!Number.isFinite(n) || n <= 0) return "0s";
-    if (n < 60) return `${Math.round(n)}s`;
-    const mins = Math.floor(n / 60);
-    const rem = Math.round(n % 60);
-    return `${mins}m ${rem}s`;
-  }
-
   function trafficClassLabel(cls) {
     switch (cls) {
-      case "interactive_rag_agent": return "Interactive AI Agent";
-      case "human_visitor": return "Human Visitor";
-      case "discovery_probe": return "Discovery Probe";
-      case "automated_crawler": return "Automated Crawler";
+      case "USER_DRIVEN_AGENT": return "User-Driven AI Agent";
+      case "AUTOMATED_AGENT_CRAWLER": return "Automated Bot / Crawler";
+      case "HUMAN_INTERACTIVE": return "Human Visitor (Chat)";
       default: return cls || "Unknown";
     }
   }
 
   function trafficClassPillClass(cls) {
     switch (cls) {
-      case "interactive_rag_agent": return "pill pill-violet";
-      case "human_visitor": return "pill pill-green";
-      case "discovery_probe": return "pill pill-amber";
-      case "automated_crawler": return "pill pill-sky";
-      default: return "pill pill-violet";
+      case "USER_DRIVEN_AGENT": return "pill pill-violet";
+      case "AUTOMATED_AGENT_CRAWLER": return "pill pill-sky";
+      case "HUMAN_INTERACTIVE": return "pill pill-green";
+      default: return "pill pill-amber";
     }
+  }
+
+  function intentLabel(intent) {
+    switch (intent) {
+      case "capability_discovery": return "Capability / Directory Scan";
+      case "bulk_crawl": return "Bulk Crawl / Research Bot";
+      case "prompt_grounded_qa": return "Question Answering (Q&A)";
+      case "targeted_section_lookup": return "Targeted Section Lookup";
+      case "ui_navigation": return "In-Browser UI Action (WebMCP)";
+      case "oauth_handshake": return "OAuth Handshake";
+      case "session_termination": return "Session Termination";
+      case "citation_verification": return "Citation / Link Check";
+      default: return intent || "Other";
+    }
+  }
+
+  function truncate(str, max = 90) {
+    const s = String(str || "").trim();
+    if (!s) return "—";
+    if (s.length <= max) return s;
+    return `${s.slice(0, max - 1)}…`;
   }
 
   function clearNode(node) {
@@ -251,21 +262,18 @@
   function renderAll(data) {
     renderHeaderAndKpis(data);
     renderDailyChart(data.dailySeries || []);
-    renderChannelDonut(data.breakdowns?.channels || []);
-    renderHorizontalBars(els.actionsBars, data.breakdowns?.actions || [], 8);
-    renderHorizontalBars(els.platformsBars, data.breakdowns?.platforms || [], 8);
-    renderHorizontalBars(els.topicsBars, data.breakdowns?.topics || [], 8);
-    renderHorizontalBars(els.countriesBars, data.breakdowns?.countries || [], 8);
-    renderTopQuestions(data.questions?.topRecurring || []);
-    populateQuestionSourceFilter(data.questions?.recent || []);
-    applyQuestionFilters();
-    populateSessionSegmentFilter(data.sessions?.recent || []);
-    applySessionFilters();
-
-    const qCount = (data.questions?.recent || []).length;
-    const sCount = (data.sessions?.recent || []).length;
-    els.tabCountQuestions.textContent = String(qCount);
-    els.tabCountSessions.textContent = String(sCount);
+    renderReasonDonut(data.breakdowns?.trafficClasses || [], data.kpis?.totalCalls || 0);
+    renderIntentBars(data.breakdowns?.intents || []);
+    renderAgents();
+    renderCallTypeCards(data);
+    applyMcpFilter();
+    renderHorizontalBars(els.mcpDiscoveryBars, data.breakdowns?.mcpActions || [], 10, (x) => x);
+    applyChatFilter();
+    applyWebmcpFilter();
+    renderNlwebTable(data.callTypeDetails?.nlweb || []);
+    renderRestTable(data.callTypeDetails?.rest || []);
+    renderMarkdownTable(data.callTypeDetails?.markdown || []);
+    renderAdvancedSection(data);
   }
 
   function renderHeaderAndKpis(data) {
@@ -274,32 +282,24 @@
     els.cacheBadge.textContent = data.cacheStatus === "hit" ? "Edge Cache (5m)" : "Fresh BQ Query";
     els.updatedBadge.textContent = `Updated ${formatTimestampUtc(data.generatedAt)} UTC · Window: ${data.windowDays || state.days}d`;
 
-    els.kpiTotalCalls.textContent = formatNumber(k.totalCalls);
-    els.kpiTotalCallsSub.textContent = `${k.aiSharePct ?? 0}% AI (${formatNumber(k.aiAgentCalls)}) · ${formatNumber(k.humanCalls)} Human`;
+    els.kpiAgenticCalls.textContent = formatNumber(k.agenticCalls);
+    els.kpiAgenticCallsSub.textContent = `${k.agenticSharePct ?? 0}% of ${formatNumber(k.totalCalls)} total calls (${formatNumber(k.humanChatCalls)} human chat)`;
 
-    els.kpiSessions.textContent = formatNumber(k.uniqueSessions);
-    els.kpiSessionsSub.textContent = `${formatNumber(k.engagedSessions)} engaged · ${formatNumber(k.oauthCalls)} OAuth calls`;
+    els.kpiUniqueAgents.textContent = formatNumber(k.uniqueAgents);
+    els.kpiUniqueAgentsSub.textContent = `${formatNumber(k.agentSessions)} agent sessions (${formatNumber(k.uniqueSessions)} total)`;
 
-    const interactiveTotal = (Number(k.interactiveRagCalls) || 0) + (Number(k.humanChatCalls) || 0);
-    els.kpiInteractive.textContent = formatNumber(interactiveTotal);
-    els.kpiInteractiveSub.textContent = `Substantive: ${formatNumber(k.substantiveCalls)} · Crawlers: ${formatNumber(k.crawlerCalls)} · Probes: ${formatNumber(k.discoveryCalls)}`;
+    els.kpiReasonSplit.textContent = `${k.automatedSharePct ?? 0}% Bots`;
+    els.kpiReasonSplitSub.textContent = `${formatNumber(k.automatedCrawlerCalls)} automated vs ${formatNumber(k.userDrivenAgentCalls)} user-driven`;
 
-    els.kpiQuestions.textContent = formatNumber(k.totalQuestionsAsked);
-    els.kpiQuestionsSub.textContent = `${formatNumber(k.uniqueQuestionsCount)} unique normalized prompts`;
-
-    const latencyStr = k.avgLatencyMs !== null && k.avgLatencyMs !== undefined ? `${k.avgLatencyMs} ms` : "—";
-    els.kpiKbLatency.textContent = `${k.kbMatchRatePct ?? 0}% KB`;
-    els.kpiKbLatencySub.textContent = `Avg latency: ${latencyStr} · Cache hit: ${k.cacheHitRatePct ?? 0}%`;
-
-    els.kpiTokens.textContent = formatCompact(k.totalTokensDelivered);
-    els.kpiTokensSub.textContent = `Blocked: ${formatNumber(k.guardrailBlockedCalls)} · Errors: ${formatNumber(k.errorCalls)} (${k.errorRatePct ?? 0}%)`;
+    els.kpiInteractive.textContent = formatNumber(k.interactiveTotalCount);
+    els.kpiInteractiveSub.textContent = `Chat: ${formatNumber(k.chatbotQuestionsCount)} · MCP Q/Tools: ${formatNumber(k.mcpToolCallsCount)} · WebMCP: ${formatNumber(k.webmcpToolCallsCount)}`;
   }
 
   function showTooltip(event, lines) {
     clearNode(els.chartTooltip);
     for (let i = 0; i < lines.length; i++) {
-      const div = el("div", i === 0 ? "q-primary" : "");
-      div.style.fontSize = i === 0 ? "0.8rem" : "0.75rem";
+      const div = el("div", i === 0 ? "cell-main" : "");
+      div.style.fontSize = i === 0 ? "0.81rem" : "0.75rem";
       div.textContent = lines[i];
       els.chartTooltip.appendChild(div);
     }
@@ -325,31 +325,31 @@
       return;
     }
 
-    const width = 880;
-    const height = 270;
-    const margin = { top: 14, right: 16, bottom: 34, left: 46 };
+    const width = 900;
+    const height = 250;
+    const margin = { top: 14, right: 18, bottom: 34, left: 46 };
     const plotW = width - margin.left - margin.right;
     const plotH = height - margin.top - margin.bottom;
 
     const maxTotal = Math.max(
       1,
-      ...series.map((d) =>
-        (Number(d.interactive_rag_calls) || 0) +
-        (Number(d.human_calls) || 0) +
-        (Number(d.discovery_calls) || 0) +
-        (Number(d.crawler_calls) || 0) ||
-        (Number(d.total_calls) || 0)
-      )
+      ...series.map((d) => {
+        const stacked =
+          (Number(d.user_driven_calls) || 0) +
+          (Number(d.automated_calls) || 0) +
+          (Number(d.human_calls) || 0) +
+          (Number(d.other_calls) || 0);
+        return Math.max(stacked, Number(d.total_calls) || 0);
+      })
     );
 
     const svg = svgEl("svg", {
       viewBox: `0 0 ${width} ${height}`,
       class: "chart-svg",
       role: "img",
-      "aria-label": "Daily traffic volume stacked bar chart"
+      "aria-label": "Daily traffic trend bar chart"
     });
 
-    // Horizontal grid lines
     const ticks = 4;
     for (let i = 0; i <= ticks; i++) {
       const val = Math.round((maxTotal / ticks) * i);
@@ -375,12 +375,12 @@
     }
 
     const step = plotW / series.length;
-    const barW = Math.max(4, Math.min(28, step * 0.68));
+    const barW = Math.min(54, Math.max(8, step * 0.56));
     const segments = [
-      ["interactive_rag_calls", "AI Agent RAG", CLASS_COLORS.interactive_rag_agent],
-      ["human_calls", "Human", CLASS_COLORS.human_visitor],
-      ["discovery_calls", "Discovery", CLASS_COLORS.discovery_probe],
-      ["crawler_calls", "Crawler", CLASS_COLORS.automated_crawler]
+      ["user_driven_calls", "User-Driven AI Agents", CLASS_COLORS.USER_DRIVEN_AGENT],
+      ["automated_calls", "Automated Bots", CLASS_COLORS.AUTOMATED_AGENT_CRAWLER],
+      ["human_calls", "Human Chatbot", CLASS_COLORS.HUMAN_INTERACTIVE],
+      ["other_calls", "Other", "#f59e0b"]
     ];
 
     const labelEvery = Math.max(1, Math.ceil(series.length / 8));
@@ -388,23 +388,36 @@
     series.forEach((day, idx) => {
       const x = margin.left + idx * step + (step - barW) / 2;
       let cursorY = margin.top + plotH;
+      let drawnHeight = 0;
 
       for (const [field, , color] of segments) {
         const count = Number(day[field]) || 0;
         if (count <= 0) continue;
-        const segH = (count / maxTotal) * plotH;
+        const segH = Math.max(3, (count / maxTotal) * plotH);
         cursorY -= segH;
+        drawnHeight += segH;
         svg.appendChild(svgEl("rect", {
           x: x.toFixed(2),
           y: cursorY.toFixed(2),
           width: barW.toFixed(2),
-          height: Math.max(1, segH).toFixed(2),
+          height: segH.toFixed(2),
           rx: "2",
           fill: color
         }));
       }
 
-      // Hover target spanning full column height
+      if (drawnHeight === 0 && (Number(day.total_calls) || 0) > 0) {
+        const fallbackH = Math.max(3, ((Number(day.total_calls) || 0) / maxTotal) * plotH);
+        svg.appendChild(svgEl("rect", {
+          x: x.toFixed(2),
+          y: (margin.top + plotH - fallbackH).toFixed(2),
+          width: barW.toFixed(2),
+          height: fallbackH.toFixed(2),
+          rx: "2",
+          fill: CLASS_COLORS.AUTOMATED_AGENT_CRAWLER
+        }));
+      }
+
       const hit = svgEl("rect", {
         x: (margin.left + idx * step).toFixed(2),
         y: margin.top,
@@ -415,10 +428,9 @@
       });
 
       const lines = [
-        `${day.event_date} · ${formatNumber(day.total_calls)} calls`,
-        `Sessions: ${formatNumber(day.unique_sessions)} · Tokens: ${formatCompact(day.tokens_delivered)}`,
-        `AI Agent: ${formatNumber(day.interactive_rag_calls)} · Human: ${formatNumber(day.human_calls)}`,
-        `Discovery: ${formatNumber(day.discovery_calls)} · Crawler: ${formatNumber(day.crawler_calls)}`
+        `${day.event_date} · ${formatNumber(day.total_calls)} calls (${formatNumber(day.unique_sessions)} sessions)`,
+        `Automated Bots: ${formatNumber(day.automated_calls)} · User-Driven AI: ${formatNumber(day.user_driven_calls)}`,
+        `Human Chatbot: ${formatNumber(day.human_calls)} · Tokens: ${formatCompact(day.tokens_delivered)}`
       ];
 
       hit.addEventListener("mousemove", (e) => showTooltip(e, lines));
@@ -448,47 +460,46 @@
     els.dailyChartStage.appendChild(svg);
   }
 
-  function renderChannelDonut(channels) {
-    clearNode(els.channelDonutContainer);
-    if (!channels.length) {
-      els.channelDonutContainer.appendChild(el("div", "empty-state", "No channel data in window."));
+  function renderReasonDonut(trafficClasses, fallbackTotal) {
+    clearNode(els.reasonDonutContainer);
+    if (!trafficClasses.length) {
+      els.reasonDonutContainer.appendChild(el("div", "empty-state", "No caller classification data in window."));
       return;
     }
 
-    const total = channels.reduce((acc, row) => acc + (Number(row.calls) || 0), 0);
+    const total = trafficClasses.reduce((acc, row) => acc + (Number(row.calls) || 0), 0) || fallbackTotal;
     const wrap = el("div", "donut-layout");
     const svgBox = el("div", "donut-wrap");
-    const size = 170;
-    const cx = 85;
-    const cy = 85;
-    const r = 62;
+    const size = 164;
+    const cx = 82;
+    const cy = 82;
+    const r = 60;
     const circumference = 2 * Math.PI * r;
 
     const svg = svgEl("svg", {
       viewBox: `0 0 ${size} ${size}`,
       class: "chart-svg",
       role: "img",
-      "aria-label": "Channel surface distribution donut chart"
+      "aria-label": "Caller reason donut chart"
     });
 
     let offset = 0;
-    const topSlices = channels.slice(0, 6);
-    topSlices.forEach((item, idx) => {
+    trafficClasses.forEach((item, idx) => {
       const value = Number(item.calls) || 0;
       const frac = total > 0 ? value / total : 0;
       const dashLen = frac * circumference;
-      const ring = svgEl("circle", {
+      const color = CLASS_COLORS[item.label] || INTENT_PALETTE[idx % INTENT_PALETTE.length];
+      svg.appendChild(svgEl("circle", {
         cx,
         cy,
         r,
         fill: "none",
-        stroke: CHANNEL_PALETTE[idx % CHANNEL_PALETTE.length],
+        stroke: color,
         "stroke-width": "22",
         "stroke-dasharray": `${dashLen.toFixed(2)} ${circumference.toFixed(2)}`,
         "stroke-dashoffset": (-offset).toFixed(2),
         transform: `rotate(-90 ${cx} ${cy})`
-      });
-      svg.appendChild(ring);
+      }));
       offset += dashLen;
     });
 
@@ -519,26 +530,26 @@
     wrap.appendChild(svgBox);
 
     const legend = el("div", "donut-legend");
-    channels.slice(0, 7).forEach((item, idx) => {
+    trafficClasses.forEach((item, idx) => {
       const row = el("div", "donut-row");
       const left = el("span", "legend-item");
       const swatch = el("span", "swatch");
-      swatch.style.background = CHANNEL_PALETTE[idx % CHANNEL_PALETTE.length];
+      swatch.style.background = CLASS_COLORS[item.label] || INTENT_PALETTE[idx % INTENT_PALETTE.length];
       left.appendChild(swatch);
-      left.appendChild(document.createTextNode(item.label || "Other"));
+      left.appendChild(document.createTextNode(trafficClassLabel(item.label)));
 
-      const pct = total > 0 ? Math.round(((Number(item.calls) || 0) / total) * 100) : 0;
-      const right = el("span", "hbar-nums", `${formatNumber(item.calls)} (${pct}%)`);
+      const pct = total > 0 ? Math.round(((Number(item.calls) || 0) / total) * 1000) / 10 : 0;
+      const right = el("span", "hbar-nums", `${formatNumber(item.calls)} (${pct}%) · ${formatNumber(item.sessions)} sess`);
       row.appendChild(left);
       row.appendChild(right);
       legend.appendChild(row);
     });
 
     wrap.appendChild(legend);
-    els.channelDonutContainer.appendChild(wrap);
+    els.reasonDonutContainer.appendChild(wrap);
   }
 
-  function renderHorizontalBars(container, rows, limit = 8) {
+  function renderHorizontalBars(container, rows, limit = 10, labelFormatter = (x) => x) {
     clearNode(container);
     const items = rows.slice(0, limit);
     if (!items.length) {
@@ -548,10 +559,11 @@
 
     const maxCalls = Math.max(1, ...items.map((r) => Number(r.calls) || 0));
     for (const item of items) {
+      const displayLabel = labelFormatter(item.label || "Unknown");
       const row = el("div", "hbar-row");
       const meta = el("div", "hbar-meta");
-      const lbl = el("span", "hbar-label", item.label || "Unknown");
-      lbl.title = item.label || "Unknown";
+      const lbl = el("span", "hbar-label", displayLabel);
+      lbl.title = displayLabel;
 
       const latPart = item.avgLatencyMs !== null && item.avgLatencyMs !== undefined ? ` · ${item.avgLatencyMs}ms` : "";
       const nums = el("span", "hbar-nums", `${formatNumber(item.calls)} calls (${formatNumber(item.sessions)} sess${latPart})`);
@@ -570,6 +582,149 @@
     }
   }
 
+  function renderIntentBars(intents) {
+    renderHorizontalBars(els.intentBars, intents, 10, intentLabel);
+  }
+
+  function renderAgents() {
+    clearNode(els.agentsList);
+    const allAgents = state.data?.agents || [];
+    const totalCallsAll = Number(state.data?.kpis?.totalCalls) || 0;
+    const term = els.agentSearch.value.trim().toLowerCase();
+    const filter = state.agentFilter;
+
+    const filtered = allAgents.filter((a) => {
+      if (filter === "agents" && a.isHuman) return false;
+      if (filter === "user_driven" && a.primaryClass !== "USER_DRIVEN_AGENT") return false;
+      if (filter === "automated" && a.primaryClass !== "AUTOMATED_AGENT_CRAWLER") return false;
+      if (!term) return true;
+      const hay = [a.name, trafficClassLabel(a.primaryClass), intentLabel(a.primaryIntent), ...a.actions.map((x) => x.label)]
+        .join(" ")
+        .toLowerCase();
+      return hay.includes(term);
+    });
+
+    els.agentsCountBadge.textContent = `${filtered.length} shown`;
+
+    if (!filtered.length) {
+      const empty = el("div", "glass empty-state", "No agents match this filter.");
+      els.agentsList.appendChild(empty);
+      return;
+    }
+
+    for (const agent of filtered) {
+      const details = el("details", "agent-card");
+      const summary = el("summary", "agent-summary");
+
+      // Col 1: Identity & Reason
+      const identity = el("div", "agent-identity");
+      const nameRow = el("div", "agent-name-row");
+      nameRow.appendChild(el("span", "agent-name", agent.name));
+      nameRow.appendChild(el("span", trafficClassPillClass(agent.primaryClass), trafficClassLabel(agent.primaryClass)));
+      identity.appendChild(nameRow);
+
+      const metaParts = [
+        intentLabel(agent.primaryIntent),
+        `${formatNumber(agent.sessions)} sessions`
+      ];
+      if (agent.avgLatencyMs !== null && agent.avgLatencyMs !== undefined) {
+        metaParts.push(`${agent.avgLatencyMs}ms avg`);
+      }
+      identity.appendChild(el("div", "agent-meta", metaParts.join(" · ")));
+      summary.appendChild(identity);
+
+      // Col 2: Top Call Types & Action Chips
+      const chipsWrap = el("div", "agent-chips");
+      for (const action of (agent.actions || []).slice(0, 3)) {
+        chipsWrap.appendChild(el("span", "chip", `${action.label} (${formatNumber(action.calls)})`));
+      }
+      if ((agent.actions || []).length > 3) {
+        chipsWrap.appendChild(el("span", "chip", `+${agent.actions.length - 3} more`));
+      }
+      summary.appendChild(chipsWrap);
+
+      // Col 3: Total calls & Chevron
+      const stats = el("div", "agent-stats");
+      const pct = totalCallsAll > 0 ? Math.round((agent.totalCalls / totalCallsAll) * 1000) / 10 : 0;
+      stats.appendChild(el("span", "agent-calls-big", formatNumber(agent.totalCalls)));
+      stats.appendChild(el("span", "agent-pct", `${pct}%`));
+      stats.appendChild(el("span", "chev", "▶"));
+      summary.appendChild(stats);
+
+      details.appendChild(summary);
+
+      // Expanded body: Exact Call Types & Actions breakdown for this agent
+      const body = el("div", "agent-body");
+
+      const ctCol = el("div");
+      ctCol.appendChild(el("h4", "mini-title", "Call Types Used"));
+      const ctList = el("div", "mini-list");
+      for (const ct of agent.callTypes || []) {
+        const row = el("div", "mini-row");
+        row.appendChild(el("span", "", ct.label));
+        const ctPct = agent.totalCalls > 0 ? Math.round((ct.calls / agent.totalCalls) * 100) : 0;
+        row.appendChild(el("span", "hbar-nums", `${formatNumber(ct.calls)} (${ctPct}%)`));
+        ctList.appendChild(row);
+      }
+      ctCol.appendChild(ctList);
+      body.appendChild(ctCol);
+
+      const actCol = el("div");
+      actCol.appendChild(el("h4", "mini-title", "Specific Actions / Endpoints Called"));
+      const actList = el("div", "mini-list");
+      for (const act of (agent.actions || []).slice(0, 12)) {
+        const row = el("div", "mini-row");
+        const left = el("div");
+        left.appendChild(el("div", "cell-main", act.label));
+        left.appendChild(el("div", "cell-sub", `${act.callType} · ${intentLabel(act.intentCategory)}`));
+        row.appendChild(left);
+
+        const lat = act.avgLatencyMs !== null && act.avgLatencyMs !== undefined ? ` · ${act.avgLatencyMs}ms` : "";
+        row.appendChild(el("span", "hbar-nums", `${formatNumber(act.calls)} calls${lat}`));
+        actList.appendChild(row);
+      }
+      actCol.appendChild(actList);
+      body.appendChild(actCol);
+
+      details.appendChild(body);
+      els.agentsList.appendChild(details);
+    }
+  }
+
+  function findChannelEntry(channels, prefix) {
+    return (channels || []).find((c) => String(c.label || "").toLowerCase().includes(prefix.toLowerCase()));
+  }
+
+  function renderCallTypeCards(data) {
+    const channels = data.breakdowns?.channels || [];
+    const k = data.kpis || {};
+    const details = data.callTypeDetails || {};
+
+    const mcp = findChannelEntry(channels, "Remote MCP");
+    els.cntCtMcp.textContent = formatNumber(mcp?.calls || 0);
+    els.subCtMcp.textContent = `${formatNumber(k.mcpToolCallsCount || details.mcp?.length || 0)} Q&A / tool calls`;
+
+    const chat = findChannelEntry(channels, "On-Site Chatbot");
+    els.cntCtChatbot.textContent = formatNumber(chat?.calls || details.chatbot?.length || 0);
+    els.subCtChatbot.textContent = `${formatNumber(details.chatbot?.length || 0)} visitor prompts`;
+
+    const webmcp = findChannelEntry(channels, "WebMCP");
+    els.cntCtWebmcp.textContent = formatNumber(webmcp?.calls || details.webmcp?.length || 0);
+    els.subCtWebmcp.textContent = `${formatNumber(details.webmcp?.length || 0)} tool invocations`;
+
+    const nlweb = findChannelEntry(channels, "External NLWeb");
+    els.cntCtNlweb.textContent = formatNumber(nlweb?.calls || details.nlweb?.length || 0);
+    els.subCtNlweb.textContent = `${formatNumber(nlweb?.sessions || 0)} sessions`;
+
+    const rest = findChannelEntry(channels, "Public REST API");
+    els.cntCtRest.textContent = formatNumber(rest?.calls || details.rest?.length || 0);
+    els.subCtRest.textContent = `${formatNumber(rest?.sessions || 0)} sessions`;
+
+    const md = findChannelEntry(channels, "Markdown");
+    els.cntCtMarkdown.textContent = formatNumber(md?.calls || details.markdown?.length || 0);
+    els.subCtMarkdown.textContent = `${formatNumber(md?.sessions || 0)} sessions`;
+  }
+
   function makeCell(label, text, { numeric = false, sortValue = null } = {}) {
     const td = el("td", numeric ? "num-cell" : "");
     td.dataset.label = label;
@@ -582,103 +737,41 @@
     return td;
   }
 
-  function renderTopQuestions(rows) {
-    clearNode(els.tbodyTopQuestions);
+  function appendStatusPill(td, row) {
+    if (row.guardrail_blocked) {
+      td.appendChild(el("span", "pill pill-rose", "Blocked"));
+    } else if (row.matched_kb) {
+      td.appendChild(el("span", "pill pill-green", "KB Hit"));
+    } else {
+      td.appendChild(el("span", "pill pill-amber", "No Match"));
+    }
+  }
+
+  function applyMcpFilter() {
+    const all = state.data?.callTypeDetails?.mcp || [];
+    const term = els.mcpSearch.value.trim().toLowerCase();
+    const filtered = !term ? all : all.filter((r) => [
+      r.agent_name,
+      r.tool_name,
+      r.resource_uri,
+      r.call_action_label,
+      r.raw_query,
+      r.response_preview,
+      r.canonical_topic
+    ].filter(Boolean).join(" ").toLowerCase().includes(term));
+
+    state.filteredMcp = filtered;
+    renderMcpTable(filtered);
+  }
+
+  function renderMcpTable(rows) {
+    clearNode(els.tbodyMcpCalls);
     if (!rows.length) {
       const tr = el("tr");
-      const td = el("td", "empty-state", "No questions logged in this time window.");
+      const td = el("td", "empty-state", "No MCP questions or tool/resource calls logged in this window.");
       td.colSpan = 7;
       tr.appendChild(td);
-      els.tbodyTopQuestions.appendChild(tr);
-      return;
-    }
-
-    for (const row of rows) {
-      const tr = el("tr");
-      tr.dataset.clickable = "true";
-      tr.title = "Click to filter detailed question log by this prompt";
-
-      const qText = row.sample_question || row.normalized_question || "—";
-      const tdQ = makeCell("Question", null, { sortValue: qText });
-      const qDiv = el("div", "q-primary", qText);
-      const subDiv = el("div", "q-sub", `${row.kb_matched_count || 0} KB matched · ${row.blocked_count || 0} blocked`);
-      tdQ.appendChild(qDiv);
-      tdQ.appendChild(subDiv);
-      tr.appendChild(tdQ);
-
-      tr.appendChild(makeCell("Times Asked", formatNumber(row.times_asked), { numeric: true, sortValue: row.times_asked || 0 }));
-      tr.appendChild(makeCell("Sessions", formatNumber(row.unique_sessions), { numeric: true, sortValue: row.unique_sessions || 0 }));
-      tr.appendChild(makeCell("Sources", row.sources || "—"));
-      tr.appendChild(makeCell("Topic", row.canonical_topic || "—"));
-      tr.appendChild(makeCell("Avg BM25", row.avg_bm25_score ?? "—", { numeric: true, sortValue: row.avg_bm25_score ?? -1 }));
-
-      const lastMs = Date.parse(row.last_asked || "") || 0;
-      tr.appendChild(makeCell("Last Asked", formatTimestampUtc(row.last_asked), { numeric: true, sortValue: lastMs }));
-
-      tr.addEventListener("click", () => {
-        els.qSearch.value = row.normalized_question || row.sample_question || "";
-        applyQuestionFilters();
-        els.tblRecentQuestions.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      });
-
-      els.tbodyTopQuestions.appendChild(tr);
-    }
-  }
-
-  function populateQuestionSourceFilter(rows) {
-    const prev = els.qSourceFilter.value || "all";
-    const sources = new Set();
-    for (const r of rows) {
-      if (r.question_source) sources.add(r.question_source);
-    }
-    clearNode(els.qSourceFilter);
-    els.qSourceFilter.appendChild(el("option", "", "All Sources")).value = "all";
-    for (const s of [...sources].sort((a, b) => collator.compare(a, b))) {
-      const opt = el("option", "", s);
-      opt.value = s;
-      els.qSourceFilter.appendChild(opt);
-    }
-    els.qSourceFilter.value = sources.has(prev) ? prev : "all";
-  }
-
-  function applyQuestionFilters() {
-    const all = state.data?.questions?.recent || [];
-    const term = els.qSearch.value.trim().toLowerCase();
-    const src = els.qSourceFilter.value;
-    const status = els.qStatusFilter.value;
-
-    const filtered = all.filter((r) => {
-      if (src !== "all" && r.question_source !== src) return false;
-      if (status === "matched" && (!r.matched_kb || r.guardrail_blocked)) return false;
-      if (status === "missed" && (r.matched_kb || r.guardrail_blocked)) return false;
-      if (status === "blocked" && !r.guardrail_blocked) return false;
-      if (!term) return true;
-      const haystack = [
-        r.question_asked,
-        r.normalized_question,
-        r.canonical_topic,
-        r.primary_section,
-        r.client_or_platform,
-        r.question_source,
-        r.fanout_queries_text,
-        r.response_preview,
-        r.country
-      ].filter(Boolean).join(" ").toLowerCase();
-      return haystack.includes(term);
-    });
-
-    state.filteredQuestions = filtered;
-    renderRecentQuestions(filtered);
-  }
-
-  function renderRecentQuestions(rows) {
-    clearNode(els.tbodyRecentQuestions);
-    if (!rows.length) {
-      const tr = el("tr");
-      const td = el("td", "empty-state", "No questions match the current filters.");
-      td.colSpan = 8;
-      tr.appendChild(td);
-      els.tbodyRecentQuestions.appendChild(tr);
+      els.tbodyMcpCalls.appendChild(tr);
       return;
     }
 
@@ -689,98 +782,291 @@
       const tsMs = Date.parse(row.event_timestamp || "") || 0;
       tr.appendChild(makeCell("Time (UTC)", formatTimestampUtc(row.event_timestamp), { numeric: true, sortValue: tsMs }));
 
-      const tdQ = makeCell("Question Asked", null, { sortValue: row.question_asked || "" });
-      tdQ.appendChild(el("div", "q-primary", row.question_asked || "—"));
-      const subBits = [];
-      if (row.turn_type) subBits.push(row.turn_type);
-      if (row.session_turn_index) subBits.push(`Turn ${row.session_turn_index}`);
-      if (row.query_language) subBits.push(row.query_language.toUpperCase());
-      if (row.country && row.country !== "unknown") subBits.push(row.country);
-      tdQ.appendChild(el("div", "q-sub", subBits.join(" · ") || "—"));
-      tr.appendChild(tdQ);
+      const tdAgent = makeCell("Agent", null, { sortValue: row.agent_name || "" });
+      tdAgent.appendChild(el("div", "cell-main", row.agent_name || "Unknown Agent"));
+      tdAgent.appendChild(el("div", "cell-sub", [row.country !== "unknown" ? row.country : null, trafficClassLabel(row.traffic_class)].filter(Boolean).join(" · ")));
+      tr.appendChild(tdAgent);
 
-      const srcLabel = row.question_source || "Unknown";
-      const clientLabel = row.client_or_platform || row.agent_platform || "Unknown";
-      const tdSrc = makeCell("Source / Client", null, { sortValue: `${srcLabel} ${clientLabel}` });
-      tdSrc.appendChild(el("div", "q-primary", srcLabel));
-      tdSrc.appendChild(el("div", "q-sub", clientLabel));
-      tr.appendChild(tdSrc);
+      const toolLabel = row.tool_name || (row.rpc_method === "resources/read" ? "resources/read" : row.call_action_label) || "MCP";
+      tr.appendChild(makeCell("Tool / Resource", toolLabel));
 
-      const tdTopic = makeCell("Topic / Section", null, { sortValue: row.canonical_topic || "" });
-      tdTopic.appendChild(el("div", "q-primary", row.canonical_topic || "—"));
-      tdTopic.appendChild(el("div", "q-sub", row.primary_section || "—"));
-      tr.appendChild(tdTopic);
+      const targetText = row.raw_query || row.resource_uri || row.primary_section || "—";
+      const tdTarget = makeCell("Question or Target", null, { sortValue: targetText });
+      tdTarget.appendChild(el("div", "cell-main", targetText));
+      if (row.canonical_topic) {
+        tdTarget.appendChild(el("div", "cell-sub", row.canonical_topic));
+      }
+      tr.appendChild(tdTarget);
 
-      tr.appendChild(makeCell("BM25", row.top_bm25_score ?? "—", { numeric: true, sortValue: row.top_bm25_score ?? -1 }));
+      tr.appendChild(makeCell("Answer Preview", truncate(row.response_preview, 100)));
+
       const lat = row.request_duration_ms;
       tr.appendChild(makeCell("Latency", lat !== null && lat !== undefined ? `${lat} ms` : "—", { numeric: true, sortValue: lat ?? -1 }));
 
-      const tdOutcome = makeCell("Outcome", null);
-      if (row.guardrail_blocked) {
-        tdOutcome.appendChild(el("span", "pill pill-rose", "Blocked"));
-      } else if (row.matched_kb) {
-        tdOutcome.appendChild(el("span", "pill pill-green", row.cache_hit_flag === 1 ? "KB + Cache" : "KB Hit"));
-      } else {
-        tdOutcome.appendChild(el("span", "pill pill-amber", "No KB Match"));
-      }
-      tr.appendChild(tdOutcome);
-
       const tdInspect = makeCell("Inspect", null);
-      const inspectBtn = el("button", "btn btn-sm btn-ghost", "View");
-      inspectBtn.type = "button";
-      inspectBtn.addEventListener("click", (e) => {
+      const btn = el("button", "btn btn-sm btn-ghost", "View");
+      btn.type = "button";
+      btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        openQuestionDialog(row);
+        openDetailDialog(row);
       });
-      tdInspect.appendChild(inspectBtn);
+      tdInspect.appendChild(btn);
       tr.appendChild(tdInspect);
 
-      tr.addEventListener("click", () => openQuestionDialog(row));
-      els.tbodyRecentQuestions.appendChild(tr);
+      tr.addEventListener("click", () => openDetailDialog(row));
+      els.tbodyMcpCalls.appendChild(tr);
     }
   }
 
-  function addDetailBlock(container, label, value) {
-    if (value === null || value === undefined || value === "") return;
-    const block = el("div", "detail-block");
-    block.appendChild(el("div", "detail-label", label));
-    block.appendChild(el("div", "detail-value", String(value)));
-    container.appendChild(block);
+  function applyChatFilter() {
+    const all = state.data?.callTypeDetails?.chatbot || [];
+    const term = els.chatSearch.value.trim().toLowerCase();
+    const filtered = !term ? all : all.filter((r) => [
+      r.raw_query,
+      r.prev_query,
+      r.canonical_topic,
+      r.response_preview,
+      r.country
+    ].filter(Boolean).join(" ").toLowerCase().includes(term));
+
+    state.filteredChat = filtered;
+    renderChatTable(filtered);
   }
 
-  function openQuestionDialog(row) {
-    clearNode(els.dlgBody);
-    els.dlgMetaPill.textContent = `${row.question_source || "Telemetry"} · ${formatTimestampUtc(row.event_timestamp)} UTC`;
-    els.dlgMetaPill.className = row.guardrail_blocked
-      ? "pill pill-rose"
-      : row.matched_kb
-        ? "pill pill-green"
-        : "pill pill-amber";
-
-    els.dlgQuestionTitle.textContent = row.question_asked || "Question Telemetry";
-
-    addDetailBlock(els.dlgBody, "Normalized Question", row.normalized_question);
-    addDetailBlock(els.dlgBody, "Previous Turn Question", row.previous_turn_question);
-    addDetailBlock(els.dlgBody, "Gemini Fanout Search Queries", row.fanout_queries_text);
-    addDetailBlock(els.dlgBody, "Matched KB Sections", row.matched_sections_text);
-    if (row.guardrail_blocked) {
-      addDetailBlock(els.dlgBody, "Guardrail Reason", row.guardrail_reason || "Blocked");
+  function renderChatTable(rows) {
+    clearNode(els.tbodyChatQuestions);
+    if (!rows.length) {
+      const tr = el("tr");
+      const td = el("td", "empty-state", "No on-site chatbot questions recorded in this window.");
+      td.colSpan = 7;
+      tr.appendChild(td);
+      els.tbodyChatQuestions.appendChild(tr);
+      return;
     }
-    addDetailBlock(els.dlgBody, "Response Preview", row.response_preview);
 
-    const grid = el("div", "detail-grid");
-    addDetailBlock(grid, "Client / Platform", row.client_or_platform || row.agent_platform || "—");
-    addDetailBlock(grid, "Traffic Class", trafficClassLabel(row.traffic_class));
-    addDetailBlock(grid, "Topic / Primary Section", `${row.canonical_topic || "—"} / ${row.primary_section || "—"}`);
-    addDetailBlock(grid, "BM25 / Results", `${row.top_bm25_score ?? "—"} (${row.results_count ?? 0} results)`);
-    addDetailBlock(grid, "Latency / Tokens", `${row.request_duration_ms ?? "—"} ms · ${row.estimated_tokens ?? 0} tok`);
-    addDetailBlock(grid, "Location / Network", [row.city, row.country, row.as_organization].filter((x) => x && x !== "unknown").join(" · ") || "—");
-    addDetailBlock(grid, "Session ID (Turn)", `${row.session_id || "—"} (#${row.session_turn_index ?? 1})`);
-    els.dlgBody.appendChild(grid);
+    for (const row of rows) {
+      const tr = el("tr");
+      tr.dataset.clickable = "true";
 
-    if (typeof els.questionDialog.showModal === "function") {
-      els.questionDialog.showModal();
+      const tsMs = Date.parse(row.event_timestamp || "") || 0;
+      tr.appendChild(makeCell("Time (UTC)", formatTimestampUtc(row.event_timestamp), { numeric: true, sortValue: tsMs }));
+
+      const qText = row.raw_query || row.http_path || "—";
+      const tdQ = makeCell("Question Asked", null, { sortValue: qText });
+      tdQ.appendChild(el("div", "cell-main", qText));
+      const subParts = [
+        row.session_turn_index ? `Turn ${row.session_turn_index}` : null,
+        row.query_language ? String(row.query_language).toUpperCase() : null,
+        row.country && row.country !== "unknown" ? row.country : null
+      ].filter(Boolean);
+      tdQ.appendChild(el("div", "cell-sub", subParts.join(" · ") || "—"));
+      tr.appendChild(tdQ);
+
+      const tdTopic = makeCell("Topic", null, { sortValue: row.canonical_topic || "" });
+      tdTopic.appendChild(el("div", "cell-main", row.canonical_topic || "—"));
+      if (row.primary_section) tdTopic.appendChild(el("div", "cell-sub", row.primary_section));
+      tr.appendChild(tdTopic);
+
+      tr.appendChild(makeCell("Answer Preview", truncate(row.response_preview, 100)));
+
+      const tdStatus = makeCell("Status", null, { sortValue: row.matched_kb ? "KB Hit" : "No Match" });
+      appendStatusPill(tdStatus, row);
+      tr.appendChild(tdStatus);
+
+      const lat = row.request_duration_ms;
+      tr.appendChild(makeCell("Latency", lat !== null && lat !== undefined ? `${lat} ms` : "—", { numeric: true, sortValue: lat ?? -1 }));
+
+      const tdInspect = makeCell("Inspect", null);
+      const btn = el("button", "btn btn-sm btn-ghost", "View");
+      btn.type = "button";
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openDetailDialog(row);
+      });
+      tdInspect.appendChild(btn);
+      tr.appendChild(tdInspect);
+
+      tr.addEventListener("click", () => openDetailDialog(row));
+      els.tbodyChatQuestions.appendChild(tr);
     }
+  }
+
+  function applyWebmcpFilter() {
+    const all = state.data?.callTypeDetails?.webmcp || [];
+    const term = els.webmcpSearch.value.trim().toLowerCase();
+    const filtered = !term ? all : all.filter((r) => [
+      r.tool_name,
+      r.raw_query,
+      r.canonical_topic,
+      r.primary_section,
+      r.response_preview
+    ].filter(Boolean).join(" ").toLowerCase().includes(term));
+
+    state.filteredWebmcp = filtered;
+    renderWebmcpTable(filtered);
+  }
+
+  function renderWebmcpTable(rows) {
+    clearNode(els.tbodyWebmcpTools);
+    if (!rows.length) {
+      const tr = el("tr");
+      const td = el("td", "empty-state", "No in-browser WebMCP tool invocations recorded in this window.");
+      td.colSpan = 6;
+      tr.appendChild(td);
+      els.tbodyWebmcpTools.appendChild(tr);
+      return;
+    }
+
+    for (const row of rows) {
+      const tr = el("tr");
+      tr.dataset.clickable = "true";
+
+      const tsMs = Date.parse(row.event_timestamp || "") || 0;
+      tr.appendChild(makeCell("Time (UTC)", formatTimestampUtc(row.event_timestamp), { numeric: true, sortValue: tsMs }));
+
+      const toolName = row.tool_name || row.call_action_label || "WebMCP Tool";
+      const tdTool = makeCell("WebMCP Tool", null, { sortValue: toolName });
+      tdTool.appendChild(el("span", "pill pill-violet", toolName));
+      tr.appendChild(tdTool);
+
+      tr.appendChild(makeCell("Arguments / Target", row.raw_query || row.primary_section || "—"));
+
+      const tdTopic = makeCell("Topic / Section", null, { sortValue: row.canonical_topic || "" });
+      tdTopic.appendChild(el("div", "cell-main", row.canonical_topic || "—"));
+      if (row.country && row.country !== "unknown") {
+        tdTopic.appendChild(el("div", "cell-sub", row.country));
+      }
+      tr.appendChild(tdTopic);
+
+      const lat = row.request_duration_ms;
+      tr.appendChild(makeCell("Latency", lat !== null && lat !== undefined ? `${lat} ms` : "—", { numeric: true, sortValue: lat ?? -1 }));
+
+      const tdInspect = makeCell("Inspect", null);
+      const btn = el("button", "btn btn-sm btn-ghost", "View");
+      btn.type = "button";
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openDetailDialog(row);
+      });
+      tdInspect.appendChild(btn);
+      tr.appendChild(tdInspect);
+
+      tr.addEventListener("click", () => openDetailDialog(row));
+      els.tbodyWebmcpTools.appendChild(tr);
+    }
+  }
+
+  function renderNlwebTable(rows) {
+    clearNode(els.tbodyNlwebCalls);
+    if (!rows.length) {
+      const tr = el("tr");
+      const td = el("td", "empty-state", "No external NLWeb calls recorded in this window.");
+      td.colSpan = 7;
+      tr.appendChild(td);
+      els.tbodyNlwebCalls.appendChild(tr);
+      return;
+    }
+
+    for (const row of rows) {
+      const tr = el("tr");
+      tr.dataset.clickable = "true";
+      const tsMs = Date.parse(row.event_timestamp || "") || 0;
+      tr.appendChild(makeCell("Time (UTC)", formatTimestampUtc(row.event_timestamp), { numeric: true, sortValue: tsMs }));
+      tr.appendChild(makeCell("Caller", row.agent_name || "Unknown"));
+      tr.appendChild(makeCell("Endpoint", row.http_path || "/ask"));
+      tr.appendChild(makeCell("Query", row.raw_query || row.canonical_topic || "—"));
+      const tdStatus = makeCell("Status", null);
+      appendStatusPill(tdStatus, row);
+      tr.appendChild(tdStatus);
+      const lat = row.request_duration_ms;
+      tr.appendChild(makeCell("Latency", lat !== null && lat !== undefined ? `${lat} ms` : "—", { numeric: true, sortValue: lat ?? -1 }));
+
+      const tdInspect = makeCell("Inspect", null);
+      const btn = el("button", "btn btn-sm btn-ghost", "View");
+      btn.type = "button";
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openDetailDialog(row);
+      });
+      tdInspect.appendChild(btn);
+      tr.appendChild(tdInspect);
+
+      tr.addEventListener("click", () => openDetailDialog(row));
+      els.tbodyNlwebCalls.appendChild(tr);
+    }
+  }
+
+  function renderRestTable(rows) {
+    clearNode(els.tbodyRestCalls);
+    if (!rows.length) {
+      const tr = el("tr");
+      const td = el("td", "empty-state", "No Public REST API calls recorded in this window.");
+      td.colSpan = 7;
+      tr.appendChild(td);
+      els.tbodyRestCalls.appendChild(tr);
+      return;
+    }
+
+    for (const row of rows) {
+      const tr = el("tr");
+      tr.dataset.clickable = "true";
+      const tsMs = Date.parse(row.event_timestamp || "") || 0;
+      tr.appendChild(makeCell("Time (UTC)", formatTimestampUtc(row.event_timestamp), { numeric: true, sortValue: tsMs }));
+      tr.appendChild(makeCell("Caller", row.agent_name || "Unknown"));
+      tr.appendChild(makeCell("Path", `${row.http_method || "GET"} ${row.http_path || "/api"}`));
+      tr.appendChild(makeCell("Query / Topic", row.raw_query || row.canonical_topic || "—"));
+      tr.appendChild(makeCell("HTTP Status", row.http_status ?? "—", { numeric: true, sortValue: row.http_status ?? 0 }));
+      const lat = row.request_duration_ms;
+      tr.appendChild(makeCell("Latency", lat !== null && lat !== undefined ? `${lat} ms` : "—", { numeric: true, sortValue: lat ?? -1 }));
+
+      const tdInspect = makeCell("Inspect", null);
+      const btn = el("button", "btn btn-sm btn-ghost", "View");
+      btn.type = "button";
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openDetailDialog(row);
+      });
+      tdInspect.appendChild(btn);
+      tr.appendChild(tdInspect);
+
+      tr.addEventListener("click", () => openDetailDialog(row));
+      els.tbodyRestCalls.appendChild(tr);
+    }
+  }
+
+  function renderMarkdownTable(rows) {
+    clearNode(els.tbodyMarkdownCalls);
+    if (!rows.length) {
+      const tr = el("tr");
+      const td = el("td", "empty-state", "No Markdown content negotiation fetches recorded in this window.");
+      td.colSpan = 6;
+      tr.appendChild(td);
+      els.tbodyMarkdownCalls.appendChild(tr);
+      return;
+    }
+
+    for (const row of rows) {
+      const tr = el("tr");
+      const tsMs = Date.parse(row.event_timestamp || "") || 0;
+      tr.appendChild(makeCell("Time (UTC)", formatTimestampUtc(row.event_timestamp), { numeric: true, sortValue: tsMs }));
+      tr.appendChild(makeCell("Agent", row.agent_name || "Unknown"));
+      tr.appendChild(makeCell("Resource / Path", row.resource_uri || row.http_path || "—"));
+      tr.appendChild(makeCell("Topic", row.canonical_topic || "—"));
+      tr.appendChild(makeCell("Tokens", formatCompact(row.estimated_tokens || 0), { numeric: true, sortValue: row.estimated_tokens || 0 }));
+      const lat = row.request_duration_ms;
+      tr.appendChild(makeCell("Latency", lat !== null && lat !== undefined ? `${lat} ms` : "—", { numeric: true, sortValue: lat ?? -1 }));
+      els.tbodyMarkdownCalls.appendChild(tr);
+    }
+  }
+
+  function renderAdvancedSection(data) {
+    const countries = data.breakdowns?.countries || [];
+    const sessions = data.sessions?.recent || [];
+    els.advancedMetaBadge.textContent = `${formatNumber(sessions.length)} sessions · ${formatNumber(countries.length)} countries`;
+
+    renderHorizontalBars(els.countriesBars, countries, 12, (x) => x);
+    populateSessionSegmentFilter(sessions);
+    applySessionFilters();
   }
 
   function populateSessionSegmentFilter(rows) {
@@ -790,7 +1076,7 @@
       if (r.session_traffic_class) classes.add(r.session_traffic_class);
     }
     clearNode(els.sSegmentFilter);
-    els.sSegmentFilter.appendChild(el("option", "", "All Traffic Classes")).value = "all";
+    els.sSegmentFilter.appendChild(el("option", "", "All Caller Types")).value = "all";
     for (const c of [...classes].sort((a, b) => collator.compare(a, b))) {
       const opt = el("option", "", trafficClassLabel(c));
       opt.value = c;
@@ -807,7 +1093,7 @@
     const filtered = all.filter((r) => {
       if (seg !== "all" && r.session_traffic_class !== seg) return false;
       if (!term) return true;
-      const haystack = [
+      return [
         r.session_id,
         r.agent_platform,
         r.primary_protocol,
@@ -815,22 +1101,20 @@
         r.actions_summary,
         r.topics_summary,
         r.questions_summary,
-        r.country,
-        r.as_organization
-      ].filter(Boolean).join(" ").toLowerCase();
-      return haystack.includes(term);
+        r.country
+      ].filter(Boolean).join(" ").toLowerCase().includes(term);
     });
 
     state.filteredSessions = filtered;
-    renderSessions(filtered);
+    renderSessionsTable(filtered);
   }
 
-  function renderSessions(rows) {
+  function renderSessionsTable(rows) {
     clearNode(els.tbodySessions);
     if (!rows.length) {
       const tr = el("tr");
       const td = el("td", "empty-state", "No sessions match the current filters.");
-      td.colSpan = 7;
+      td.colSpan = 6;
       tr.appendChild(td);
       els.tbodySessions.appendChild(tr);
       return;
@@ -839,33 +1123,73 @@
     for (const row of rows) {
       const tr = el("tr");
       const endMs = Date.parse(row.session_end || row.session_start || "") || 0;
-      tr.appendChild(makeCell("Last Activity", formatTimestampUtc(row.session_end || row.session_start), { numeric: true, sortValue: endMs }));
+      tr.appendChild(makeCell("Last Activity (UTC)", formatTimestampUtc(row.session_end || row.session_start), { numeric: true, sortValue: endMs }));
 
-      const tdPlat = makeCell("Platform & Session", null, { sortValue: row.agent_platform || "" });
+      const tdPlat = makeCell("Agent / Platform", null, { sortValue: row.agent_platform || "" });
       const geoBits = [row.primary_protocol, row.country && row.country !== "unknown" ? row.country : null, row.is_oauth_authenticated ? "OAuth" : null].filter(Boolean);
-      tdPlat.appendChild(el("div", "q-primary", row.agent_platform || "Unknown"));
-      tdPlat.appendChild(el("div", "q-sub", `${geoBits.join(" · ")} · ${(row.session_id || "").slice(0, 12)}`));
+      tdPlat.appendChild(el("div", "cell-main", row.agent_platform || "Unknown"));
+      tdPlat.appendChild(el("div", "cell-sub", geoBits.join(" · ") || "—"));
       tr.appendChild(tdPlat);
 
-      const tdClass = makeCell("Classification", null, { sortValue: row.session_traffic_class || "" });
+      const tdClass = makeCell("Reason Class", null, { sortValue: row.session_traffic_class || "" });
       tdClass.appendChild(el("span", trafficClassPillClass(row.session_traffic_class), trafficClassLabel(row.session_traffic_class)));
-      if (row.engaged_session_flag === 1) {
-        const sub = el("div", "q-sub", "Engaged");
-        tdClass.appendChild(sub);
-      }
       tr.appendChild(tdClass);
 
-      const callsText = `${row.total_calls ?? 0} (${row.interactive_retrieval_calls ?? 0} subst.)`;
-      tr.appendChild(makeCell("Calls", callsText, { numeric: true, sortValue: row.total_calls || 0 }));
-      tr.appendChild(makeCell("Duration", formatDurationSec(row.session_duration_sec), { numeric: true, sortValue: row.session_duration_sec || 0 }));
+      tr.appendChild(makeCell("Calls", `${row.total_calls ?? 0}`, { numeric: true, sortValue: row.total_calls || 0 }));
       tr.appendChild(makeCell("Tokens", formatCompact(row.total_tokens_delivered || 0), { numeric: true, sortValue: row.total_tokens_delivered || 0 }));
 
-      const tdTrail = makeCell("Trail", null, { sortValue: row.actions_summary || "" });
-      tdTrail.appendChild(el("div", "q-primary", row.questions_summary || row.actions_summary || "—"));
-      tdTrail.appendChild(el("div", "q-sub", [row.topics_summary, row.actions_summary && row.questions_summary ? row.actions_summary : null].filter(Boolean).join(" · ") || "—"));
+      const tdTrail = makeCell("Actions & Questions Trail", null, { sortValue: row.actions_summary || "" });
+      tdTrail.appendChild(el("div", "cell-main", truncate(row.questions_summary || row.actions_summary || "—", 120)));
+      if (row.topics_summary) {
+        tdTrail.appendChild(el("div", "cell-sub", truncate(row.topics_summary, 100)));
+      }
       tr.appendChild(tdTrail);
 
       els.tbodySessions.appendChild(tr);
+    }
+  }
+
+  function addDetailBlock(container, label, value) {
+    if (value === null || value === undefined || value === "") return;
+    const block = el("div", "detail-block");
+    block.appendChild(el("div", "detail-label", label));
+    block.appendChild(el("div", "detail-value", String(value)));
+    container.appendChild(block);
+  }
+
+  function openDetailDialog(row) {
+    clearNode(els.dlgBody);
+    els.dlgMetaPill.textContent = `${row.channel_surface || row.protocol || "Call"} · ${formatTimestampUtc(row.event_timestamp)} UTC`;
+    els.dlgMetaPill.className = row.guardrail_blocked
+      ? "pill pill-rose"
+      : row.matched_kb
+        ? "pill pill-green"
+        : "pill pill-violet";
+
+    els.dlgTitle.textContent = row.raw_query || row.call_action_label || row.tool_name || row.http_path || "Call Detail";
+
+    addDetailBlock(els.dlgBody, "Question / Arguments / Target", row.raw_query || row.resource_uri);
+    addDetailBlock(els.dlgBody, "Previous Turn Question", row.prev_query);
+    addDetailBlock(els.dlgBody, "Gemini Fanout Search Queries", row.fanout_queries_text);
+    addDetailBlock(els.dlgBody, "Matched KB Sections", row.matched_sections_text);
+    if (row.guardrail_blocked) {
+      addDetailBlock(els.dlgBody, "Guardrail Reason", row.guardrail_reason || "Blocked");
+    }
+    addDetailBlock(els.dlgBody, "Response Preview", row.response_preview);
+
+    const grid = el("div", "detail-grid");
+    addDetailBlock(grid, "Agent / Client", row.agent_name || "Unknown");
+    addDetailBlock(grid, "Reason Class", trafficClassLabel(row.traffic_class));
+    addDetailBlock(grid, "Call Purpose", intentLabel(row.intent_category));
+    addDetailBlock(grid, "Topic / Section", `${row.canonical_topic || "—"} / ${row.primary_section || "—"}`);
+    addDetailBlock(grid, "Latency / Tokens", `${row.request_duration_ms ?? "—"} ms · ${row.estimated_tokens ?? 0} tok`);
+    addDetailBlock(grid, "BM25 / HTTP Status", `${row.top_bm25_score ?? "—"} · HTTP ${row.http_status ?? 200}`);
+    addDetailBlock(grid, "Location / Network", [row.city, row.country, row.as_organization].filter((x) => x && x !== "unknown").join(" · ") || "—");
+    addDetailBlock(grid, "Session ID", row.session_id || "—");
+    els.dlgBody.appendChild(grid);
+
+    if (typeof els.detailDialog.showModal === "function") {
+      els.detailDialog.showModal();
     }
   }
 
@@ -877,30 +1201,28 @@
     return str;
   }
 
-  function exportFilteredQuestionsCsv() {
-    const rows = state.filteredQuestions;
-    if (!rows.length) {
-      showDashBanner("No rows in the filtered question table to export.", true);
+  function exportCsv(rows, filenamePrefix) {
+    if (!rows || !rows.length) {
+      showDashBanner("No rows available in this table to export.", true);
       return;
     }
 
     const headers = [
       "event_timestamp",
-      "question_source",
-      "client_or_platform",
+      "agent_name",
       "traffic_class",
-      "question_asked",
-      "normalized_question",
+      "intent_category",
+      "channel_surface",
+      "call_action_label",
+      "tool_name",
+      "raw_query",
       "canonical_topic",
       "primary_section",
-      "top_bm25_score",
-      "results_count",
       "matched_kb",
-      "guardrail_blocked",
       "request_duration_ms",
       "estimated_tokens",
       "country",
-      "session_id"
+      "response_preview"
     ];
 
     const lines = [headers.join(",")];
@@ -912,16 +1234,16 @@
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `radustoian-questions-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `${filenamePrefix}-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(link);
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
   }
 
-  // Accessible Tab Controller (modern-web-guidance tabs pattern)
+  // Accessible Call-Type Tabs (modern-web-guidance tabs pattern)
   function initTabs() {
-    const tabBtns = Array.from(document.querySelectorAll('.tabs-bar [role="tab"]'));
+    const tabBtns = Array.from(document.querySelectorAll('.ct-tabs-grid [role="tab"]'));
     const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
 
     function activateTab(targetBtn, { moveFocus = false } = {}) {
@@ -965,7 +1287,6 @@
       });
     }
 
-    // Automatically switch to the matching tab when browser Find-in-Page matches inside a hidden="until-found" panel
     for (const panel of panels) {
       panel.addEventListener("beforematch", () => {
         const ownerBtn = tabBtns.find((btn) => btn.dataset.panel === panel.id);
@@ -1079,18 +1400,33 @@
       lockDashboard("");
     });
 
-    els.qSearch.addEventListener("input", applyQuestionFilters);
-    els.qSourceFilter.addEventListener("change", applyQuestionFilters);
-    els.qStatusFilter.addEventListener("change", applyQuestionFilters);
-    els.exportQuestionsBtn.addEventListener("click", exportFilteredQuestionsCsv);
+    for (const btn of els.agentFilterBar.querySelectorAll("button.seg-btn")) {
+      btn.addEventListener("click", () => {
+        state.agentFilter = btn.dataset.filter || "all";
+        for (const b of els.agentFilterBar.querySelectorAll("button.seg-btn")) {
+          b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+        }
+        renderAgents();
+      });
+    }
+    els.agentSearch.addEventListener("input", renderAgents);
+
+    els.mcpSearch.addEventListener("input", applyMcpFilter);
+    els.exportMcpBtn.addEventListener("click", () => exportCsv(state.filteredMcp, "mcp-calls"));
+
+    els.chatSearch.addEventListener("input", applyChatFilter);
+    els.exportChatBtn.addEventListener("click", () => exportCsv(state.filteredChat, "chatbot-questions"));
+
+    els.webmcpSearch.addEventListener("input", applyWebmcpFilter);
+    els.exportWebmcpBtn.addEventListener("click", () => exportCsv(state.filteredWebmcp, "webmcp-tools"));
 
     els.sSearch.addEventListener("input", applySessionFilters);
     els.sSegmentFilter.addEventListener("change", applySessionFilters);
 
-    els.dlgCloseBtn.addEventListener("click", () => els.questionDialog.close());
-    els.questionDialog.addEventListener("click", (e) => {
-      if (e.target === els.questionDialog) {
-        els.questionDialog.close();
+    els.dlgCloseBtn.addEventListener("click", () => els.detailDialog.close());
+    els.detailDialog.addEventListener("click", (e) => {
+      if (e.target === els.detailDialog) {
+        els.detailDialog.close();
       }
     });
   }
@@ -1099,14 +1435,17 @@
     const ids = [
       "authGate", "authForm", "tokenInput", "toggleTokenBtn", "rememberTokenChk", "unlockBtn", "authError",
       "dashboardView", "datasetBadge", "cacheBadge", "updatedBadge", "windowSelect", "refreshBtn", "lockBtn", "dashBanner",
-      "kpiTotalCalls", "kpiTotalCallsSub", "kpiSessions", "kpiSessionsSub", "kpiInteractive", "kpiInteractiveSub",
-      "kpiQuestions", "kpiQuestionsSub", "kpiKbLatency", "kpiKbLatencySub", "kpiTokens", "kpiTokensSub",
-      "tabCountQuestions", "tabCountSessions",
-      "dailyChartStage", "channelDonutContainer", "actionsBars", "platformsBars", "topicsBars", "countriesBars",
-      "tblTopQuestions", "tbodyTopQuestions", "tblRecentQuestions", "tbodyRecentQuestions",
-      "qSearch", "qSourceFilter", "qStatusFilter", "exportQuestionsBtn",
-      "tblSessions", "tbodySessions", "sSearch", "sSegmentFilter",
-      "sortStatus", "chartTooltip", "questionDialog", "dlgMetaPill", "dlgQuestionTitle", "dlgCloseBtn", "dlgBody"
+      "kpiAgenticCalls", "kpiAgenticCallsSub", "kpiUniqueAgents", "kpiUniqueAgentsSub", "kpiReasonSplit", "kpiReasonSplitSub", "kpiInteractive", "kpiInteractiveSub",
+      "dailyChartStage", "reasonDonutContainer", "intentBars",
+      "agentFilterBar", "agentSearch", "agentsCountBadge", "agentsList",
+      "cntCtMcp", "subCtMcp", "cntCtChatbot", "subCtChatbot", "cntCtWebmcp", "subCtWebmcp",
+      "cntCtNlweb", "subCtNlweb", "cntCtRest", "subCtRest", "cntCtMarkdown", "subCtMarkdown",
+      "mcpSearch", "exportMcpBtn", "tblMcpCalls", "tbodyMcpCalls", "mcpDiscoveryBars",
+      "chatSearch", "exportChatBtn", "tblChatQuestions", "tbodyChatQuestions",
+      "webmcpSearch", "exportWebmcpBtn", "tblWebmcpTools", "tbodyWebmcpTools",
+      "tblNlwebCalls", "tbodyNlwebCalls", "tblRestCalls", "tbodyRestCalls", "tblMarkdownCalls", "tbodyMarkdownCalls",
+      "advancedSection", "advancedMetaBadge", "countriesBars", "sSearch", "sSegmentFilter", "tblSessions", "tbodySessions",
+      "sortStatus", "chartTooltip", "detailDialog", "dlgMetaPill", "dlgTitle", "dlgCloseBtn", "dlgBody"
     ];
     for (const id of ids) {
       els[id] = document.getElementById(id);
