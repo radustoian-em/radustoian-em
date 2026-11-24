@@ -1373,6 +1373,89 @@
       line-height: 1.5;
       color: var(--p-100);
     }
+    .a2ui-sql-step-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-top: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.025);
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+    }
+    .a2ui-qfeed {
+      display: grid;
+      gap: 12px;
+    }
+    .a2ui-qcard {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      display: grid;
+      gap: 8px;
+    }
+    .a2ui-qhead {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .a2ui-qmeta,
+    .a2ui-qactions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    .a2ui-qtext {
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .a2ui-qprev {
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+    }
+    .a2ui-qrationale {
+      font-size: 0.83rem;
+      color: var(--ink-soft);
+    }
+    details.a2ui-qanswer {
+      margin-top: 2px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--glass-border);
+      background: rgba(10, 4, 18, 0.55);
+    }
+    summary.a2ui-qanswer-summary {
+      list-style: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--p-200);
+      cursor: pointer;
+    }
+    summary.a2ui-qanswer-summary::-webkit-details-marker {
+      display: none;
+    }
+    details.a2ui-qanswer[open] .chev {
+      transform: rotate(90deg);
+    }
+    .a2ui-qanswer-body {
+      padding: 8px 10px 10px;
+      border-top: 1px solid var(--glass-border);
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
   </style>
 </head>
 <body>
@@ -2013,10 +2096,10 @@
 
         <article class="glass ask-data-card">
           <div id="askDataStarters" class="ask-data-starters" role="group" aria-label="Starter analytics questions">
-            <button type="button" class="a2ui-chip" data-question="Show Q&amp;A questions from the last 14 days">Show Q&amp;A questions from the last 14 days</button>
-            <button type="button" class="a2ui-chip" data-question="Compare User-Driven Agents vs Automated Crawlers by day">Compare User-Driven Agents vs Automated Crawlers by day</button>
-            <button type="button" class="a2ui-chip" data-question="Which topics and sections get the most MCP and WebMCP tool calls?">Which topics get the most MCP &amp; WebMCP calls?</button>
-            <button type="button" class="a2ui-chip" data-question="What are the slowest queries or errors in this window?">What are the slowest queries or errors?</button>
+            <button type="button" class="a2ui-chip" data-question="What actual questions have AI agents asked on behalf of users?">What actual questions have AI agents asked on behalf of users?</button>
+            <button type="button" class="a2ui-chip" data-question="What questions are asked by agents or chatbot visitors on behalf of candidates?">What questions are asked by agents or chatbot visitors on behalf of candidates?</button>
+            <button type="button" class="a2ui-chip" data-question="Compare what users ask via AI agents vs. the on-site chatbot">Compare what users ask via AI agents vs. the on-site chatbot</button>
+            <button type="button" class="a2ui-chip" data-question="Which profile sections and case studies do user-driven AI agents look up most?">Which profile sections and case studies do user-driven AI agents look up most?</button>
           </div>
 
           <form id="askDataForm" class="ask-data-form" novalidate>
@@ -2058,7 +2141,7 @@
     </dialog>
   </main>
 
-  <script src="/js/analytics-genui.js?v=1" defer></script>
-  <script src="/js/agentic-traffic.js?v=7" defer></script>
+  <script src="/js/analytics-genui.js?v=2" defer></script>
+  <script src="/js/agentic-traffic.js?v=8" defer></script>
 </body>
 </html>
