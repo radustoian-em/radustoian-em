@@ -28,6 +28,8 @@
     agentFilter: "all",
     callPurpose: "all",
     actionEventsCache: new Map(),
+    askHistory: [],
+    askLoading: false,
     filteredMcp: [],
     filteredChat: [],
     filteredWebmcp: [],
@@ -45,6 +47,14 @@
       return "/api/v1/analytics";
     }
     return "https://radustoian.com/api/v1/analytics";
+  }
+
+  function resolveAnalyticsAskEndpoint() {
+    const host = window.location.hostname;
+    if (host === "radustoian.com" || host === "www.radustoian.com") {
+      return "/api/v1/analytics/ask";
+    }
+    return "https://radustoian.com/api/v1/analytics/ask";
   }
 
   function formatNumber(val) {
@@ -196,6 +206,9 @@
     state.token = "";
     state.data = null;
     state.actionEventsCache.clear();
+    state.askHistory = [];
+    state.askLoading = false;
+    resetAskThread();
     clearStoredToken();
     els.tokenInput.value = "";
     els.dashboardView.hidden = true;
@@ -1508,6 +1521,10 @@
       lines.push(headers.map((h) => escapeCsvCell(r[h])).join(","));
     }
 
+    downloadCsvBlob(lines, filenamePrefix);
+  }
+
+  function downloadCsvBlob(lines, filenamePrefix) {
     const blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -1517,6 +1534,18 @@
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
+  }
+
+  function exportGenericCsv(columns, rows, filenamePrefix = "analytics-ask-results") {
+    if (!rows || !rows.length || !columns || !columns.length) {
+      showDashBanner("No rows available in this table to export.", true);
+      return;
+    }
+    const lines = [columns.map((c) => escapeCsvCell(c.label || c.key)).join(",")];
+    for (const r of rows) {
+      lines.push(columns.map((c) => escapeCsvCell(r?.[c.key])).join(","));
+    }
+    downloadCsvBlob(lines, filenamePrefix);
   }
 
   // Accessible Call-Type Tabs (modern-web-guidance tabs pattern)
@@ -1648,6 +1677,191 @@
     }
   }
 
+  function setAskStatus(visible, message = "") {
+    if (!els.askDataStatus) return;
+    if (!visible) {
+      els.askDataStatus.hidden = true;
+      if (els.askDataStatusText) els.askDataStatusText.textContent = "";
+      return;
+    }
+    if (els.askDataStatusText) {
+      els.askDataStatusText.textContent = message || "Analyzing question...";
+    }
+    els.askDataStatus.hidden = false;
+  }
+
+  function resetAskThread() {
+    state.askHistory = [];
+    if (els.askDataThread) clearNode(els.askDataThread);
+    if (els.askDataInput) els.askDataInput.value = "";
+    setAskStatus(false);
+  }
+
+  function parseSseFrames(buffer, onFrame) {
+    let rest = buffer.replace(/\r\n/g, "\n");
+    let idx;
+    while ((idx = rest.indexOf("\n\n")) !== -1) {
+      const block = rest.slice(0, idx);
+      rest = rest.slice(idx + 2);
+      let eventName = "message";
+      const dataLines = [];
+      for (const line of block.split("\n")) {
+        if (line.startsWith("event:")) {
+          eventName = line.slice(6).trim();
+        } else if (line.startsWith("data:")) {
+          dataLines.push(line.slice(5).trim());
+        }
+      }
+      if (dataLines.length) {
+        onFrame(eventName, dataLines.join("\n"));
+      }
+    }
+    return rest;
+  }
+
+  async function submitAnalyticsQuestion(rawQuestion) {
+    const question = String(rawQuestion || "").trim();
+    if (!question || !state.token || state.askLoading) return;
+
+    state.askLoading = true;
+    if (els.askDataSubmit) {
+      els.askDataSubmit.disabled = true;
+      els.askDataSubmit.textContent = "Analyzing...";
+    }
+    if (els.askDataInput) {
+      els.askDataInput.value = "";
+      els.askDataInput.disabled = true;
+    }
+    setAskStatus(true, "Analyzing question and drafting BigQuery SQL...");
+
+    const turnEl = el("div", "ask-turn");
+    const promptBar = el("div", "ask-turn-prompt");
+    promptBar.appendChild(el("div", "ask-turn-question", question));
+    const statusPill = el("span", "pill pill-violet", "Running…");
+    promptBar.appendChild(statusPill);
+    turnEl.appendChild(promptBar);
+
+    const bodyEl = el("div", "ask-turn-body");
+    turnEl.appendChild(bodyEl);
+    if (els.askDataThread) {
+      els.askDataThread.appendChild(turnEl);
+      const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      turnEl.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest" });
+    }
+
+    try {
+      const resp = await fetch(`${resolveAnalyticsAskEndpoint()}?stream=1`, {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "text/event-stream, application/json",
+          "Authorization": `Bearer ${state.token}`
+        },
+        body: JSON.stringify({
+          question,
+          days: state.days,
+          history: state.askHistory.slice(-6)
+        })
+      });
+
+      if (resp.status === 401) {
+        const errData = await resp.json().catch(() => null);
+        lockDashboard(errData?.message || "Invalid dashboard token. Please enter your DASHBOARD_API_KEY.");
+        return;
+      }
+
+      const contentType = (resp.headers.get("content-type") || "").toLowerCase();
+      let surfacePayload = null;
+
+      if (contentType.includes("text/event-stream") && resp.body) {
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let streamErr = null;
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          buffer = parseSseFrames(buffer, (evt, dataStr) => {
+            let parsed = null;
+            try {
+              parsed = JSON.parse(dataStr);
+            } catch {
+              return;
+            }
+            if (evt === "status" && parsed) {
+              setAskStatus(true, parsed.message || "Working...");
+              statusPill.textContent = parsed.stage === "querying_bigquery"
+                ? "Querying BigQuery…"
+                : parsed.stage === "composing_ui"
+                  ? "Composing UI…"
+                  : parsed.stage === "repairing_sql"
+                    ? "Refining SQL…"
+                    : "Planning SQL…";
+            } else if (evt === "surface" && parsed) {
+              surfacePayload = parsed;
+            } else if (evt === "error" && parsed) {
+              streamErr = new Error(parsed.message || "Analytics query failed.");
+            }
+          });
+        }
+        if (streamErr) throw streamErr;
+      } else {
+        const payload = await resp.json().catch(() => null);
+        if (!resp.ok || !payload) {
+          throw new Error(payload?.message || `Analytics AI request failed (HTTP ${resp.status}).`);
+        }
+        surfacePayload = payload;
+      }
+
+      if (!surfacePayload) {
+        throw new Error("No Generative UI response returned from analytics endpoint.");
+      }
+
+      statusPill.className = "pill pill-green";
+      statusPill.textContent = `${surfacePayload.queryMeta?.rowCount ?? 0} rows`;
+
+      if (window.AnalyticsA2UIRenderer && typeof window.AnalyticsA2UIRenderer.renderSurface === "function") {
+        const rendered = window.AnalyticsA2UIRenderer.renderSurface(surfacePayload, {
+          onFollowUp: (q) => submitAnalyticsQuestion(q),
+          onRowDetail: (row) => openDetailDialog(row),
+          onExportCsv: exportGenericCsv,
+          onTooltipShow: showTooltip,
+          onTooltipHide: hideTooltip
+        });
+        bodyEl.appendChild(rendered);
+      } else {
+        bodyEl.appendChild(el("div", "a2ui-summary", surfacePayload.title || "Answer ready."));
+      }
+
+      state.askHistory = [
+        ...state.askHistory,
+        {
+          question,
+          sql: surfacePayload.queryMeta?.sql || "",
+          summary: surfacePayload.title || ""
+        }
+      ].slice(-6);
+    } catch (err) {
+      statusPill.className = "pill pill-rose";
+      statusPill.textContent = "Error";
+      bodyEl.appendChild(el("div", "alert", err?.message || "Failed to analyze question."));
+    } finally {
+      state.askLoading = false;
+      setAskStatus(false);
+      if (els.askDataSubmit) {
+        els.askDataSubmit.disabled = false;
+        els.askDataSubmit.textContent = "Ask AI Analyst";
+      }
+      if (els.askDataInput) {
+        els.askDataInput.disabled = false;
+        els.askDataInput.focus();
+      }
+    }
+  }
+
   function bindEvents() {
     els.authForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -1718,6 +1932,32 @@
         els.detailDialog.close();
       }
     });
+
+    if (els.askDataForm) {
+      els.askDataForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        submitAnalyticsQuestion(els.askDataInput?.value || "");
+      });
+    }
+    if (els.askDataInput) {
+      els.askDataInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          submitAnalyticsQuestion(els.askDataInput.value);
+        }
+      });
+    }
+    if (els.askDataStarters) {
+      els.askDataStarters.addEventListener("click", (e) => {
+        const chip = e.target.closest("button[data-question]");
+        if (chip) {
+          submitAnalyticsQuestion(chip.dataset.question || chip.textContent || "");
+        }
+      });
+    }
+    if (els.askDataClearBtn) {
+      els.askDataClearBtn.addEventListener("click", resetAskThread);
+    }
   }
 
   function cacheElements() {
@@ -1735,6 +1975,7 @@
       "webmcpSearch", "exportWebmcpBtn", "tblWebmcpTools", "tbodyWebmcpTools",
       "tblNlwebCalls", "tbodyNlwebCalls", "tblRestCalls", "tbodyRestCalls", "tblMarkdownCalls", "tbodyMarkdownCalls",
       "advancedSection", "advancedMetaBadge", "countriesBars", "sSearch", "sSegmentFilter", "tblSessions", "tbodySessions",
+      "askDataSection", "askDataForm", "askDataInput", "askDataSubmit", "askDataClearBtn", "askDataStarters", "askDataStatus", "askDataStatusText", "askDataThread",
       "sortStatus", "chartTooltip", "detailDialog", "dlgMetaPill", "dlgTitle", "dlgCloseBtn", "dlgBody"
     ];
     for (const id of ids) {
