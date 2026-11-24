@@ -1795,11 +1795,13 @@
               setAskStatus(true, parsed.message || "Working...");
               statusPill.textContent = parsed.stage === "querying_bigquery"
                 ? "Querying BigQuery…"
-                : parsed.stage === "composing_ui"
-                  ? "Composing UI…"
-                  : parsed.stage === "repairing_sql"
-                    ? "Refining SQL…"
-                    : "Planning SQL…";
+                : parsed.stage === "widening_window"
+                  ? "Checking broader window…"
+                  : parsed.stage === "composing_ui"
+                    ? "Analyzing questions & UI…"
+                    : parsed.stage === "repairing_sql"
+                      ? "Refining SQL…"
+                      : "Planning query…";
             } else if (evt === "surface" && parsed) {
               surfacePayload = parsed;
             } else if (evt === "error" && parsed) {

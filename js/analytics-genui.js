@@ -340,9 +340,93 @@
     return wrap;
   }
 
+  function renderQuestionFeed(comp, dataModel, handlers) {
+    const items = Array.isArray(comp.questionItems) ? comp.questionItems : [];
+    const dataRows = resolveDataPath(dataModel, "/rows");
+    const rowByEventId = new Map();
+    if (Array.isArray(dataRows)) {
+      for (const r of dataRows) {
+        if (r && r.event_id !== undefined && r.event_id !== null) {
+          rowByEventId.set(String(r.event_id), r);
+        }
+      }
+    }
+
+    const card = el("article", "glass panel-card a2ui-card");
+    const head = el("div", "panel-head");
+    head.appendChild(el("h4", "panel-title", comp.title || "Questions & Agent Lookups"));
+    head.appendChild(el("span", "meta-chip", `${items.length} shown`));
+    card.appendChild(head);
+
+    if (!items.length) {
+      card.appendChild(el("div", "empty-state", "No questions or agent lookups matched in this set."));
+      return card;
+    }
+
+    const feed = el("div", "a2ui-qfeed");
+    for (const item of items) {
+      const qCard = el("div", "a2ui-qcard");
+      const qHead = el("div", "a2ui-qhead");
+
+      const leftMeta = el("div", "a2ui-qmeta");
+      const isChatbot = item.actorType === "chatbot";
+      leftMeta.appendChild(el("span", isChatbot ? "pill pill-green" : "pill pill-violet", isChatbot ? "Website Chatbot" : "AI Agent"));
+      if (item.agentLabel) {
+        leftMeta.appendChild(el("span", "meta-chip", item.agentLabel));
+      }
+      if (item.personaBadge) {
+        leftMeta.appendChild(el("span", "pill pill-sky", item.personaBadge));
+      }
+      qHead.appendChild(leftMeta);
+
+      const rightMeta = el("div", "a2ui-qactions");
+      if (item.timestampUtc) {
+        rightMeta.appendChild(el("span", "cell-sub", `${formatCellValue(item.timestampUtc, "date")} UTC`));
+      }
+      const matchedRow = item.eventId ? rowByEventId.get(String(item.eventId)) : null;
+      if (matchedRow && typeof handlers.onRowDetail === "function") {
+        const detailBtn = el("button", "btn btn-sm btn-ghost", "Full Detail");
+        detailBtn.type = "button";
+        detailBtn.addEventListener("click", () => handlers.onRowDetail(matchedRow));
+        rightMeta.appendChild(detailBtn);
+      }
+      qHead.appendChild(rightMeta);
+      qCard.appendChild(qHead);
+
+      qCard.appendChild(el("div", "a2ui-qtext", item.questionText || "—"));
+      if (item.prevContext) {
+        qCard.appendChild(el("div", "a2ui-qprev", `Follow-up to: ${item.prevContext}`));
+      }
+      if (item.rationale) {
+        qCard.appendChild(el("div", "a2ui-qrationale", item.rationale));
+      }
+
+      if (item.answerSnippet) {
+        const ansDetails = el("details", "a2ui-qanswer");
+        const ansSummary = el("summary", "a2ui-qanswer-summary");
+        ansSummary.appendChild(el("span", "chev", "▸"));
+        ansSummary.appendChild(document.createTextNode("Answer preview"));
+        ansDetails.appendChild(ansSummary);
+        ansDetails.appendChild(el("div", "a2ui-qanswer-body", item.answerSnippet));
+        qCard.appendChild(ansDetails);
+      }
+
+      feed.appendChild(qCard);
+    }
+
+    card.appendChild(feed);
+    return card;
+  }
+
   function renderDataTable(comp, dataModel, handlers) {
     const rawRows = resolveDataPath(dataModel, comp.dataPath || "/rows");
-    const rows = Array.isArray(rawRows) ? rawRows : [];
+    const allRows = Array.isArray(rawRows) ? rawRows : [];
+    let rows = allRows;
+    if (Array.isArray(comp.eventIds) && comp.eventIds.length > 0 && allRows.length && Object.prototype.hasOwnProperty.call(allRows[0] || {}, "event_id")) {
+      const idSet = new Set(comp.eventIds.map((x) => String(x)));
+      const subset = allRows.filter((r) => idSet.has(String(r?.event_id)));
+      if (subset.length > 0) rows = subset;
+    }
     const columns = Array.isArray(comp.columns) && comp.columns.length
       ? comp.columns
       : (rows.length ? Object.keys(rows[0]).slice(0, 10).map((key) => ({ key, label: key.replace(/_/g, " "), type: "text" })) : []);
@@ -472,12 +556,17 @@
   }
 
   function renderSqlAccordion(comp) {
+    const queries = Array.isArray(comp.queries) && comp.queries.length
+      ? comp.queries
+      : [{ step: 1, purpose: "", sql: comp.sql || "", rowCount: comp.rowCount ?? 0, durationMs: comp.durationMs ?? null, repaired: Boolean(comp.repaired) }];
+    const fullSqlText = queries.map((q, idx) => (queries.length > 1 ? `-- Step ${q.step || idx + 1}: ${q.purpose || "Query"}\n${q.sql}` : q.sql)).join("\n\n");
+
     const details = el("details", "a2ui-sql");
     const summary = el("summary", "a2ui-sql-summary");
 
     const left = el("span", "a2ui-sql-title");
     left.appendChild(el("span", "chev", "▸"));
-    left.appendChild(document.createTextNode("Executed BigQuery SQL"));
+    left.appendChild(document.createTextNode(queries.length > 1 ? `Executed BigQuery SQL (${queries.length} steps)` : "Executed BigQuery SQL"));
     summary.appendChild(left);
 
     const right = el("div", "a2ui-sql-meta");
@@ -498,7 +587,7 @@
       e.preventDefault();
       e.stopPropagation();
       if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-        navigator.clipboard.writeText(comp.sql || "").then(() => {
+        navigator.clipboard.writeText(fullSqlText).then(() => {
           copyBtn.textContent = "Copied";
           setTimeout(() => { copyBtn.textContent = "Copy SQL"; }, 1600);
         }).catch(() => {});
@@ -508,10 +597,19 @@
     summary.appendChild(right);
     details.appendChild(summary);
 
-    const pre = el("pre", "a2ui-sql-pre");
-    const code = el("code", "", comp.sql || "");
-    pre.appendChild(code);
-    details.appendChild(pre);
+    const stepsWrap = el("div", "a2ui-sql-steps");
+    queries.forEach((q, idx) => {
+      if (queries.length > 1) {
+        const stepHead = el("div", "a2ui-sql-step-head");
+        stepHead.appendChild(el("span", "", `Step ${q.step || idx + 1}: ${q.purpose || "BigQuery query"}`));
+        stepHead.appendChild(el("span", "meta-chip", `${q.rowCount ?? 0} rows · ${q.durationMs ?? 0} ms`));
+        stepsWrap.appendChild(stepHead);
+      }
+      const pre = el("pre", "a2ui-sql-pre");
+      pre.appendChild(el("code", "", q.sql || ""));
+      stepsWrap.appendChild(pre);
+    });
+    details.appendChild(stepsWrap);
     return details;
   }
 
@@ -546,6 +644,8 @@
         }
         case "SummaryCard":
           return renderSummaryCard(comp);
+        case "QuestionFeed":
+          return renderQuestionFeed(comp, dataModel, handlers);
         case "KpiStrip":
           return renderKpiStrip(comp);
         case "BarChart":
