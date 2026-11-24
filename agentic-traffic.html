@@ -1110,6 +1110,269 @@
       color: var(--ink-muted);
       font-size: 0.87rem;
     }
+
+    /* Section 5: Conversational Analytics & A2UI Surface */
+    .ask-data-card {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+    .ask-data-starters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ask-data-form {
+      display: grid;
+      gap: 10px;
+    }
+    .ask-data-input-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    .ask-data-textarea {
+      flex: 1 1 320px;
+      min-height: 54px;
+      max-height: 180px;
+      resize: vertical;
+      padding: 11px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border-hi);
+      background: rgba(11, 5, 20, 0.9);
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+    .ask-data-textarea::placeholder {
+      color: var(--ink-muted);
+    }
+    .ask-data-textarea:focus-visible {
+      outline: 2px solid var(--p-300);
+      outline-offset: 2px;
+    }
+    .ask-data-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(192, 132, 252, 0.28);
+      color: var(--p-100);
+      font-size: 0.84rem;
+    }
+    .ask-data-spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(216, 180, 254, 0.25);
+      border-top-color: var(--p-300);
+      animation: a2ui-spin 0.85s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes a2ui-spin {
+      to { transform: rotate(360deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ask-data-spinner {
+        animation: none;
+        border-color: var(--p-300);
+      }
+    }
+    .ask-data-thread {
+      display: grid;
+      gap: 20px;
+    }
+    .ask-turn {
+      display: grid;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--glass-border);
+    }
+    .ask-turn:first-child {
+      padding-top: 4px;
+      border-top: 0;
+    }
+    .ask-turn-prompt {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--glass-border);
+    }
+    .ask-turn-question {
+      font-weight: 600;
+      font-size: 0.94rem;
+      color: var(--ink);
+    }
+
+    /* A2UI Native Component Catalog Styles */
+    .a2ui-col {
+      display: grid;
+      gap: 14px;
+    }
+    .a2ui-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .a2ui-summary {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: rgba(168, 85, 247, 0.09);
+      border: 1px solid rgba(192, 132, 252, 0.26);
+    }
+    .a2ui-tone-positive {
+      background: rgba(52, 211, 153, 0.09);
+      border-color: rgba(52, 211, 153, 0.28);
+    }
+    .a2ui-tone-warning {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+    .a2ui-tone-neutral {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: var(--glass-border);
+    }
+    .a2ui-summary-title {
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: var(--p-100);
+      margin-bottom: 4px;
+    }
+    .a2ui-summary-body {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--ink-soft);
+      white-space: pre-wrap;
+    }
+    .a2ui-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+    .a2ui-kpi-card {
+      border-top-width: 2px;
+    }
+    .a2ui-accent-violet { border-top-color: var(--p-400); }
+    .a2ui-accent-sky { border-top-color: var(--sky); }
+    .a2ui-accent-emerald { border-top-color: var(--emerald); }
+    .a2ui-accent-amber { border-top-color: var(--amber); }
+    .a2ui-accent-rose { border-top-color: var(--rose); }
+    .a2ui-compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .a2ui-compare-card {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-top-width: 2px;
+      display: grid;
+      gap: 10px;
+    }
+    .a2ui-compare-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .a2ui-compare-metrics {
+      display: grid;
+      gap: 6px;
+    }
+    .a2ui-compare-metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 0.84rem;
+    }
+    .a2ui-followups {
+      display: grid;
+      gap: 8px;
+    }
+    .a2ui-followups-label {
+      font-size: 0.77rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-muted);
+    }
+    .a2ui-chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .a2ui-chip {
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border-hi);
+      background: rgba(168, 85, 247, 0.1);
+      color: var(--p-100);
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .a2ui-chip:hover {
+      background: rgba(168, 85, 247, 0.22);
+      border-color: var(--p-300);
+    }
+    details.a2ui-sql {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border);
+      background: rgba(10, 4, 18, 0.72);
+    }
+    summary.a2ui-sql-summary {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+    }
+    summary.a2ui-sql-summary::-webkit-details-marker {
+      display: none;
+    }
+    .a2ui-sql-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    details.a2ui-sql[open] .chev {
+      transform: rotate(90deg);
+    }
+    .a2ui-sql-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .a2ui-sql-pre {
+      margin: 0;
+      padding: 12px 14px;
+      border-top: 1px solid var(--glass-border);
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: var(--p-100);
+    }
   </style>
 </head>
 <body>
@@ -1737,6 +2000,46 @@
           </div>
         </details>
       </section>
+
+      <!-- Section 5: Conversational Analytics (AI Analyst + A2UI Generative UI) -->
+      <section id="askDataSection" class="section-block" aria-labelledby="hAskData">
+        <div class="section-header">
+          <div>
+            <h2 id="hAskData" class="section-title">5. Ask a Question About Your Data</h2>
+            <p class="section-sub">Natural-language BigQuery exploration powered by Gemini 3.6 Flash, read-only SQL validation, and A2UI Generative UI</p>
+          </div>
+          <button type="button" id="askDataClearBtn" class="btn btn-sm btn-ghost">New Thread</button>
+        </div>
+
+        <article class="glass ask-data-card">
+          <div id="askDataStarters" class="ask-data-starters" role="group" aria-label="Starter analytics questions">
+            <button type="button" class="a2ui-chip" data-question="Show Q&amp;A questions from the last 14 days">Show Q&amp;A questions from the last 14 days</button>
+            <button type="button" class="a2ui-chip" data-question="Compare User-Driven Agents vs Automated Crawlers by day">Compare User-Driven Agents vs Automated Crawlers by day</button>
+            <button type="button" class="a2ui-chip" data-question="Which topics and sections get the most MCP and WebMCP tool calls?">Which topics get the most MCP &amp; WebMCP calls?</button>
+            <button type="button" class="a2ui-chip" data-question="What are the slowest queries or errors in this window?">What are the slowest queries or errors?</button>
+          </div>
+
+          <form id="askDataForm" class="ask-data-form" novalidate>
+            <label class="sr-only" for="askDataInput">Ask a question about your BigQuery traffic data</label>
+            <div class="ask-data-input-row">
+              <textarea
+                id="askDataInput"
+                class="ask-data-textarea"
+                rows="2"
+                placeholder="Ask anything about your BigQuery traffic (e.g. 'Compare Q&amp;A questions by agent this month')... Press Enter to submit, Shift+Enter for a new line."
+              ></textarea>
+              <button type="submit" id="askDataSubmit" class="btn btn-primary">Ask AI Analyst</button>
+            </div>
+          </form>
+
+          <div id="askDataStatus" class="ask-data-status" role="status" aria-live="polite" hidden>
+            <span class="ask-data-spinner" aria-hidden="true"></span>
+            <span id="askDataStatusText">Analyzing question...</span>
+          </div>
+
+          <div id="askDataThread" class="ask-data-thread"></div>
+        </article>
+      </section>
     </section>
 
     <div id="sortStatus" class="sr-only" role="status" aria-live="polite"></div>
@@ -1755,6 +2058,7 @@
     </dialog>
   </main>
 
-  <script src="/js/agentic-traffic.js?v=6" defer></script>
+  <script src="/js/analytics-genui.js?v=1" defer></script>
+  <script src="/js/agentic-traffic.js?v=7" defer></script>
 </body>
 </html>
