@@ -1801,7 +1801,9 @@
                     ? "Analyzing questions & UI…"
                     : parsed.stage === "repairing_sql"
                       ? "Refining SQL…"
-                      : "Planning query…";
+                      : parsed.stage === "retrying_analysis"
+                        ? "Retrying…"
+                        : "Planning query…";
             } else if (evt === "surface" && parsed) {
               surfacePayload = parsed;
             } else if (evt === "error" && parsed) {
@@ -1849,7 +1851,19 @@
     } catch (err) {
       statusPill.className = "pill pill-rose";
       statusPill.textContent = "Error";
-      bodyEl.appendChild(el("div", "alert", err?.message || "Failed to analyze question."));
+      const errBanner = el("div", "alert ask-error-row");
+      errBanner.setAttribute("role", "alert");
+      errBanner.appendChild(el("span", "ask-error-msg", err?.message || "Failed to analyze question."));
+      const retryBtn = el("button", "btn btn-sm btn-ghost ask-retry-btn", "Retry");
+      retryBtn.type = "button";
+      retryBtn.setAttribute("aria-label", `Retry question: ${question.slice(0, 80)}`);
+      retryBtn.addEventListener("click", () => {
+        if (state.askLoading) return;
+        turnEl.remove();
+        submitAnalyticsQuestion(question);
+      });
+      errBanner.appendChild(retryBtn);
+      bodyEl.appendChild(errBanner);
     } finally {
       state.askLoading = false;
       setAskStatus(false);
