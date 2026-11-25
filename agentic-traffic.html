@@ -1477,6 +1477,14 @@
       white-space: pre-wrap;
       word-break: break-word;
     }
+    #dashboardView.is-loading .kpi-grid,
+    #dashboardView.is-loading .panel-card,
+    #dashboardView.is-loading .agents-list,
+    #dashboardView.is-loading .ct-tabs-grid,
+    #dashboardView.is-loading [role="tabpanel"] {
+      opacity: 0.6;
+      transition: opacity 140ms ease;
+    }
   </style>
 </head>
 <body>
@@ -2115,7 +2123,10 @@
             <h2 id="hAskData" class="section-title">5. Ask a Question About Your Data</h2>
             <p class="section-sub">Natural-language BigQuery exploration powered by Gemini 3.6 Flash, read-only SQL validation, and A2UI Generative UI</p>
           </div>
-          <button type="button" id="askDataClearBtn" class="btn btn-sm btn-ghost">New Thread</button>
+          <div class="controls">
+            <span id="askDataWindowBadge" class="meta-chip">Window: Last 30 days</span>
+            <button type="button" id="askDataClearBtn" class="btn btn-sm btn-ghost">New Thread</button>
+          </div>
         </div>
 
         <article class="glass ask-data-card">
@@ -2166,6 +2177,6 @@
   </main>
 
   <script src="/js/analytics-genui.js?v=3" defer></script>
-  <script src="/js/agentic-traffic.js?v=10" defer></script>
+  <script src="/js/agentic-traffic.js?v=11" defer></script>
 </body>
 </html>
