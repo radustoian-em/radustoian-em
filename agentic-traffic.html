@@ -1212,6 +1212,27 @@
       font-size: 0.94rem;
       color: var(--ink);
     }
+    .ask-error-row {
+      margin-top: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .ask-error-msg {
+      flex: 1 1 220px;
+    }
+    .ask-retry-btn {
+      flex-shrink: 0;
+      min-block-size: 32px;
+      border-color: rgba(254, 205, 211, 0.35);
+      color: #ffe4e6;
+    }
+    .ask-retry-btn:hover {
+      background: rgba(254, 205, 211, 0.14);
+      border-color: rgba(254, 205, 211, 0.6);
+    }
 
     /* A2UI Native Component Catalog Styles */
     .a2ui-col {
@@ -2142,6 +2163,6 @@
   </main>
 
   <script src="/js/analytics-genui.js?v=2" defer></script>
-  <script src="/js/agentic-traffic.js?v=8" defer></script>
+  <script src="/js/agentic-traffic.js?v=9" defer></script>
 </body>
 </html>
