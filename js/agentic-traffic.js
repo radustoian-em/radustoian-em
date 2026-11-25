@@ -20,9 +20,14 @@
     "#818cf8"
   ];
 
+  const CHART_MONTH_DAY_FMT = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  const CHART_FULL_DATE_FMT = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+  const CHART_MONTH_YEAR_FMT = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+
   const state = {
     token: "",
     remember: false,
+    window: "30",
     days: 30,
     data: null,
     agentFilter: "all",
@@ -218,6 +223,63 @@
     els.tokenInput.focus();
   }
 
+  function formatWindowLabel(winVal) {
+    const val = String(winVal ?? "30").trim().toLowerCase();
+    if (val === "1h") return "Last 1 hour";
+    if (val === "today") return "Today (UTC)";
+    if (val === "yesterday") return "Yesterday (UTC)";
+    const days = Number.parseInt(val, 10);
+    return Number.isFinite(days) ? `Last ${days} days` : "Last 30 days";
+  }
+
+  function formatChartAxisLabel(raw, granularity, idx, totalLen, prevDayKey) {
+    const str = String(raw || "").trim();
+    if (!str) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+      const ms = Date.parse(`${str}T00:00:00Z`);
+      if (Number.isFinite(ms)) return CHART_MONTH_DAY_FMT.format(new Date(ms));
+    }
+    if (/^\d{4}-\d{2}$/.test(str)) {
+      const ms = Date.parse(`${str}-01T00:00:00Z`);
+      if (Number.isFinite(ms)) return CHART_MONTH_YEAR_FMT.format(new Date(ms));
+    }
+    if (/^\d{4}-\d{2}-\d{2}T/.test(str)) {
+      const ms = Date.parse(str);
+      if (Number.isFinite(ms)) {
+        const d = new Date(ms);
+        const hhmm = d.toISOString().slice(11, 16);
+        const dayKey = d.toISOString().slice(0, 10);
+        if (idx === 0 || totalLen <= 4 || dayKey !== prevDayKey || granularity === "day") {
+          return `${CHART_MONTH_DAY_FMT.format(d)} ${hhmm}`;
+        }
+        return hhmm;
+      }
+    }
+    return str;
+  }
+
+  function formatChartTooltipDate(raw, granularity) {
+    const str = String(raw || "").trim();
+    if (!str) return "—";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+      const ms = Date.parse(`${str}T00:00:00Z`);
+      if (Number.isFinite(ms)) return CHART_FULL_DATE_FMT.format(new Date(ms));
+    }
+    if (/^\d{4}-\d{2}$/.test(str)) {
+      const ms = Date.parse(`${str}-01T00:00:00Z`);
+      if (Number.isFinite(ms)) return CHART_MONTH_YEAR_FMT.format(new Date(ms));
+    }
+    if (/^\d{4}-\d{2}-\d{2}T/.test(str)) {
+      const ms = Date.parse(str);
+      if (Number.isFinite(ms)) {
+        const d = new Date(ms);
+        if (granularity === "day") return CHART_FULL_DATE_FMT.format(d);
+        return `${CHART_FULL_DATE_FMT.format(d)} · ${d.toISOString().slice(11, 16)} UTC`;
+      }
+    }
+    return str;
+  }
+
   async function fetchAnalytics({ refresh = false } = {}) {
     if (!state.token || state.loading) return;
     state.loading = true;
@@ -227,7 +289,10 @@
     showDashBanner("");
 
     const base = resolveAnalyticsEndpoint();
-    const qs = new URLSearchParams({ days: String(state.days) });
+    const qs = new URLSearchParams({ window: state.window });
+    if (/^\d+$/.test(state.window)) {
+      qs.set("days", String(state.days));
+    }
     if (refresh) qs.set("refresh", "1");
 
     try {
@@ -282,7 +347,7 @@
 
   function renderAll(data) {
     renderHeaderAndKpis(data);
-    renderDailyChart(data.dailySeries || []);
+    renderDailyChart(data.dailySeries || [], data);
     renderReasonDonut(data.breakdowns?.trafficClasses || [], data.kpis?.totalCalls || 0);
     renderIntentBars(data.breakdowns?.intents || []);
     renderAgents();
@@ -295,8 +360,11 @@
   function renderHeaderAndKpis(data) {
     const k = data.kpis || {};
     els.datasetBadge.textContent = data.dataset || "BigQuery";
-    els.cacheBadge.textContent = data.cacheStatus === "hit" ? "Edge Cache (5m)" : "Fresh BQ Query";
-    els.updatedBadge.textContent = `Updated ${formatTimestampUtc(data.generatedAt)} UTC · Window: ${data.windowDays || state.days}d`;
+    const ttlSec = Number(data.cacheTtlSec) || 300;
+    const ttlLabel = ttlSec < 60 ? `${ttlSec}s` : `${Math.round(ttlSec / 60)}m`;
+    els.cacheBadge.textContent = data.cacheStatus === "hit" ? `Edge Cache (${ttlLabel})` : "Fresh BQ Query";
+    const windowDisplay = data.windowLabel || formatWindowLabel(state.window);
+    els.updatedBadge.textContent = `Updated ${formatTimestampUtc(data.generatedAt)} UTC · Window: ${windowDisplay}`;
 
     els.kpiAgenticCalls.textContent = formatNumber(k.agenticCalls);
     els.kpiAgenticCallsSub.textContent = `${k.agenticSharePct ?? 0}% of ${formatNumber(k.totalCalls)} total calls (${formatNumber(k.humanChatCalls)} human chat)`;
@@ -334,7 +402,22 @@
     els.chartTooltip.hidden = true;
   }
 
-  function renderDailyChart(series) {
+  function renderDailyChart(series, meta = {}) {
+    const granularity = meta.seriesGranularity || (state.window === "1h" ? "5min" : (state.window === "today" || state.window === "yesterday" ? "hour" : "day"));
+    const windowLabel = meta.windowLabel || formatWindowLabel(state.window);
+
+    if (els.dailyChartTitle) {
+      els.dailyChartTitle.textContent = granularity === "5min"
+        ? "Traffic Trend — Last 1 Hour"
+        : granularity === "hour"
+          ? `Hourly Traffic Trend — ${windowLabel}`
+          : "Daily Traffic Trend";
+    }
+    if (els.dailyChartSub) {
+      const unitWord = granularity === "5min" ? "5-minute bucket" : granularity === "hour" ? "hour bar" : "day bar";
+      els.dailyChartSub.textContent = `Hover or focus any ${unitWord} to inspect User-Driven AI Agents, Automated Bots, and Human Chatbot visits`;
+    }
+
     clearNode(els.dailyChartStage);
     if (!series.length) {
       els.dailyChartStage.appendChild(el("div", "empty-state", "No events recorded in the selected window yet."));
@@ -343,7 +426,7 @@
 
     const width = 900;
     const height = 250;
-    const margin = { top: 14, right: 18, bottom: 34, left: 46 };
+    const margin = { top: 14, right: 24, bottom: 34, left: 46 };
     const plotW = width - margin.left - margin.right;
     const plotH = height - margin.top - margin.bottom;
 
@@ -363,7 +446,7 @@
       viewBox: `0 0 ${width} ${height}`,
       class: "chart-svg",
       role: "img",
-      "aria-label": "Daily traffic trend bar chart"
+      "aria-label": granularity === "day" ? "Daily traffic trend bar chart" : `${windowLabel} traffic trend bar chart`
     });
 
     const ticks = 4;
@@ -400,6 +483,8 @@
     ];
 
     const labelEvery = Math.max(1, Math.ceil(series.length / 8));
+    let lastLabelX = -Infinity;
+    let prevDayKey = "";
 
     series.forEach((day, idx) => {
       const x = margin.left + idx * step + (step - barW) / 2;
@@ -443,8 +528,9 @@
         tabindex: "0"
       });
 
+      const formattedDate = formatChartTooltipDate(day.event_date, granularity);
       const lines = [
-        `${day.event_date} · ${formatNumber(day.total_calls)} calls (${formatNumber(day.unique_sessions)} sessions)`,
+        `${formattedDate} · ${formatNumber(day.total_calls)} calls (${formatNumber(day.unique_sessions)} sessions)`,
         `Automated Bots: ${formatNumber(day.automated_calls)} · User-Driven AI: ${formatNumber(day.user_driven_calls)}`,
         `Human Chatbot: ${formatNumber(day.human_calls)} · Tokens: ${formatCompact(day.tokens_delivered)}`
       ];
@@ -459,17 +545,22 @@
       hit.addEventListener("blur", hideTooltip);
       svg.appendChild(hit);
 
-      if (idx % labelEvery === 0 || idx === series.length - 1) {
+      const centerX = x + barW / 2;
+      const isCandidate = idx % labelEvery === 0 || idx === series.length - 1;
+      const dayKey = String(day.event_date || "").slice(0, 10);
+      if (isCandidate && centerX - lastLabelX >= 68) {
         const dateLabel = svgEl("text", {
-          x: (x + barW / 2).toFixed(2),
+          x: centerX.toFixed(2),
           y: height - 10,
           "text-anchor": "middle",
           fill: "#9494ad",
           "font-size": "11",
           "font-family": "ui-monospace, monospace"
         });
-        dateLabel.textContent = String(day.event_date || "").slice(5);
+        dateLabel.textContent = formatChartAxisLabel(day.event_date, granularity, idx, series.length, prevDayKey);
         svg.appendChild(dateLabel);
+        lastLabelX = centerX;
+        prevDayKey = dayKey;
       }
     });
 
@@ -797,7 +888,7 @@
   }
 
   async function loadAndRenderActionEvents(agent, act, container) {
-    const cacheKey = `${state.days}::${agent.name}::${act.label}::${act.callType}::${act.intentCategory}`;
+    const cacheKey = `${state.window}::${agent.name}::${act.label}::${act.callType}::${act.intentCategory}`;
     if (state.actionEventsCache.has(cacheKey)) {
       renderActionEventsList(container, state.actionEventsCache.get(cacheKey));
       return;
@@ -807,13 +898,16 @@
     container.appendChild(el("div", "cell-sub", "Loading recent requests & answers..."));
 
     const qs = new URLSearchParams({
-      days: String(state.days),
+      window: state.window,
       agent: agent.name,
       action: act.label,
       callType: act.callType || "",
       intent: act.intentCategory || "",
       limit: "25"
     });
+    if (/^\d+$/.test(state.window)) {
+      qs.set("days", String(state.days));
+    }
 
     try {
       const resp = await fetch(`${resolveAnalyticsEndpoint()}/events?${qs.toString()}`, {
@@ -1760,6 +1854,7 @@
         },
         body: JSON.stringify({
           question,
+          window: state.window,
           days: state.days,
           history: state.askHistory.slice(-6)
         })
@@ -1898,7 +1993,10 @@
     });
 
     els.windowSelect.addEventListener("change", () => {
-      state.days = Number.parseInt(els.windowSelect.value, 10) || 30;
+      const val = String(els.windowSelect.value || "30").trim();
+      const parsed = Number.parseInt(val, 10);
+      state.window = val;
+      state.days = /^\d+$/.test(val) && Number.isFinite(parsed) ? parsed : 1;
       fetchAnalytics({ refresh: false });
     });
 
@@ -1981,7 +2079,7 @@
       "authGate", "authForm", "tokenInput", "toggleTokenBtn", "rememberTokenChk", "unlockBtn", "authError",
       "dashboardView", "datasetBadge", "cacheBadge", "updatedBadge", "windowSelect", "refreshBtn", "lockBtn", "dashBanner",
       "kpiAgenticCalls", "kpiAgenticCallsSub", "kpiUniqueAgents", "kpiUniqueAgentsSub", "kpiReasonSplit", "kpiReasonSplitSub", "kpiInteractive", "kpiInteractiveSub",
-      "dailyChartStage", "reasonDonutContainer", "intentBars",
+      "dailyChartTitle", "dailyChartSub", "dailyChartStage", "reasonDonutContainer", "intentBars",
       "agentFilterBar", "agentSearch", "agentsCountBadge", "agentsList",
       "ctPurposeBar", "ctPurposeSelect",
       "cntCtMcp", "subCtMcp", "cntCtChatbot", "subCtChatbot", "cntCtWebmcp", "subCtWebmcp",
@@ -2004,6 +2102,13 @@
     initTabs();
     initSortableTables();
     bindEvents();
+
+    if (els.windowSelect) {
+      const initialWin = String(els.windowSelect.value || "30").trim();
+      const parsedDays = Number.parseInt(initialWin, 10);
+      state.window = initialWin;
+      state.days = /^\d+$/.test(initialWin) && Number.isFinite(parsedDays) ? parsedDays : 1;
+    }
 
     const stored = readStoredToken();
     if (stored.token) {

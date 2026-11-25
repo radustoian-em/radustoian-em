@@ -45,6 +45,38 @@
     return new Intl.NumberFormat().format(num);
   }
 
+  const CHART_MONTH_DAY_FMT = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  const CHART_FULL_DATE_FMT = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+  const CHART_MONTH_YEAR_FMT = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+
+  function formatChartDate(raw, { includeYear = false } = {}) {
+    const str = String(raw || "").trim();
+    if (!str) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+      const ms = Date.parse(`${str}T00:00:00Z`);
+      if (Number.isFinite(ms)) {
+        return (includeYear ? CHART_FULL_DATE_FMT : CHART_MONTH_DAY_FMT).format(new Date(ms));
+      }
+    }
+    if (/^\d{4}-\d{2}$/.test(str)) {
+      const ms = Date.parse(`${str}-01T00:00:00Z`);
+      if (Number.isFinite(ms)) {
+        return CHART_MONTH_YEAR_FMT.format(new Date(ms));
+      }
+    }
+    if (/^\d{4}-\d{2}-\d{2}T/.test(str)) {
+      const ms = Date.parse(str);
+      if (Number.isFinite(ms)) {
+        const d = new Date(ms);
+        const hhmm = d.toISOString().slice(11, 16);
+        return includeYear
+          ? `${CHART_FULL_DATE_FMT.format(d)} · ${hhmm} UTC`
+          : `${CHART_MONTH_DAY_FMT.format(d)} ${hhmm}`;
+      }
+    }
+    return includeYear ? str : str.slice(0, 12);
+  }
+
   function formatCellValue(val, type) {
     if (val === null || val === undefined || val === "") return "—";
     if (type === "number") {
@@ -267,8 +299,12 @@
         fill: "transparent",
         tabindex: "0"
       });
+      const rawTooltipX = r?.[comp.xField];
+      const formattedTooltipX = rawTooltipX !== undefined && rawTooltipX !== null && /^\d{4}-\d{2}/.test(String(rawTooltipX))
+        ? formatChartDate(rawTooltipX, { includeYear: true })
+        : String(rawTooltipX ?? `Point ${i + 1}`);
       const lines = [
-        String(r?.[comp.xField] ?? `Point ${i + 1}`),
+        formattedTooltipX,
         ...series.map((s) => `${s.label || s.field}: ${formatMetricValue(r?.[s.field], "number")}`)
       ];
       if (typeof handlers.onTooltipShow === "function") {
@@ -295,7 +331,7 @@
           "font-family": "ui-monospace, monospace"
         });
         const rawX = String(r?.[comp.xField] ?? "");
-        lbl.textContent = /^\d{4}-\d{2}-\d{2}/.test(rawX) ? rawX.slice(5, 10) : rawX.slice(0, 12);
+        lbl.textContent = formatChartDate(rawX, { includeYear: false });
         svg.appendChild(lbl);
       }
     });
