@@ -34,12 +34,16 @@
     callPurpose: "all",
     actionEventsCache: new Map(),
     askHistory: [],
+    askTurns: [],
     askLoading: false,
+    askAbort: null,
     filteredMcp: [],
     filteredChat: [],
     filteredWebmcp: [],
     filteredSessions: [],
-    loading: false
+    loading: false,
+    fetchSeq: 0,
+    analyticsAbort: null
   };
 
   let activateCallTypeTab = () => {};
@@ -208,14 +212,21 @@
   }
 
   function lockDashboard(message = "") {
+    if (state.analyticsAbort) {
+      state.analyticsAbort.abort();
+      state.analyticsAbort = null;
+    }
+    state.loading = false;
     state.token = "";
     state.data = null;
     state.actionEventsCache.clear();
     state.askHistory = [];
+    state.askTurns = [];
     state.askLoading = false;
     resetAskThread();
     clearStoredToken();
     els.tokenInput.value = "";
+    els.dashboardView.classList.remove("is-loading");
     els.dashboardView.hidden = true;
     els.authGate.hidden = false;
     showDashBanner("");
@@ -281,11 +292,23 @@
   }
 
   async function fetchAnalytics({ refresh = false } = {}) {
-    if (!state.token || state.loading) return;
+    if (!state.token) return;
+    if (state.analyticsAbort) {
+      state.analyticsAbort.abort();
+    }
+    const controller = new AbortController();
+    state.analyticsAbort = controller;
+    const reqSeq = ++state.fetchSeq;
+
     state.loading = true;
     els.refreshBtn.disabled = true;
     els.unlockBtn.disabled = true;
     els.refreshBtn.textContent = "Loading...";
+    if (!els.dashboardView.hidden) {
+      els.dashboardView.classList.add("is-loading");
+      if (els.windowSelect) els.windowSelect.setAttribute("aria-busy", "true");
+      if (els.updatedBadge) els.updatedBadge.textContent = `Loading ${formatWindowLabel(state.window)}...`;
+    }
     showDashBanner("");
 
     const base = resolveAnalyticsEndpoint();
@@ -299,12 +322,14 @@
       const resp = await fetch(`${base}?${qs.toString()}`, {
         method: "GET",
         cache: "no-store",
+        signal: controller.signal,
         headers: {
           "Authorization": `Bearer ${state.token}`
         }
       });
 
       const payload = await resp.json().catch(() => null);
+      if (reqSeq !== state.fetchSeq) return;
 
       if (resp.status === 401) {
         const errMsg = payload?.message || "Invalid dashboard token. Please enter your DASHBOARD_API_KEY.";
@@ -327,10 +352,18 @@
       els.authGate.hidden = true;
       els.dashboardView.hidden = false;
 
+      if ((state.window === "1h" || state.window === "today" || state.window === "yesterday") && !payload.windowKey) {
+        showDashBanner(
+          "The deployed Worker API did not return a sub-day windowKey yet — deploy mcp-server to enable Last 1 hour, Today, and Yesterday filtering.",
+          true
+        );
+      }
+
       state.actionEventsCache.clear();
       state.data = payload;
       renderAll(payload);
     } catch (err) {
+      if (err?.name === "AbortError" || reqSeq !== state.fetchSeq) return;
       const errMsg = `Network error reaching analytics endpoint: ${err?.message || err}`;
       if (els.dashboardView.hidden) {
         showAuthError(errMsg);
@@ -338,14 +371,32 @@
         showDashBanner(errMsg);
       }
     } finally {
-      state.loading = false;
-      els.refreshBtn.disabled = false;
-      els.unlockBtn.disabled = false;
-      els.refreshBtn.textContent = "Refresh";
+      if (reqSeq === state.fetchSeq) {
+        state.loading = false;
+        state.analyticsAbort = null;
+        els.dashboardView.classList.remove("is-loading");
+        if (els.windowSelect) els.windowSelect.removeAttribute("aria-busy");
+        els.refreshBtn.disabled = false;
+        els.unlockBtn.disabled = false;
+        els.refreshBtn.textContent = "Refresh";
+      }
+    }
+  }
+
+  function resetTableSortIndicators() {
+    for (const table of document.querySelectorAll("table.data-table")) {
+      for (const th of table.querySelectorAll("thead th[data-sortable]")) {
+        if (th.dataset.col === "0") {
+          th.setAttribute("aria-sort", "descending");
+        } else {
+          th.removeAttribute("aria-sort");
+        }
+      }
     }
   }
 
   function renderAll(data) {
+    hideTooltip();
     renderHeaderAndKpis(data);
     renderDailyChart(data.dailySeries || [], data);
     renderReasonDonut(data.breakdowns?.trafficClasses || [], data.kpis?.totalCalls || 0);
@@ -355,6 +406,7 @@
     renderHorizontalBars(els.mcpDiscoveryBars, data.breakdowns?.mcpActions || [], 10, (x) => x);
     setCallPurposeFilter(state.callPurpose, { autoSelectTab: false });
     renderAdvancedSection(data);
+    resetTableSortIndicators();
   }
 
   function renderHeaderAndKpis(data) {
@@ -365,6 +417,9 @@
     els.cacheBadge.textContent = data.cacheStatus === "hit" ? `Edge Cache (${ttlLabel})` : "Fresh BQ Query";
     const windowDisplay = data.windowLabel || formatWindowLabel(state.window);
     els.updatedBadge.textContent = `Updated ${formatTimestampUtc(data.generatedAt)} UTC · Window: ${windowDisplay}`;
+    if (els.askDataWindowBadge) {
+      els.askDataWindowBadge.textContent = `Window: ${windowDisplay}`;
+    }
 
     els.kpiAgenticCalls.textContent = formatNumber(k.agenticCalls);
     els.kpiAgenticCallsSub.textContent = `${k.agenticSharePct ?? 0}% of ${formatNumber(k.totalCalls)} total calls (${formatNumber(k.humanChatCalls)} human chat)`;
@@ -1785,7 +1840,12 @@
   }
 
   function resetAskThread() {
+    if (state.askAbort) {
+      state.askAbort.abort();
+      state.askAbort = null;
+    }
     state.askHistory = [];
+    state.askTurns = [];
     if (els.askDataThread) clearNode(els.askDataThread);
     if (els.askDataInput) els.askDataInput.value = "";
     setAskStatus(false);
@@ -1813,11 +1873,15 @@
     return rest;
   }
 
-  async function submitAnalyticsQuestion(rawQuestion) {
+  async function submitAnalyticsQuestion(rawQuestion, { signal = null, skipFocus = false } = {}) {
     const question = String(rawQuestion || "").trim();
     if (!question || !state.token || state.askLoading) return;
 
     state.askLoading = true;
+    const reqWindow = state.window;
+    const reqDays = state.days;
+    const reqWindowLabel = formatWindowLabel(reqWindow);
+
     if (els.askDataSubmit) {
       els.askDataSubmit.disabled = true;
       els.askDataSubmit.textContent = "Analyzing...";
@@ -1826,11 +1890,13 @@
       els.askDataInput.value = "";
       els.askDataInput.disabled = true;
     }
-    setAskStatus(true, "Analyzing question and drafting BigQuery SQL...");
+    setAskStatus(true, `Analyzing question for ${reqWindowLabel}...`);
 
     const turnEl = el("div", "ask-turn");
     const promptBar = el("div", "ask-turn-prompt");
     promptBar.appendChild(el("div", "ask-turn-question", question));
+    const windowChip = el("span", "meta-chip", reqWindowLabel);
+    promptBar.appendChild(windowChip);
     const statusPill = el("span", "pill pill-violet", "Running…");
     promptBar.appendChild(statusPill);
     turnEl.appendChild(promptBar);
@@ -1839,14 +1905,17 @@
     turnEl.appendChild(bodyEl);
     if (els.askDataThread) {
       els.askDataThread.appendChild(turnEl);
-      const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      turnEl.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest" });
+      if (!skipFocus) {
+        const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        turnEl.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest" });
+      }
     }
 
     try {
       const resp = await fetch(`${resolveAnalyticsAskEndpoint()}?stream=1`, {
         method: "POST",
         cache: "no-store",
+        signal: signal || undefined,
         headers: {
           "Content-Type": "application/json",
           "Accept": "text/event-stream, application/json",
@@ -1854,8 +1923,8 @@
         },
         body: JSON.stringify({
           question,
-          window: state.window,
-          days: state.days,
+          window: reqWindow,
+          days: reqDays,
           history: state.askHistory.slice(-6)
         })
       });
@@ -1935,6 +2004,7 @@
         bodyEl.appendChild(el("div", "a2ui-summary", surfacePayload.title || "Answer ready."));
       }
 
+      state.askTurns.push({ question, window: reqWindow });
       state.askHistory = [
         ...state.askHistory,
         {
@@ -1944,6 +2014,10 @@
         }
       ].slice(-6);
     } catch (err) {
+      if (err?.name === "AbortError") {
+        turnEl.remove();
+        return;
+      }
       statusPill.className = "pill pill-rose";
       statusPill.textContent = "Error";
       const errBanner = el("div", "alert ask-error-row");
@@ -1968,8 +2042,29 @@
       }
       if (els.askDataInput) {
         els.askDataInput.disabled = false;
-        els.askDataInput.focus();
+        if (!skipFocus) els.askDataInput.focus();
       }
+    }
+  }
+
+  async function refreshAskThreadForWindow() {
+    const questions = state.askTurns.map((t) => t.question).filter(Boolean).slice(-3);
+    if (!questions.length) return;
+    if (state.askAbort) {
+      state.askAbort.abort();
+    }
+    const controller = new AbortController();
+    state.askAbort = controller;
+    state.askHistory = [];
+    state.askTurns = [];
+    state.askLoading = false;
+    if (els.askDataThread) clearNode(els.askDataThread);
+    for (const q of questions) {
+      if (controller.signal.aborted) break;
+      await submitAnalyticsQuestion(q, { signal: controller.signal, skipFocus: true });
+    }
+    if (state.askAbort === controller) {
+      state.askAbort = null;
     }
   }
 
@@ -1980,6 +2075,12 @@
       if (!entered) {
         showAuthError("Please enter your DASHBOARD_API_KEY token.");
         return;
+      }
+      if (els.windowSelect) {
+        const val = String(els.windowSelect.value || "30").trim();
+        const parsed = Number.parseInt(val, 10);
+        state.window = val;
+        state.days = /^\d+$/.test(val) && Number.isFinite(parsed) ? parsed : 1;
       }
       state.token = entered;
       state.remember = Boolean(els.rememberTokenChk.checked);
@@ -1997,7 +2098,11 @@
       const parsed = Number.parseInt(val, 10);
       state.window = val;
       state.days = /^\d+$/.test(val) && Number.isFinite(parsed) ? parsed : 1;
-      fetchAnalytics({ refresh: false });
+      if (els.askDataWindowBadge) {
+        els.askDataWindowBadge.textContent = `Window: ${formatWindowLabel(state.window)}`;
+      }
+      fetchAnalytics({ refresh: true });
+      refreshAskThreadForWindow();
     });
 
     els.refreshBtn.addEventListener("click", () => {
@@ -2089,7 +2194,7 @@
       "webmcpSearch", "exportWebmcpBtn", "tblWebmcpTools", "tbodyWebmcpTools",
       "tblNlwebCalls", "tbodyNlwebCalls", "tblRestCalls", "tbodyRestCalls", "tblMarkdownCalls", "tbodyMarkdownCalls",
       "advancedSection", "advancedMetaBadge", "countriesBars", "sSearch", "sSegmentFilter", "tblSessions", "tbodySessions",
-      "askDataSection", "askDataForm", "askDataInput", "askDataSubmit", "askDataClearBtn", "askDataStarters", "askDataStatus", "askDataStatusText", "askDataThread",
+      "askDataSection", "askDataWindowBadge", "askDataForm", "askDataInput", "askDataSubmit", "askDataClearBtn", "askDataStarters", "askDataStatus", "askDataStatusText", "askDataThread",
       "sortStatus", "chartTooltip", "detailDialog", "dlgMetaPill", "dlgTitle", "dlgCloseBtn", "dlgBody"
     ];
     for (const id of ids) {
@@ -2108,6 +2213,9 @@
       const parsedDays = Number.parseInt(initialWin, 10);
       state.window = initialWin;
       state.days = /^\d+$/.test(initialWin) && Number.isFinite(parsedDays) ? parsedDays : 1;
+      if (els.askDataWindowBadge) {
+        els.askDataWindowBadge.textContent = `Window: ${formatWindowLabel(state.window)}`;
+      }
     }
 
     const stored = readStoredToken();
