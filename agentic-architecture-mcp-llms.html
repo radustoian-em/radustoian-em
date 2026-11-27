@@ -264,6 +264,10 @@
                 <a href="https://radustoian.com/.well-known/jwks.json" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline">/.well-known/jwks.json ↗</a>
                 <span class="text-[9px] text-purple-400">JWKS</span>
               </div>
+              <div class="flex items-center justify-between">
+                <a href="https://radustoian.com/.well-known/search?q=Radu+Stoian" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline">/.well-known/search ↗</a>
+                <span class="text-[9px] text-purple-400">AI Search</span>
+              </div>
             </div>
           </div>
           <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
@@ -299,6 +303,9 @@
             <h3 class="text-sm font-bold text-slate-100">llms.txt & llms-full.txt</h3>
             <p class="text-[11px] text-slate-400 leading-normal">
               Curated digest + 10-section exhaustive markdown file containing complete biography, verified case studies, and citations.
+            </p>
+            <p class="text-[10px] text-purple-300/90 leading-normal">
+              Note: <code class="font-mono">llms.txt</code> acts like an XML sitemap for agents—strictly for HTML, Markdown, and documentation pages, excluding API and MCP endpoints.
             </p>
           </div>
           <div class="pt-3 border-t border-slate-800/80 space-y-1 font-mono text-[11px]">
@@ -664,6 +671,31 @@
           </div>
         </div>
 
+        <!-- Route G: Cloudflare Search for Agents -->
+        <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 hover:border-emerald-500/30 rounded-xl p-5 shadow-xl flex flex-col justify-between space-y-4 md:col-span-3">
+          <div class="space-y-2">
+            <span class="text-xs font-mono font-bold text-emerald-400">ROUTE G • SEARCH FOR AGENTS</span>
+            <h3 class="text-base font-bold text-white">Standardized Edge Markdown Search</h3>
+            <p class="text-xs text-slate-300">
+              Cloudflare-native hybrid retrieval endpoint auto-advertised via HTML <code class="text-emerald-300 font-mono">&lt;meta name="agent:endpoint"&gt;</code>, returning raw Markdown chunks with source keys and relevance scores.
+            </p>
+            <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px] font-mono space-y-1.5 text-slate-300">
+              <div>
+                <a href="https://radustoian.com/.well-known/search?q=Radu+Stoian" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-white underline block font-semibold">
+                  GET /.well-known/search?q=... (text/markdown) ↗
+                </a>
+              </div>
+              <div class="text-cyan-400">QUERY /.well-known/search (text/plain or application/json body)</div>
+            </div>
+            <p class="text-[10px] text-slate-400">
+              Complements <code class="font-mono">/mcp</code> and <code class="font-mono">/ask</code>: ideal for lightweight HTTP agents needing raw Markdown chunks without JSON-RPC overhead; use <code class="font-mono">/mcp</code> or <code class="font-mono">/ask</code> for curated answers with normalized LinkedIn/Substack URLs and guardrails.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-slate-800 text-[11px] text-emerald-300 font-semibold">
+            ✓ Zero-config discovery & fast Markdown chunk retrieval
+          </div>
+        </div>
+
       </div>
 
     </section>
@@ -676,7 +708,7 @@
           <span class="text-xs text-slate-400">(Quick index of all files hosted on radustoian.com)</span>
         </div>
         <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 px-2.5 py-1 rounded border border-cyan-800/60">
-          29 Accessible Endpoints
+          30 Accessible Endpoints
         </span>
       </div>
 
@@ -770,6 +802,9 @@
         </a>
         <a href="https://radustoian.com/sites" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
           <span>/sites (NLWeb Directory)</span> <span>↗</span>
+        </a>
+        <a href="https://radustoian.com/.well-known/search?q=Radu+Stoian" target="_blank" rel="noopener noreferrer" class="p-2.5 bg-slate-950 border border-slate-800/80 rounded-lg hover:border-cyan-500/50 hover:text-cyan-300 transition-all flex items-center justify-between">
+          <span>/.well-known/search</span> <span>↗</span>
         </a>
       </div>
     </section>
