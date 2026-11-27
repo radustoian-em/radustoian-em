@@ -1400,7 +1400,7 @@ function initChatEngine() {
 
     if (isOffTopicTaskAttempt(userQuestion)) {
       const refusalText =
-        'I am only meant to answer questions about Radu Stoian. Please feel free to ask anything about him, his background, skills, case studies, or projects.';
+        'I am only meant to answer questions about Radu Stoian, his work, and topics covered in his published articles on AI, SEO, and talent attraction. Please feel free to ask anything about his background, skills, case studies, projects, or articles.';
       await streamAgentResponse(refusalText, [], userQuestion);
       return;
     }
