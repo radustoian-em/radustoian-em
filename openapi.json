@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Radu Stoian MCP",
-    "description": "Authoritative Model Context Protocol (MCP) server, dynamic question answering, and public agent endpoints for Radu Stoian, Technical Director at Enhance Media.",
-    "version": "2.4.1",
+    "description": "Authoritative Model Context Protocol (MCP) server, dynamic question answering (BM25 + Cloudflare AI Search over Substack & LinkedIn articles), and public agent endpoints for Radu Stoian, Technical Director at Enhance Media.",
+    "version": "2.5.0",
     "contact": {
       "name": "Radu Stoian",
       "url": "https://radustoian.com"

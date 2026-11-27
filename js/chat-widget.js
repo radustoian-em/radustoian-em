@@ -7,7 +7,7 @@
 
   const SPARKLE_ICON =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>';
-  const ASK_PLACEHOLDER_DESKTOP = 'Ask about my experience, skills or case studies...';
+  const ASK_PLACEHOLDER_DESKTOP = 'Ask about my experience, articles, skills or case studies...';
   const ASK_PLACEHOLDER_MOBILE = 'Ask about my experience ...';
   const CHAT_CSS_HREF = '/chat-widget.css?v=5.0';
 
@@ -733,7 +733,7 @@ function initChatEngine() {
           </button>
         </form>
         <div class="nlweb-footer-sub">
-          <span>Grounded live via <a href="/ask" target="_blank" rel="noopener">/ask</a> NLWeb and Gemini &middot; <a href="/terms-and-conditions.html" rel="nofollow">see Terms and Conditions</a></span>
+          <span>Grounded live via <a href="/ask" target="_blank" rel="noopener">/ask</a> NLWeb, Cloudflare AI Search &amp; Gemini &middot; <a href="/terms-and-conditions.html" rel="nofollow">see Terms and Conditions</a></span>
         </div>
       </footer>
     `;
@@ -769,7 +769,7 @@ function initChatEngine() {
     messages = [
       {
         role: 'agent',
-        content: `Hello! I'm Radu's AI assistant.\n\nI dynamically answer questions grounded in Radu's background, publications, agentic AI architecture, and employer brand optimization. How can I help you today?`,
+        content: `Hello! I'm Radu's AI assistant.\n\nI dynamically answer questions grounded in Radu's profile, case studies, agentic AI architecture, and published Substack & LinkedIn articles. How can I help you today?`,
         sources: []
       }
     ];

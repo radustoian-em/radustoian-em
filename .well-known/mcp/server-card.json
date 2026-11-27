@@ -4,9 +4,9 @@
   "title": "Radu Stoian MCP",
   "displayName": "Radu Stoian MCP",
   "slug": "radustoian-mcp",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "protocolVersion": "2025-11-25",
-  "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, section retrieval, and external investigation links grounded in the site's knowledge base, plus client-side WebMCP tools.",
+  "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering grounded in the site's knowledge base plus Substack and LinkedIn articles via Cloudflare AI Search, section retrieval, and external investigation links, plus client-side WebMCP tools.",
   "websiteUrl": "https://radustoian.com",
   "endpoint": "https://radustoian.com/mcp",
   "icon": "https://radustoian.com/favicon-32x32.png",
@@ -55,8 +55,8 @@
     "title": "Radu Stoian MCP",
     "displayName": "Radu Stoian MCP",
     "slug": "radustoian-mcp",
-    "version": "2.4.1",
-    "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, profile section retrieval, and verified external investigation links.",
+    "version": "2.5.0",
+    "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering grounded in the site's knowledge base plus Substack and LinkedIn articles via Cloudflare AI Search, profile section retrieval, and verified external investigation links.",
     "websiteUrl": "https://radustoian.com",
     "icon": "https://radustoian.com/favicon-32x32.png",
     "iconUrl": "https://radustoian.com/favicon-32x32.png",
@@ -102,7 +102,7 @@
     "_meta": {
       "name": "Radu Stoian MCP",
       "title": "Radu Stoian MCP",
-      "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering, profile section retrieval, and verified external investigation links.",
+      "description": "Authoritative Model Context Protocol (MCP) server for Radu Stoian, Technical Director at Enhance Media. Provides dynamic question answering grounded in the site's knowledge base plus Substack and LinkedIn articles via Cloudflare AI Search, profile section retrieval, and verified external investigation links.",
       "creator": "Radu Stoian",
       "author": {
         "name": "Radu Stoian",
@@ -133,7 +133,7 @@
     {
       "name": "ask",
       "title": "Ask Radu Stoian",
-      "description": "Use this tool when the user wants to answer specific questions about Radu Stoian's professional background, executive leadership as Technical Director at Enhance Media, AI recruitment & talent acquisition strategies, client case study metrics (e.g., John Lewis Partnership, Virgin Atlantic, University of Surrey), technical architecture, speaking engagements, or verified credentials.",
+      "description": "Use this tool when the user wants to answer specific questions about Radu Stoian's professional background, executive leadership as Technical Director at Enhance Media, AI recruitment & talent acquisition strategies, client case study metrics (e.g., John Lewis Partnership, Virgin Atlantic, University of Surrey), technical architecture, speaking engagements, verified credentials, or his published Substack and LinkedIn articles.",
       "readOnly": true,
       "icons": [
         {
@@ -155,7 +155,7 @@
         "properties": {
           "query": {
             "type": "string",
-            "description": "The user's natural language question or topic to look up about Radu Stoian (e.g. 'What did Radu achieve for his clients?', 'Who is Radu Stoian?', 'What certifications does he hold?')."
+            "description": "The user's natural language question or topic to look up about Radu Stoian or his Substack and LinkedIn articles (e.g. 'What did Radu achieve for his clients?', 'What is the Glass Box approach to AI optimisation?', 'What certifications does he hold?')."
           }
         },
         "required": [
@@ -193,13 +193,14 @@
               "case-studies",
               "expertise",
               "testimonials",
+              "colleague-testimonials",
               "publications",
               "speaking",
               "skills",
               "contact",
               "agentic-architecture"
             ],
-            "description": "The canonical profile section to retrieve: 'about' (career history & biography), 'case-studies' (client projects & verified conversion metrics), 'expertise' (core AI & recruitment specialisms), 'testimonials' (client endorsements & reviews), 'publications' (Substack articles & insights), 'speaking' (conferences, BrightonSEO & OJCP talks), 'skills' (certifications, badges & education), 'contact' (public profiles & social links), or 'agentic-architecture' (multi-layer AI discovery infrastructure)."
+            "description": "The canonical profile section to retrieve: 'about' (career history & biography), 'case-studies' (client projects & verified conversion metrics), 'expertise' (core AI & recruitment specialisms), 'testimonials' (external client endorsements & reviews ONLY), 'colleague-testimonials' (internal colleague, peer, direct report & manager recommendations ONLY), 'publications' (Substack articles & insights), 'speaking' (conferences, BrightonSEO & OJCP talks), 'skills' (certifications, badges & education), 'contact' (public profiles & social links), or 'agentic-architecture' (multi-layer AI discovery infrastructure)."
           }
         },
         "required": [
