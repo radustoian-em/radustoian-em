@@ -139,6 +139,36 @@
         }
       }
     },
+    "/.well-known/search": {
+      "get": {
+        "summary": "Search for Agents (Cloudflare AI Search)",
+        "description": "Cloudflare Search for Agents hybrid retrieval endpoint. Accepts `q` query param (and also supports the HTTP `QUERY` method with a `text/plain` or `application/json` body) and returns raw `text/markdown` chunks with relevance scores across site content and Substack/LinkedIn articles. For curated answers with canonical LinkedIn/Substack URLs, use `/mcp` or `/ask`.",
+        "operationId": "searchForAgents",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Keywords or natural-language search query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Markdown search chunks with source keys and relevance scores",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/mcp": {
       "post": {
         "summary": "Model Context Protocol (MCP) Streamable HTTP Server",

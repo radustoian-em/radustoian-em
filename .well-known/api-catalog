@@ -76,6 +76,21 @@
           "type": "text/html"
         }
       ]
+    },
+    {
+      "anchor": "https://radustoian.com/.well-known/search",
+      "service-desc": [
+        {
+          "href": "https://radustoian.com/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://developers.cloudflare.com/ai-search/how-to/search-for-agents/",
+          "type": "text/html"
+        }
+      ]
     }
   ]
 }

@@ -97,6 +97,7 @@ Standardized `/.well-known/` paths where agents reliably inspect manifests and c
 - [`/.well-known/openid-configuration`](https://radustoian.com/.well-known/openid-configuration) - OpenID Connect Discovery 1.0 Metadata
 - [`/.well-known/oauth-protected-resource`](https://radustoian.com/.well-known/oauth-protected-resource) - RFC 9728 OAuth 2.0 Protected Resource Metadata
 - [`/.well-known/jwks.json`](https://radustoian.com/.well-known/jwks.json) - RFC 7517 JSON Web Key Set (JWKS)
+- [`/.well-known/search?q=...`](https://radustoian.com/.well-known/search?q=Radu+Stoian) - Cloudflare Search for Agents (GET / HTTP QUERY Markdown retrieval)
 - [`/sitemap.xml`](https://radustoian.com/sitemap.xml) - XML Sitemap
 
 ---
@@ -108,6 +109,8 @@ Standardized `/.well-known/` paths where agents reliably inspect manifests and c
 Curated digest plus 10-section exhaustive markdown file containing complete biography, verified case studies, and citations:
 - [`llms.txt`](https://radustoian.com/llms.txt) - Curated summary and quick index for LLM agents.
 - [`llms-full.txt`](https://radustoian.com/llms-full.txt) - Comprehensive profile context for deep ingestion.
+
+> **Note on `llms.txt` scope:** `llms.txt` is meant to be similar to an XML sitemap, but for AI agents. It is strictly for HTML, Markdown, and documentation pages and intentionally excludes API endpoints and MCP endpoints.
 
 ### 02. AI-Readable Catalogs
 ARD v1.0 manifest with representative natural language query embeddings, plus RFC 9264 API catalog mapping to OpenAPI specifications:
@@ -199,9 +202,15 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 - **Features:** Multi-turn context decontextualization (`prev`), dynamic Schema.org entity extraction, and streaming token delivery.
 - **Advantage:** Plug-and-play integration for NLWeb-enabled conversational clients, streaming web agents, and powers the native client-side chat widget on radustoian.com.
 
+### Route G: Search for Agents (`/.well-known/search`)
+Cloudflare-native hybrid retrieval endpoint advertised automatically in HTML via `<meta name="agent:endpoint">` and returning raw Markdown chunks:
+- **Endpoint:** `GET /.well-known/search?q={query}` & `QUERY /.well-known/search`
+- **Response Format:** `text/markdown; charset=utf-8` chunks with source keys and relevance scores across site content and Substack/LinkedIn articles.
+- **Complementary Role:** Ideal for lightweight HTTP agents seeking fast raw Markdown retrieval without MCP or JSON-RPC overhead; for curated answers with normalized live LinkedIn/Substack URLs and guardrails, use [`/mcp`](https://radustoian.com/mcp) or [`/ask`](https://radustoian.com/ask).
+
 ---
 
-## Master Resource Directory (29 Accessible Endpoints) (#directory)
+## Master Resource Directory (30 Accessible Endpoints) (#directory)
 
 | # | Endpoint / Resource | Description |
 |---|---------------------|-------------|
@@ -234,6 +243,7 @@ NLWeb protocol endpoint providing conversational multi-turn AI over dynamic know
 | 27 | [`/ask`](https://radustoian.com/ask) | NLWeb Conversational Stream (SSE / JSON) |
 | 28 | [`/who`](https://radustoian.com/who) | NLWeb Publisher Identity (Schema.org JSON-LD) |
 | 29 | [`/sites`](https://radustoian.com/sites) | NLWeb Sites Registry |
+| 30 | [`/.well-known/search`](https://radustoian.com/.well-known/search?q=Radu+Stoian) | Cloudflare Search for Agents (Markdown hybrid retrieval) |
 
 ---
 

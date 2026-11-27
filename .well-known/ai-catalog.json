@@ -119,6 +119,18 @@
         "Poppy discovery metadata and OAuth issuer binding",
         "Connect personal agent to Radu Stoian's APIs and profile"
       ]
+    },
+    {
+      "identifier": "urn:air:radustoian.com:search:well-known-search",
+      "displayName": "Search for Agents (/.well-known/search)",
+      "description": "Cloudflare Search for Agents hybrid retrieval endpoint returning raw Markdown chunks across radustoian.com, Substack, and LinkedIn articles via GET /.well-known/search?q={query} or HTTP QUERY.",
+      "type": "text/markdown",
+      "url": "https://radustoian.com/.well-known/search",
+      "representativeQueries": [
+        "Search radustoian.com content and articles in Markdown without MCP",
+        "Query /.well-known/search for Radu Stoian's Substack and LinkedIn posts",
+        "Hybrid keyword and vector search over radustoian.com"
+      ]
     }
   ]
 }
