@@ -103,9 +103,12 @@ function initChatEngine() {
     }
   }
 
-  // Typewriter Speed Configuration: 5 words per second (200ms per word)
-  const WORDS_PER_SECOND = 5;
+  // Typewriter Speed Configuration: 30 words per second (~33ms per word)
+  const WORDS_PER_SECOND = 30;
   const WORD_TICK_MS = 1000 / WORDS_PER_SECOND;
+  const prefersReducedMotion = () =>
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function getSessionQueryCount() {
     let sessionCount = 0;
@@ -1294,14 +1297,20 @@ function initChatEngine() {
         return;
       }
 
-      const wordChunks = tokenizeIntoWords(targetText);
-      let tokenIndex = 0;
-      const totalChunks = wordChunks.length;
-
       if (streamingTimer) {
         clearInterval(streamingTimer);
         streamingTimer = null;
       }
+
+      if (prefersReducedMotion()) {
+        finalizeLiveAgentBubble(liveBubble, targetText, sources, userQuestion, cleanFanOut, language);
+        resolve();
+        return;
+      }
+
+      const wordChunks = tokenizeIntoWords(targetText);
+      let tokenIndex = 0;
+      const totalChunks = wordChunks.length;
 
       streamingTimer = setInterval(() => {
         if (tokenIndex < totalChunks) {
@@ -1447,7 +1456,7 @@ function initChatEngine() {
       }
 
       if (liveBubble && streamWordIndex < streamWordChunks.length) {
-        streamWordIndex++;
+        streamWordIndex = prefersReducedMotion() ? streamWordChunks.length : streamWordIndex + 1;
         const currentDisplay = streamWordChunks.slice(0, streamWordIndex).join('');
         liveBubble.setLeadHtml(renderMarkdownWithCursor(currentDisplay));
       }
