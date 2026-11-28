@@ -633,8 +633,9 @@
 
     const flushList = () => {
       if (!listItems.length) return;
-      const listEl = el("ul", listOrdered ? "a2ui-md-list a2ui-md-ol" : "a2ui-md-list");
-      const tagEl = listOrdered ? el("ol", "a2ui-md-list a2ui-md-ol") : listEl;
+      const tagEl = listOrdered
+        ? el("ol", "a2ui-md-list a2ui-md-ol")
+        : el("ul", "a2ui-md-list");
       for (const itemText of listItems) {
         const li = document.createElement("li");
         appendInlineFormatted(li, itemText);
@@ -1255,6 +1256,7 @@
 
     const rootId = updateComponents.rootId || "root_col";
     const visited = new Set();
+    const seenSummaries = new Set();
 
     function renderNode(nodeId) {
       if (!nodeId || visited.has(nodeId)) return null;
@@ -1272,8 +1274,12 @@
           }
           return box;
         }
-        case "SummaryCard":
+        case "SummaryCard": {
+          const summaryKey = `${String(comp.title || "").trim()}\n${String(comp.body || "").trim()}`.toLowerCase();
+          if (seenSummaries.has(summaryKey)) return null;
+          seenSummaries.add(summaryKey);
           return renderSummaryCard(comp);
+        }
         case "ProvenanceBar":
           return renderProvenanceBar(comp);
         case "QuestionFeed":
