@@ -1442,9 +1442,138 @@
       font-size: 0.8rem;
       color: var(--ink-muted);
     }
+    .a2ui-qeff {
+      font-size: 0.81rem;
+      color: var(--sky);
+    }
     .a2ui-qrationale {
       font-size: 0.83rem;
       color: var(--ink-soft);
+    }
+    details.a2ui-provenance {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border);
+      background: rgba(16, 7, 28, 0.65);
+    }
+    summary.a2ui-provenance-summary {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-size: 0.79rem;
+      color: var(--ink-soft);
+    }
+    summary.a2ui-provenance-summary::-webkit-details-marker {
+      display: none;
+    }
+    .a2ui-provenance-left,
+    .a2ui-provenance-toggle {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .a2ui-provenance-toggle {
+      color: var(--p-200);
+      font-weight: 500;
+    }
+    details.a2ui-provenance[open] .chev {
+      transform: rotate(90deg);
+    }
+    .a2ui-provenance-scope {
+      color: var(--ink-muted);
+    }
+    .a2ui-provenance-body {
+      padding: 10px 14px 12px;
+      border-top: 1px solid var(--glass-border);
+      display: grid;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+    .a2ui-provenance-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .a2ui-provenance-key {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--p-300);
+      min-width: 120px;
+    }
+    .a2ui-provenance-val {
+      color: var(--ink-soft);
+    }
+    .a2ui-provenance-metrics {
+      display: grid;
+      gap: 6px;
+    }
+    .a2ui-provenance-metric {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+    }
+    .a2ui-provenance-code {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--p-100);
+      word-break: break-all;
+    }
+    .a2ui-timeline-list,
+    .a2ui-gap-list {
+      display: grid;
+      gap: 12px;
+    }
+    .a2ui-timeline-card,
+    .a2ui-gap-item {
+      padding: 13px 15px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      display: grid;
+      gap: 10px;
+    }
+    .a2ui-timeline-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .a2ui-timeline-turns {
+      margin: 0;
+      padding: 0 0 0 14px;
+      border-left: 2px solid rgba(192, 132, 252, 0.35);
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+    .a2ui-timeline-turn {
+      display: grid;
+      gap: 4px;
+    }
+    .a2ui-timeline-turn-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    .a2ui-timeline-turn-text {
+      font-size: 0.88rem;
+      color: var(--ink);
+      word-break: break-word;
     }
     details.a2ui-qanswer {
       margin-top: 2px;
@@ -2121,7 +2250,7 @@
         <div class="section-header">
           <div>
             <h2 id="hAskData" class="section-title">5. Ask a Question About Your Data</h2>
-            <p class="section-sub">Natural-language BigQuery exploration powered by Gemini 3.6 Flash, read-only SQL validation, and A2UI Generative UI</p>
+            <p class="section-sub">Ontology-grounded BigQuery exploration powered by Gemini 3.6 Flash, semantic SQL validation, and A2UI v3 Generative UI</p>
           </div>
           <div class="controls">
             <span id="askDataWindowBadge" class="meta-chip">Window: Last 30 days</span>
@@ -2131,10 +2260,11 @@
 
         <article class="glass ask-data-card">
           <div id="askDataStarters" class="ask-data-starters" role="group" aria-label="Starter analytics questions">
-            <button type="button" class="a2ui-chip" data-question="What actual questions have AI agents asked on behalf of users?">What actual questions have AI agents asked on behalf of users?</button>
-            <button type="button" class="a2ui-chip" data-question="What questions are asked by agents or chatbot visitors on behalf of candidates?">What questions are asked by agents or chatbot visitors on behalf of candidates?</button>
+            <button type="button" class="a2ui-chip" data-question="Are the WebMCP tools used by agents?">Are the WebMCP tools used by agents?</button>
+            <button type="button" class="a2ui-chip" data-question="What questions did users ask via the chatbot?">What questions did users ask via the chatbot?</button>
+            <button type="button" class="a2ui-chip" data-question="What questions were asked by agents to the MCP or ASK endpoint?">What questions were asked by agents to the MCP or ASK endpoint?</button>
             <button type="button" class="a2ui-chip" data-question="Compare what users ask via AI agents vs. the on-site chatbot">Compare what users ask via AI agents vs. the on-site chatbot</button>
-            <button type="button" class="a2ui-chip" data-question="Which profile sections and case studies do user-driven AI agents look up most?">Which profile sections and case studies do user-driven AI agents look up most?</button>
+            <button type="button" class="a2ui-chip" data-question="Show unanswered questions and knowledge base gaps">Show unanswered questions and knowledge base gaps</button>
           </div>
 
           <form id="askDataForm" class="ask-data-form" novalidate>
@@ -2176,7 +2306,7 @@
     </dialog>
   </main>
 
-  <script src="/js/analytics-genui.js?v=3" defer></script>
-  <script src="/js/agentic-traffic.js?v=11" defer></script>
+  <script src="/js/analytics-genui.js?v=4" defer></script>
+  <script src="/js/agentic-traffic.js?v=12" defer></script>
 </body>
 </html>

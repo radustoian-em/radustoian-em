@@ -1594,17 +1594,21 @@
 
   function openDetailDialog(row) {
     clearNode(els.dlgBody);
-    els.dlgMetaPill.textContent = `${row.channel_surface || row.protocol || "Call"} · ${formatTimestampUtc(row.event_timestamp)} UTC`;
+    els.dlgMetaPill.textContent = `${row.question_source || row.channel_surface || row.protocol || "Call"} · ${formatTimestampUtc(row.event_timestamp)} UTC`;
     els.dlgMetaPill.className = row.guardrail_blocked
       ? "pill pill-rose"
       : row.matched_kb
         ? "pill pill-green"
         : "pill pill-violet";
 
-    els.dlgTitle.textContent = row.raw_query || row.call_action_label || row.tool_name || row.http_path || "Call Detail";
+    const primaryQueryText = row.question_asked ?? row.raw_query ?? "";
+    els.dlgTitle.textContent = primaryQueryText || row.call_action_label || row.tool_name || row.http_path || "Call Detail";
 
-    addDetailBlock(els.dlgBody, "Question / Arguments / Target", row.raw_query || row.resource_uri);
-    addDetailBlock(els.dlgBody, "Previous Turn Question", row.prev_query);
+    addDetailBlock(els.dlgBody, "Question / Arguments / Target", primaryQueryText || row.resource_uri);
+    if (row.effective_query && String(row.effective_query).trim() && String(row.effective_query).trim() !== String(primaryQueryText).trim()) {
+      addDetailBlock(els.dlgBody, "Decontextualized Query", row.effective_query);
+    }
+    addDetailBlock(els.dlgBody, "Previous Turn Question", row.previous_turn_question ?? row.prev_query);
     addDetailBlock(els.dlgBody, "Gemini Fanout Search Queries", row.fanout_queries_text);
     addDetailBlock(els.dlgBody, "Matched KB Sections", row.matched_sections_text);
     if (row.guardrail_blocked) {
@@ -1957,17 +1961,21 @@
             }
             if (evt === "status" && parsed) {
               setAskStatus(true, parsed.message || "Working...");
-              statusPill.textContent = parsed.stage === "querying_bigquery"
-                ? "Querying BigQuery…"
-                : parsed.stage === "widening_window"
-                  ? "Checking broader window…"
-                  : parsed.stage === "composing_ui"
-                    ? "Analyzing questions & UI…"
-                    : parsed.stage === "repairing_sql"
-                      ? "Refining SQL…"
-                      : parsed.stage === "retrying_analysis"
-                        ? "Retrying…"
-                        : "Planning query…";
+              statusPill.textContent = parsed.stage === "profiling_catalog"
+                ? "Grounding ontology…"
+                : parsed.stage === "validating_sql"
+                  ? "Validating SQL…"
+                  : parsed.stage === "querying_bigquery"
+                    ? "Querying BigQuery…"
+                    : parsed.stage === "widening_window"
+                      ? "Checking broader window…"
+                      : parsed.stage === "composing_ui"
+                        ? "Analyzing questions & UI…"
+                        : parsed.stage === "repairing_sql"
+                          ? "Refining SQL…"
+                          : parsed.stage === "retrying_analysis"
+                            ? "Retrying…"
+                            : "Planning query…";
             } else if (evt === "surface" && parsed) {
               surfacePayload = parsed;
             } else if (evt === "error" && parsed) {
