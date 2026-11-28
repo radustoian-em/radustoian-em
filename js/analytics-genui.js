@@ -688,15 +688,41 @@
     return card;
   }
 
+  function compactKpiValue(rawVal) {
+    const plain = String(rawVal ?? "0")
+      .replace(/[`*_~]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!plain) return "0";
+    if (plain.length <= 24 && !/(?:\.\s|\s-\s|:\s)/.test(plain)) return plain;
+    const numUnitMatch = /^([+-]?\$?\d[\d,.]*(?:\s*(?:%|ms|s|m|K|M|tok|calls|sessions|tools))?)\b/i.exec(plain);
+    if (numUnitMatch && numUnitMatch[1].length <= 24) return numUnitMatch[1].trim();
+    const firstClause = plain.split(/(?:\.\s|\s-\s|:\s)/)[0].trim();
+    const candidate = firstClause || plain;
+    return candidate.length > 24 ? `${candidate.slice(0, 23).trim()}…` : candidate;
+  }
+
+  function compactKpiSubtext(rawSub) {
+    const plain = String(rawSub ?? "")
+      .replace(/[`*_~]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!plain) return "";
+    const beforeBullet = plain.split(/\s-\s/)[0].trim();
+    return beforeBullet.length > 48 ? `${beforeBullet.slice(0, 47).trim()}…` : beforeBullet;
+  }
+
   function renderKpiStrip(comp) {
     const grid = el("div", "a2ui-kpi-grid");
     for (const item of comp.items || []) {
       const accent = ["violet", "sky", "emerald", "amber", "rose"].includes(item.accent) ? item.accent : "violet";
       const card = el("article", `kpi-card a2ui-kpi-card a2ui-accent-${accent}`);
       card.appendChild(el("div", "kpi-label", item.label || ""));
-      card.appendChild(el("div", "kpi-value", item.value ?? "0"));
-      if (item.subtext) {
-        card.appendChild(el("div", "kpi-sub", item.subtext));
+      const valText = compactKpiValue(item.value ?? "0");
+      card.appendChild(el("div", valText.length > 10 ? "kpi-value kpi-value-sm" : "kpi-value", valText));
+      const subText = compactKpiSubtext(item.subtext);
+      if (subText) {
+        card.appendChild(el("div", "kpi-sub", subText));
       }
       grid.appendChild(card);
     }
