@@ -566,13 +566,124 @@
     return card;
   }
 
+  function appendInlineFormatted(parent, text, depth = 0) {
+    const str = String(text ?? "");
+    if (!str) return;
+    if (depth > 2) {
+      parent.appendChild(document.createTextNode(str));
+      return;
+    }
+
+    const tokenRegex = /`([^`\n]+)`|\*\*\*([^\s*](?:[^\n*]*[^\s*])?)\*\*\*|\*\*([^\s*](?:[^\n]*?[^\s*])?)\*\*|\*([^\s*](?:[^\n*]*[^\s*])?)\*/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = tokenRegex.exec(str)) !== null) {
+      if (match.index > lastIndex) {
+        parent.appendChild(document.createTextNode(str.slice(lastIndex, match.index)));
+      }
+      if (match[1] !== undefined) {
+        parent.appendChild(el("code", "a2ui-md-code", match[1]));
+      } else if (match[2] !== undefined) {
+        const strongEl = el("strong", "a2ui-md-bold");
+        const emEl = el("em", "a2ui-md-em");
+        emEl.textContent = match[2];
+        strongEl.appendChild(emEl);
+        parent.appendChild(strongEl);
+      } else if (match[3] !== undefined) {
+        const strongEl = el("strong", "a2ui-md-bold");
+        appendInlineFormatted(strongEl, match[3], depth + 1);
+        parent.appendChild(strongEl);
+      } else if (match[4] !== undefined) {
+        const emEl = el("em", "a2ui-md-em");
+        emEl.textContent = match[4];
+        parent.appendChild(emEl);
+      }
+      lastIndex = tokenRegex.lastIndex;
+    }
+
+    if (lastIndex < str.length) {
+      parent.appendChild(document.createTextNode(str.slice(lastIndex)));
+    }
+  }
+
+  function renderFormattedBody(rawText, containerClass) {
+    const container = el("div", containerClass);
+    const normalized = String(rawText ?? "").replace(/\r\n/g, "\n").trim();
+    if (!normalized) {
+      container.appendChild(el("p", "a2ui-md-p", "—"));
+      return container;
+    }
+
+    const lines = normalized.split("\n");
+    let paraLines = [];
+    let listItems = [];
+    let listOrdered = null;
+
+    const flushParagraph = () => {
+      if (!paraLines.length) return;
+      const p = el("p", "a2ui-md-p");
+      paraLines.forEach((line, idx) => {
+        if (idx > 0) p.appendChild(document.createElement("br"));
+        appendInlineFormatted(p, line);
+      });
+      container.appendChild(p);
+      paraLines = [];
+    };
+
+    const flushList = () => {
+      if (!listItems.length) return;
+      const listEl = el("ul", listOrdered ? "a2ui-md-list a2ui-md-ol" : "a2ui-md-list");
+      const tagEl = listOrdered ? el("ol", "a2ui-md-list a2ui-md-ol") : listEl;
+      for (const itemText of listItems) {
+        const li = document.createElement("li");
+        appendInlineFormatted(li, itemText);
+        tagEl.appendChild(li);
+      }
+      container.appendChild(tagEl);
+      listItems = [];
+      listOrdered = null;
+    };
+
+    for (const rawLine of lines) {
+      const trimmed = rawLine.trim();
+      if (!trimmed) {
+        flushParagraph();
+        flushList();
+        continue;
+      }
+
+      const ulMatch = /^[-*•]\s+(.+)$/.exec(trimmed);
+      const olMatch = /^\d+[.)]\s+(.+)$/.exec(trimmed);
+
+      if (ulMatch) {
+        flushParagraph();
+        if (listOrdered === true) flushList();
+        listOrdered = false;
+        listItems.push(ulMatch[1]);
+      } else if (olMatch) {
+        flushParagraph();
+        if (listOrdered === false) flushList();
+        listOrdered = true;
+        listItems.push(olMatch[1]);
+      } else {
+        flushList();
+        paraLines.push(trimmed);
+      }
+    }
+
+    flushParagraph();
+    flushList();
+    return container;
+  }
+
   function renderSummaryCard(comp) {
     const tone = ["info", "positive", "warning", "neutral"].includes(comp.tone) ? comp.tone : "info";
     const card = el("div", `a2ui-summary a2ui-tone-${tone}`);
     if (comp.title) {
       card.appendChild(el("div", "a2ui-summary-title", comp.title));
     }
-    card.appendChild(el("p", "a2ui-summary-body", comp.body || ""));
+    card.appendChild(renderFormattedBody(comp.body || "", "a2ui-summary-body"));
     return card;
   }
 
