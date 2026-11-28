@@ -32,12 +32,45 @@
     return cur;
   }
 
+  const ENUM_DISPLAY_LABELS = {
+    USER_DRIVEN_AGENT: "User-Driven AI Agent",
+    AUTOMATED_AGENT_CRAWLER: "Automated Bot / Crawler",
+    HUMAN_INTERACTIVE: "Human Visitor (Chatbot)",
+    prompt_grounded_qa: "Question Answering (Q&A)",
+    targeted_section_lookup: "Targeted Section Lookup",
+    capability_discovery: "Capability Discovery",
+    directory_scan: "MCP Directory / Registry Scan",
+    research_bot: "Research Bot / Crawler",
+    bulk_crawl: "Bulk Crawl / Automated Sweep",
+    ui_navigation: "In-Browser UI Action (WebMCP)",
+    citation_verification: "Citation / Link Check",
+    oauth_handshake: "OAuth Handshake",
+    session_termination: "Session Termination",
+    markdown_negotiation: "Markdown Negotiation",
+    rest_api: "Public REST API",
+    webmcp: "In-Browser WebMCP",
+    nlweb: "NLWeb (/ask)",
+    mcp: "Remote MCP"
+  };
+
+  function humanizeEnumValue(val) {
+    if (val === null || val === undefined) return "";
+    const str = String(val).trim();
+    if (!str) return "";
+    return Object.prototype.hasOwnProperty.call(ENUM_DISPLAY_LABELS, str) ? ENUM_DISPLAY_LABELS[str] : str;
+  }
+
   function formatMetricValue(val, fmt = "number") {
     if (val === null || val === undefined || val === "") return "—";
     const num = Number(val);
     if (!Number.isFinite(num)) return String(val);
     if (fmt === "ms") return `${new Intl.NumberFormat().format(Math.round(num * 10) / 10)} ms`;
     if (fmt === "pct") return `${Math.round(num * 10) / 10}%`;
+    if (fmt === "tokens") {
+      if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M tok`;
+      if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K tok`;
+      return `${new Intl.NumberFormat().format(num)} tok`;
+    }
     if (fmt === "compact") {
       if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
       if (num >= 10_000) return `${(num / 1_000).toFixed(1)}K`;
@@ -95,6 +128,444 @@
     return String(val);
   }
 
+  function renderProvenanceBar(comp) {
+    const details = el("details", "a2ui-provenance");
+    const summary = el("summary", "a2ui-provenance-summary");
+
+    const left = el("div", "a2ui-provenance-left");
+    if (comp.archetypeLabel) {
+      left.appendChild(el("span", "pill pill-violet", comp.archetypeLabel));
+    }
+    if (comp.scopeSummary) {
+      left.appendChild(el("span", "a2ui-provenance-scope", comp.scopeSummary));
+    }
+    if (comp.rowCapReached) {
+      left.appendChild(el("span", "pill pill-amber", "Row cap (200) reached on detail step"));
+    }
+    summary.appendChild(left);
+
+    const right = el("span", "a2ui-provenance-toggle");
+    right.appendChild(el("span", "chev", "▸"));
+    right.appendChild(document.createTextNode("Definitions & Provenance"));
+    summary.appendChild(right);
+    details.appendChild(summary);
+
+    const body = el("div", "a2ui-provenance-body");
+    if (Array.isArray(comp.viewsUsed) && comp.viewsUsed.length) {
+      const viewsRow = el("div", "a2ui-provenance-row");
+      viewsRow.appendChild(el("span", "a2ui-provenance-key", "BigQuery Views"));
+      viewsRow.appendChild(el("span", "a2ui-provenance-val", comp.viewsUsed.join(", ")));
+      body.appendChild(viewsRow);
+    }
+    if (comp.exclusions) {
+      const excRow = el("div", "a2ui-provenance-row");
+      excRow.appendChild(el("span", "a2ui-provenance-key", "Default Scope"));
+      excRow.appendChild(el("span", "a2ui-provenance-val", comp.exclusions));
+      body.appendChild(excRow);
+    }
+    if (Array.isArray(comp.certifiedMetrics) && comp.certifiedMetrics.length) {
+      const metricsWrap = el("div", "a2ui-provenance-metrics");
+      metricsWrap.appendChild(el("div", "a2ui-provenance-key", "Certified Metrics Applied"));
+      for (const m of comp.certifiedMetrics) {
+        const mRow = el("div", "a2ui-provenance-metric");
+        mRow.appendChild(el("strong", "", m.label || m.id));
+        if (m.formula) {
+          mRow.appendChild(el("code", "a2ui-provenance-code", m.formula));
+        }
+        metricsWrap.appendChild(mRow);
+      }
+      body.appendChild(metricsWrap);
+    }
+    details.appendChild(body);
+    return details;
+  }
+
+  function renderDonutShareChart(comp, dataModel) {
+    const rawRows = resolveDataPath(dataModel, comp.dataPath || "/rows");
+    const items = Array.isArray(rawRows) ? rawRows.slice(0, 8) : [];
+    const card = el("article", "glass panel-card a2ui-card");
+    const head = el("div", "panel-head");
+    head.appendChild(el("h4", "panel-title", comp.title || "Share Breakdown"));
+    card.appendChild(head);
+
+    if (!items.length) {
+      card.appendChild(el("div", "empty-state", "No matching rows returned for this breakdown."));
+      return card;
+    }
+
+    const palette = ["#a855f7", "#38bdf8", "#34d399", "#f59e0b", "#f472b6", "#818cf8", "#2dd4bf", "#fb7185"];
+    const total = items.reduce((acc, r) => acc + Math.max(0, Number(r?.[comp.valueField]) || 0), 0);
+
+    const layout = el("div", "donut-layout");
+    const svgBox = el("div", "donut-wrap");
+    const size = 164;
+    const cx = 82;
+    const cy = 82;
+    const r = 60;
+    const circumference = 2 * Math.PI * r;
+
+    const svg = svgEl("svg", {
+      viewBox: `0 0 ${size} ${size}`,
+      class: "chart-svg",
+      role: "img",
+      "aria-label": comp.title || "Proportional share donut chart"
+    });
+
+    let offset = 0;
+    items.forEach((row, idx) => {
+      const val = Math.max(0, Number(row?.[comp.valueField]) || 0);
+      const frac = total > 0 ? val / total : 0;
+      const dashLen = frac * circumference;
+      const color = palette[idx % palette.length];
+      svg.appendChild(svgEl("circle", {
+        cx,
+        cy,
+        r,
+        fill: "none",
+        stroke: color,
+        "stroke-width": "22",
+        "stroke-dasharray": `${dashLen.toFixed(2)} ${circumference.toFixed(2)}`,
+        "stroke-dashoffset": (-offset).toFixed(2),
+        transform: `rotate(-90 ${cx} ${cy})`
+      }));
+      offset += dashLen;
+    });
+
+    const centerVal = svgEl("text", {
+      x: cx,
+      y: cy + 3,
+      "text-anchor": "middle",
+      fill: "#f8fafc",
+      "font-size": "20",
+      "font-weight": "700",
+      "font-family": "Fraunces, Georgia, serif"
+    });
+    centerVal.textContent = formatMetricValue(total, "compact");
+    svg.appendChild(centerVal);
+
+    const centerSub = svgEl("text", {
+      x: cx,
+      y: cy + 20,
+      "text-anchor": "middle",
+      fill: "#9494ad",
+      "font-size": "10",
+      "letter-spacing": "0.08em"
+    });
+    centerSub.textContent = String(comp.centerLabel || "TOTAL").slice(0, 14).toUpperCase();
+    svg.appendChild(centerSub);
+
+    svgBox.appendChild(svg);
+    layout.appendChild(svgBox);
+
+    const legend = el("div", "donut-legend");
+    items.forEach((row, idx) => {
+      const label = humanizeEnumValue(row?.[comp.labelField] ?? "Unknown");
+      const val = Math.max(0, Number(row?.[comp.valueField]) || 0);
+      const pct = total > 0 ? Math.round((val / total) * 1000) / 10 : 0;
+
+      const legRow = el("div", "donut-row");
+      const left = el("span", "legend-item");
+      const swatch = el("span", "swatch");
+      swatch.style.background = palette[idx % palette.length];
+      left.appendChild(swatch);
+      left.appendChild(document.createTextNode(label));
+
+      const right = el("span", "hbar-nums", `${formatMetricValue(val, "number")} (${pct}%)`);
+      legRow.appendChild(left);
+      legRow.appendChild(right);
+      legend.appendChild(legRow);
+    });
+
+    layout.appendChild(legend);
+    card.appendChild(layout);
+    return card;
+  }
+
+  function renderStackedBarChart(comp, dataModel, handlers) {
+    const rawRows = resolveDataPath(dataModel, comp.dataPath || "/rows");
+    const rows = Array.isArray(rawRows) ? rawRows.slice(0, 45) : [];
+    const series = Array.isArray(comp.series) ? comp.series : [];
+
+    const card = el("article", "glass panel-card a2ui-card");
+    const head = el("div", "panel-head");
+    head.appendChild(el("h4", "panel-title", comp.title || "Stacked Breakdown"));
+
+    const legend = el("div", "legend");
+    const palette = ["#a855f7", "#38bdf8", "#34d399", "#f59e0b", "#f472b6"];
+    series.forEach((s, idx) => {
+      const item = el("span", "legend-item");
+      const swatch = el("span", "swatch");
+      swatch.style.background = s.color || palette[idx % palette.length];
+      item.appendChild(swatch);
+      item.appendChild(document.createTextNode(humanizeEnumValue(s.label || s.field)));
+      legend.appendChild(item);
+    });
+    head.appendChild(legend);
+    card.appendChild(head);
+
+    if (!rows.length || !series.length) {
+      card.appendChild(el("div", "empty-state", "Insufficient data points to plot a stacked bar chart."));
+      return card;
+    }
+
+    const stage = el("div", "chart-stage");
+    stage.style.minHeight = "220px";
+    const width = 860;
+    const height = 228;
+    const margin = { top: 14, right: 20, bottom: 34, left: 48 };
+    const plotW = width - margin.left - margin.right;
+    const plotH = height - margin.top - margin.bottom;
+
+    const maxY = Math.max(
+      1,
+      ...rows.map((r) => series.reduce((acc, s) => acc + Math.max(0, Number(r?.[s.field]) || 0), 0))
+    );
+
+    const svg = svgEl("svg", {
+      viewBox: `0 0 ${width} ${height}`,
+      class: "chart-svg",
+      role: "img",
+      "aria-label": comp.title || "Stacked bar chart"
+    });
+
+    const ticks = 4;
+    for (let i = 0; i <= ticks; i++) {
+      const val = Math.round((maxY / ticks) * i);
+      const y = margin.top + plotH - (plotH * i) / ticks;
+      svg.appendChild(svgEl("line", {
+        x1: margin.left,
+        y1: y,
+        x2: width - margin.right,
+        y2: y,
+        stroke: "rgba(216, 180, 254, 0.12)",
+        "stroke-dasharray": i === 0 ? "" : "3,4"
+      }));
+      const lbl = svgEl("text", {
+        x: margin.left - 8,
+        y: y + 4,
+        "text-anchor": "end",
+        fill: "#9494ad",
+        "font-size": "11",
+        "font-family": "ui-monospace, monospace"
+      });
+      lbl.textContent = formatMetricValue(val, "compact");
+      svg.appendChild(lbl);
+    }
+
+    const step = plotW / rows.length;
+    const barW = Math.min(54, Math.max(10, step * 0.56));
+    const labelEvery = Math.max(1, Math.ceil(rows.length / 8));
+    let lastLabelX = -Infinity;
+
+    rows.forEach((r, idx) => {
+      const x = margin.left + idx * step + (step - barW) / 2;
+      let cursorY = margin.top + plotH;
+      let totalBar = 0;
+
+      series.forEach((s, sIdx) => {
+        const count = Math.max(0, Number(r?.[s.field]) || 0);
+        if (count <= 0) return;
+        totalBar += count;
+        const segH = Math.max(2, (count / maxY) * plotH);
+        cursorY -= segH;
+        svg.appendChild(svgEl("rect", {
+          x: x.toFixed(2),
+          y: cursorY.toFixed(2),
+          width: barW.toFixed(2),
+          height: segH.toFixed(2),
+          rx: "2",
+          fill: s.color || palette[sIdx % palette.length]
+        }));
+      });
+
+      const hit = svgEl("rect", {
+        x: (margin.left + idx * step).toFixed(2),
+        y: margin.top,
+        width: step.toFixed(2),
+        height: plotH,
+        fill: "transparent",
+        tabindex: "0"
+      });
+
+      const rawX = r?.[comp.xField];
+      const formattedX = rawX !== undefined && rawX !== null && /^\d{4}-\d{2}/.test(String(rawX))
+        ? formatChartDate(rawX, { includeYear: true })
+        : humanizeEnumValue(rawX ?? `Item ${idx + 1}`);
+
+      const lines = [
+        `${formattedX} · Total: ${formatMetricValue(totalBar, "number")}`,
+        ...series.map((s) => `${humanizeEnumValue(s.label || s.field)}: ${formatMetricValue(r?.[s.field] ?? 0, "number")}`)
+      ];
+
+      if (typeof handlers.onTooltipShow === "function") {
+        hit.addEventListener("mousemove", (e) => handlers.onTooltipShow(e, lines));
+        hit.addEventListener("mouseenter", (e) => handlers.onTooltipShow(e, lines));
+        hit.addEventListener("focus", () => {
+          const rect = hit.getBoundingClientRect();
+          handlers.onTooltipShow({ clientX: rect.left + rect.width / 2, clientY: rect.top + 16 }, lines);
+        });
+      }
+      if (typeof handlers.onTooltipHide === "function") {
+        hit.addEventListener("mouseleave", handlers.onTooltipHide);
+        hit.addEventListener("blur", handlers.onTooltipHide);
+      }
+      svg.appendChild(hit);
+
+      const centerX = x + barW / 2;
+      if ((idx % labelEvery === 0 || idx === rows.length - 1) && centerX - lastLabelX >= 64) {
+        const lbl = svgEl("text", {
+          x: centerX.toFixed(2),
+          y: height - 9,
+          "text-anchor": "middle",
+          fill: "#9494ad",
+          "font-size": "11",
+          "font-family": "ui-monospace, monospace"
+        });
+        const strX = String(rawX ?? "");
+        lbl.textContent = /^\d{4}-\d{2}/.test(strX)
+          ? formatChartDate(strX, { includeYear: false })
+          : humanizeEnumValue(strX).slice(0, 14);
+        svg.appendChild(lbl);
+        lastLabelX = centerX;
+      }
+    });
+
+    stage.appendChild(svg);
+    card.appendChild(stage);
+    return card;
+  }
+
+  function renderSessionTimeline(comp, dataModel, handlers) {
+    const sessions = Array.isArray(comp.sessions) ? comp.sessions : [];
+    const dataRows = resolveDataPath(dataModel, "/rows");
+    const rowByEventId = new Map();
+    if (Array.isArray(dataRows)) {
+      for (const r of dataRows) {
+        if (r && r.event_id !== undefined && r.event_id !== null) {
+          rowByEventId.set(String(r.event_id), r);
+        }
+      }
+    }
+
+    const card = el("article", "glass panel-card a2ui-card");
+    const head = el("div", "panel-head");
+    head.appendChild(el("h4", "panel-title", comp.title || "Multi-Turn Session Trails"));
+    head.appendChild(el("span", "meta-chip", `${sessions.length} sessions`));
+    card.appendChild(head);
+
+    if (!sessions.length) {
+      card.appendChild(el("div", "empty-state", "No multi-turn session trails available in this result set."));
+      return card;
+    }
+
+    const list = el("div", "a2ui-timeline-list");
+    for (const s of sessions) {
+      const sCard = el("div", "a2ui-timeline-card");
+      const sHead = el("div", "a2ui-timeline-head");
+      const left = el("div", "a2ui-qmeta");
+      const isChatbot = s.actorType === "chatbot";
+      left.appendChild(el("span", isChatbot ? "pill pill-green" : "pill pill-violet", isChatbot ? "Website Chatbot" : "AI Agent"));
+      left.appendChild(el("strong", "", s.agentLabel || "Unknown Agent"));
+      if (s.turnCount) {
+        left.appendChild(el("span", "meta-chip", `${s.turnCount} turns`));
+      }
+      if (s.durationLabel) {
+        left.appendChild(el("span", "meta-chip", s.durationLabel));
+      }
+      sHead.appendChild(left);
+      if (s.startedAt) {
+        sHead.appendChild(el("span", "cell-sub", `${formatCellValue(s.startedAt, "date")} UTC`));
+      }
+      sCard.appendChild(sHead);
+
+      const turnsList = el("ol", "a2ui-timeline-turns");
+      for (const t of s.turns || []) {
+        const li = el("li", "a2ui-timeline-turn");
+        const metaRow = el("div", "a2ui-timeline-turn-meta");
+        metaRow.appendChild(el("span", "pill pill-sky", `Turn ${t.turnIndex ?? "?"}`));
+        if (t.actionLabel) metaRow.appendChild(el("span", "meta-chip", t.actionLabel));
+        if (t.topic) metaRow.appendChild(el("span", "meta-chip", t.topic));
+        if (t.matchedKb === false) metaRow.appendChild(el("span", "pill pill-amber", "KB Miss"));
+        if (t.latencyMs !== null && t.latencyMs !== undefined) {
+          metaRow.appendChild(el("span", "cell-sub", `${t.latencyMs} ms`));
+        }
+        const matchedRow = t.eventId ? rowByEventId.get(String(t.eventId)) : null;
+        if (matchedRow && typeof handlers.onRowDetail === "function") {
+          const btn = el("button", "btn btn-sm btn-ghost", "Detail");
+          btn.type = "button";
+          btn.addEventListener("click", () => handlers.onRowDetail(matchedRow));
+          metaRow.appendChild(btn);
+        }
+        li.appendChild(metaRow);
+        li.appendChild(el("div", "a2ui-timeline-turn-text", t.queryText || "—"));
+        turnsList.appendChild(li);
+      }
+      sCard.appendChild(turnsList);
+      list.appendChild(sCard);
+    }
+
+    card.appendChild(list);
+    return card;
+  }
+
+  function renderGapAuditCard(comp, dataModel, handlers) {
+    const items = Array.isArray(comp.gapItems) ? comp.gapItems : [];
+    const dataRows = resolveDataPath(dataModel, "/rows");
+    const rowByEventId = new Map();
+    if (Array.isArray(dataRows)) {
+      for (const r of dataRows) {
+        if (r && r.event_id !== undefined && r.event_id !== null) {
+          rowByEventId.set(String(r.event_id), r);
+        }
+      }
+    }
+
+    const card = el("article", "glass panel-card a2ui-card");
+    const head = el("div", "panel-head");
+    head.appendChild(el("h4", "panel-title", comp.title || "Knowledge Base & Reliability Gaps"));
+    head.appendChild(el("span", "meta-chip", `${items.length} flagged`));
+    card.appendChild(head);
+
+    if (!items.length) {
+      card.appendChild(el("div", "empty-state", "No KB misses, guardrail blocks, or execution errors found in this set."));
+      return card;
+    }
+
+    const list = el("div", "a2ui-gap-list");
+    for (const item of items) {
+      const gCard = el("div", "a2ui-gap-item");
+      const gHead = el("div", "a2ui-qhead");
+      const left = el("div", "a2ui-qmeta");
+      const pillCls = item.reasonType === "kb_miss" || item.reasonType === "slow" ? "pill-amber" : "pill-rose";
+      left.appendChild(el("span", `pill ${pillCls}`, item.reasonBadge || "Gap"));
+      if (item.agentLabel) left.appendChild(el("span", "meta-chip", item.agentLabel));
+      if (item.topic) left.appendChild(el("span", "meta-chip", item.topic));
+      gHead.appendChild(left);
+
+      const right = el("div", "a2ui-qactions");
+      if (item.timestampUtc) {
+        right.appendChild(el("span", "cell-sub", `${formatCellValue(item.timestampUtc, "date")} UTC`));
+      }
+      const matchedRow = item.eventId ? rowByEventId.get(String(item.eventId)) : null;
+      if (matchedRow && typeof handlers.onRowDetail === "function") {
+        const btn = el("button", "btn btn-sm btn-ghost", "Full Detail");
+        btn.type = "button";
+        btn.addEventListener("click", () => handlers.onRowDetail(matchedRow));
+        right.appendChild(btn);
+      }
+      gHead.appendChild(right);
+      gCard.appendChild(gHead);
+      gCard.appendChild(el("div", "a2ui-qtext", item.questionText || "—"));
+      if (item.detail) {
+        gCard.appendChild(el("div", "a2ui-qrationale", item.detail));
+      }
+      list.appendChild(gCard);
+    }
+
+    card.appendChild(list);
+    return card;
+  }
+
   function renderSummaryCard(comp) {
     const tone = ["info", "positive", "warning", "neutral"].includes(comp.tone) ? comp.tone : "info";
     const card = el("div", `a2ui-summary a2ui-tone-${tone}`);
@@ -139,7 +610,7 @@
     const maxVal = Math.max(1, ...items.map((r) => Math.max(0, Number(r?.[comp.valueField]) || 0)));
 
     for (const row of items) {
-      const label = row?.[comp.labelField] ?? "Unknown";
+      const label = humanizeEnumValue(row?.[comp.labelField] ?? "Unknown");
       const val = Number(row?.[comp.valueField]) || 0;
       const barRow = el("div", "hbar-row");
       const meta = el("div", "hbar-meta");
@@ -410,6 +881,12 @@
       if (item.agentLabel) {
         leftMeta.appendChild(el("span", "meta-chip", item.agentLabel));
       }
+      if (item.turnType === "Follow-up Turn") {
+        leftMeta.appendChild(el("span", "pill pill-amber", "Follow-up"));
+      }
+      if (item.matchedKb === false) {
+        leftMeta.appendChild(el("span", "pill pill-rose", "KB Miss"));
+      }
       if (item.personaBadge) {
         leftMeta.appendChild(el("span", "pill pill-sky", item.personaBadge));
       }
@@ -430,6 +907,9 @@
       qCard.appendChild(qHead);
 
       qCard.appendChild(el("div", "a2ui-qtext", item.questionText || "—"));
+      if (item.effectiveQuery) {
+        qCard.appendChild(el("div", "a2ui-qeff", `Resolved intent: ${item.effectiveQuery}`));
+      }
       if (item.prevContext) {
         qCard.appendChild(el("div", "a2ui-qprev", `Follow-up to: ${item.prevContext}`));
       }
@@ -536,7 +1016,7 @@
     table.appendChild(thead);
 
     const hasDetailRow = (r) =>
-      r && (r.raw_query !== undefined || r.response_preview !== undefined || r.event_id !== undefined);
+      r && (r.raw_query !== undefined || r.question_asked !== undefined || r.response_preview !== undefined || r.event_id !== undefined);
 
     for (const row of rows) {
       const tr = el("tr");
@@ -556,7 +1036,10 @@
 
       for (const col of columns) {
         const rawVal = row?.[col.key];
-        const td = el("td", col.type === "number" ? "num-cell" : "", formatCellValue(rawVal, col.type));
+        const formatted = (col.type || "text") === "text" && /^(traffic_class|intent_category|protocol)$/i.test(col.key)
+          ? humanizeEnumValue(rawVal) || "—"
+          : formatCellValue(rawVal, col.type);
+        const td = el("td", col.type === "number" ? "num-cell" : "", formatted);
         td.setAttribute("data-label", col.label || col.key);
         if (rawVal !== undefined && rawVal !== null) {
           td.dataset.value = String(rawVal);
@@ -680,16 +1163,26 @@
         }
         case "SummaryCard":
           return renderSummaryCard(comp);
+        case "ProvenanceBar":
+          return renderProvenanceBar(comp);
         case "QuestionFeed":
           return renderQuestionFeed(comp, dataModel, handlers);
         case "KpiStrip":
           return renderKpiStrip(comp);
         case "BarChart":
           return renderBarChart(comp, dataModel);
+        case "DonutShareChart":
+          return renderDonutShareChart(comp, dataModel);
+        case "StackedBarChart":
+          return renderStackedBarChart(comp, dataModel, handlers);
         case "LineChart":
           return renderLineChart(comp, dataModel, handlers);
         case "ComparisonGrid":
           return renderComparisonGrid(comp);
+        case "SessionTimeline":
+          return renderSessionTimeline(comp, dataModel, handlers);
+        case "GapAuditCard":
+          return renderGapAuditCard(comp, dataModel, handlers);
         case "DataTable":
           return renderDataTable(comp, dataModel, handlers);
         case "FollowUpChips":
